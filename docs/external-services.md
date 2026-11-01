@@ -68,9 +68,9 @@ Checked on 2026-11-01: the [Steam Web API Terms of Use](https://steamcommunity.c
 
 ## Risks accepted by the owner
 
-<!-- One line per risk, with the date. Proposed on 2026-11-01, to be accepted by the owner: -->
+<!-- One line per risk, with the date. -->
 
-- `appdetails` is undocumented and may change or close without notice: the bag keeps what it has cached, and only the new additions fail. (Proposed on 2026-11-01.)
-- The covers and descriptions of Steam are shown without an explicit license, in a private page between friends. (Proposed on 2026-11-01.)
-- The free plan of Netlify pauses every project of the account when its 300 credits are used up, until the next month. (Proposed on 2026-11-01.)
-- The data of the bag lives in the United States (`us-east-2`). (Proposed on 2026-11-01.)
+- `appdetails` is undocumented and may change or close without notice: the bag keeps what it has cached, and only the new additions fail. (Accepted on 2026-11-01.)
+- The covers and descriptions of Steam are shown without an explicit license, in a private page between friends. (Accepted on 2026-11-01.)
+- The free plan of Netlify pauses every project of the account when its 300 credits are used up, until the next month. (Accepted on 2026-11-01.)
+- The data of the bag lives in the United States (`us-east-2`). (Accepted on 2026-11-01.)
