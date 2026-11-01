@@ -1,11 +1,11 @@
-# Weekly pull requests to update the npm packages and the GitHub Actions; the minor and patch
+# Monthly pull requests to update the npm packages and the GitHub Actions; the minor and patch
 # updates of npm come grouped in one pull request. Read them with the dependency-reviewer agent.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
     groups:
       npm-minor:
         update-types: [minor, patch]
@@ -17,4 +17,4 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
