@@ -601,6 +601,9 @@ input {
 /* Footer and signature */
 
 .app-footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1367,6 +1370,38 @@ input {
   .app-toast-in {
     padding-left: var(--space-8);
     padding-right: var(--space-6);
+  }
+}
+
+
+/* The mark of Sylent, large and faint behind the footer, as a watermark. */
+.app-footer-mark {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  color: var(--text);
+  opacity: 0.06;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.app-footer-mark .app-mark {
+  height: 230px;
+}
+
+.app-footer {
+  min-height: 240px;
+  justify-content: flex-end;
+}
+
+@media (min-width: 900px) {
+  .app-footer-mark .app-mark {
+    height: 280px;
+  }
+
+  .app-footer {
+    min-height: 280px;
   }
 }
 

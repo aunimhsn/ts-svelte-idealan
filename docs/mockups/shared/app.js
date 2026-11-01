@@ -60,8 +60,9 @@ const state = STATES[params.get("state")] || {};
 
 function footer() {
   return `<footer class="app-footer">
+    <span class="app-footer-mark" aria-hidden="true">${MARK}</span>
     <p>Données et images&nbsp;: Steam. Idealan n’est pas affilié à Valve.</p>
-    <a class="app-signature" href="https://sylent.art" aria-label="Sylent, sur sylent.art">${MARK}<span class="app-wordmark" aria-hidden="true"></span></a>
+    <a class="app-signature" href="https://sylent.art" aria-label="Sylent, sur sylent.art"><span class="app-wordmark" aria-hidden="true"></span></a>
   </footer>`;
 }
 
