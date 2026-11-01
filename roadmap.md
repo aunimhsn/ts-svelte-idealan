@@ -33,7 +33,7 @@ The usual steps of the first cycle of a small application; adapt them at the set
 - [ ] **6. The bag** (build), in sub-steps agreed with the owner on 2026-11-01 (6c split into 6c and 6d the same day):
   - [x] **6a. The server** ([#11](https://github.com/aunimhsn/ts-svelte-idealan/pull/11)).
   - [x] **6b. The welcome and the bag** ([#12](https://github.com/aunimhsn/ts-svelte-idealan/pull/12)).
-  - [x] **6c. Votes and removing**: the votes on the cards (the column of the score gets its two buttons, the score jumps), who voted (the bubble under the score), « Retirer » with its confirmation (the panel, reused by step 7).
+  - [x] **6c. Votes and removing** ([#13](https://github.com/aunimhsn/ts-svelte-idealan/pull/13)).
   - [ ] **6d. Filters**: the filters by kind of game with « Jouable à N », « Aucun jeu ne correspond à ces filtres. » and « Retirer les filtres » (the sort by score came with 6b).
 - [ ] **7. Moderation** (build): the admin's settings (rename, reset a personal code, which also clears `attempts/<id>` and unlocks the nickname, delete a player and its `attempts/<id>` (an orphan one is harmless); after a reset, the first one to enter with the nickname chooses its code: the admin tells the friend to enter at once — from the review of step 6a) and emptying the bag; needed before the LAN, since only the admin unlocks a nickname.
 - [ ] **8. Launch**: the application checked on the `netlify.app` address, the two codes set, the link and the member code sent to the friends.

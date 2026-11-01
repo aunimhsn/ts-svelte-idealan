@@ -2,6 +2,16 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 6c. Votes and removing
+
+Merged on 2026-11-01 in [#13](https://github.com/aunimhsn/ts-svelte-idealan/pull/13). Tools: build.
+
+- The votes on the cards, with the score that jumps; who voted in a bubble under the score (a tap, a hover or the keyboard focus).
+- The votes shown at once over the bag as last read (`withVotes`), and the order of the cards kept after the friend's own vote (`inOrder`).
+- « Retirer » with `src/components/confirm-panel.svelte`, a native `<dialog>` armed for 2 seconds, reused by step 7.
+- A queued call dropped when another tab changed the player.
+- The review applied as chosen by the owner, all but grouping the queued votes of one game.
+
 ## 6b. The welcome and the bag
 
 Merged on 2026-11-01 in [#12](https://github.com/aunimhsn/ts-svelte-idealan/pull/12). Tools: build.
