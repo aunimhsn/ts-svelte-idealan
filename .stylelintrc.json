@@ -5,7 +5,17 @@
     "color-hex-length": "long",
     "selector-pseudo-class-no-unknown": [
       true,
-      { "ignorePseudoClasses": ["global"] }
+      {
+        "ignorePseudoClasses": ["global"]
+      }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/styles/tokens.css"],
+      "rules": {
+        "custom-property-empty-line-before": null
+      }
+    }
+  ]
 }

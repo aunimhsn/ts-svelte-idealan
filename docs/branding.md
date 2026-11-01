@@ -11,7 +11,7 @@ The application has no brand of its own yet: the covers of the Steam games are i
 | Name shown in the interface (« Idealan »?) | Text | `src/i18n/fr.json` | To confirm |
 | Square icon, readable at 16 px, for the favicon | SVG | the « Bloc évidé » of the mock-up (`LOGOS.tile` in `docs/mockups/shared/app.js`) | Chosen on 2026-11-01 |
 | The signature of the footer: the mark of Sylent and its wordmark | SVG and PNG | `docs/mockups/assets/sylent-mark.svg` (from sylent.art), `docs/mockups/assets/sylent-wordmark.png` (from `assets/logo-text.png` of sylent-courses, cropped to its ink) | Chosen on 2026-11-01 |
-| Fonts, with their license (self-hosting allowed) | WOFF2 | Chakra Petch, Manrope, Montserrat (SIL Open Font License): from Google Fonts in the mock-up, self-hosted by the application | Chosen on 2026-11-01 |
+| Fonts, with their license (self-hosting allowed) | WOFF2 | Chakra Petch, Manrope, Montserrat (SIL Open Font License): from Google Fonts in the mock-up, self-hosted by the application in `src/assets/fonts/` (the Latin subset, with their licenses; step 6b) | Chosen on 2026-11-01 |
 
 ## Principles
 
@@ -26,7 +26,7 @@ Chosen by the owner on 2026-11-01 among four styles of the family of sylent.art,
 
 ## Tokens
 
-Written in step 4 (design system), on 2026-11-01: [`docs/mockups/shared/tokens.css`](mockups/shared/tokens.css) holds every token with a short comment, and becomes the tokens file of the application as it is; the CSS of the mock-up uses nothing else. The sections below give each group and its reasons.
+Written in step 4 (design system), on 2026-11-01: [`src/styles/tokens.css`](../src/styles/tokens.css) holds every token with a short comment. It was the tokens file of the mock-up and became the tokens file of the application as it is in step 6b; the mock-up now reads it from there, so that both share one source, and its CSS uses nothing else. The sections below give each group and its reasons.
 
 - Every length, color, shadow, duration, layer, weight, line height and letter spacing is a token; the ratios proper to one component (a percentage, a viewport share, an angle, a scale factor, an opacity) stay in it.
 - A token says its role (`--size-caption`, `--layer-toast`), not its value, so that a value changes in one place.

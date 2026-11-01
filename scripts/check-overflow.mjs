@@ -5,8 +5,9 @@
 // the bottom. It also fails on an element marked `data-one-line` that takes more than one line,
 // on a script error, on a file that doesn't load and on what the Content Security Policy of
 // netlify.toml blocks.
-// The functions don't run here: a call to /api/ answers 404, so each screen is checked in its
-// error state until the bag gets test data.
+// The functions don't run here: the bag answers the test data of check-overflow-bag.json, for a
+// friend kept in the storage of the browser, or doesn't answer at all; any other call to /api/
+// answers 404.
 // Run after `npm run build`: `node scripts/check-overflow.mjs [dist]`. Install the browser once
 // with `npx playwright install --only-shell chromium`.
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
@@ -17,8 +18,20 @@ import { chromium } from "playwright";
 const [folder = "dist"] = process.argv.slice(2);
 const dist = resolve(folder);
 
-// The screens of the application, as their URL path: a single page for now.
-const screens = ["/"];
+// The screens of the application: a single page, the welcome or the bag, by what the browser
+// keeps of the friend (src/lib/session.ts, under the key `idealan`) and what the bag answers.
+const bag = readFileSync(new URL("check-overflow-bag.json", import.meta.url));
+const kept = JSON.stringify({
+  accessCode: "code",
+  nickname: "Abcdefghijklmnop",
+  playerId: "j1",
+  personalCode: "1234",
+});
+const screens = [
+  { name: "the welcome", path: "/" },
+  { name: "the bag", path: "/", kept, bag: "answers" },
+  { name: "the bag without the server", path: "/", kept, bag: "down" },
+];
 
 // The narrowest screen still met, the narrowest common Android one and a wider one; then a small
 // and a large computer screen, as the big screen of the LAN.
@@ -110,24 +123,36 @@ const wrapped = () =>
 const browser = await chromium.launch();
 const errors = [];
 
-try {
-  for (const width of [...phones, ...desktops]) {
-    const phone = phones.includes(width);
-    const context = await browser.newContext({
-      viewport: { width, height: 800 },
-      deviceScaleFactor: phone ? 3 : 1,
-      isMobile: phone,
-      hasTouch: phone,
-    });
+// Loads one screen at one width, in a browser of its own, and records what is wrong.
+const check = async (width, screen) => {
+  const phone = phones.includes(width);
+  const context = await browser.newContext({
+    viewport: { width, height: 800 },
+    deviceScaleFactor: phone ? 3 : 1,
+    isMobile: phone,
+    hasTouch: phone,
+  });
+  const where = `${screen.name} at ${width} px`;
+  try {
     // Only the local server is reached: the Steam CDN or a slow third party would fail the check.
     await context.route(
       (url) => url.origin !== origin,
       (route) => route.abort(),
     );
+    await context.route("**/api/get-bag", (route) =>
+      screen.bag === "answers"
+        ? route.fulfill({ contentType: "application/json", body: bag })
+        : route.abort(),
+    );
+    // What the browser keeps of the friend, written before the application starts.
+    if (screen.kept) {
+      await context.addInitScript((value) => {
+        localStorage.setItem("idealan", value);
+      }, screen.kept);
+    }
     const page = await context.newPage();
-    let current = "";
     page.on("pageerror", (error) => {
-      errors.push(`${current}: script error at ${width} px, ${error.message}`);
+      errors.push(`${where}: script error, ${error.message}`);
     });
     // A file, a style or an image blocked by the Content Security Policy fails the check.
     page.on("console", (message) => {
@@ -135,7 +160,7 @@ try {
         message.type() === "error" &&
         message.text().includes("Content Security Policy")
       ) {
-        errors.push(`${current}: ${message.text()} at ${width} px`);
+        errors.push(`${where}: ${message.text()}`);
       }
     });
     // A file of the build that doesn't load (a script, a style) leaves a blank or unstyled screen
@@ -143,38 +168,44 @@ try {
     page.on("response", (answer) => {
       const { pathname } = new URL(answer.url());
       if (answer.status() >= 400 && !pathname.startsWith("/api/")) {
-        errors.push(
-          `${current}: ${pathname} answers ${answer.status()} at ${width} px`,
-        );
+        errors.push(`${where}: ${pathname} answers ${answer.status()}`);
       }
     });
-    for (const path of screens) {
-      current = path;
-      try {
-        const answer = await page.goto(`${origin}${path}`, {
-          waitUntil: "networkidle",
-        });
-        if (!answer?.ok()) {
-          errors.push(`${path}: answers ${answer?.status()} at ${width} px`);
-          continue;
-        }
-        // The application has mounted into #app: an empty page would fit any width.
-        if (!(await page.locator("#app > *").count())) {
-          errors.push(`${path}: the application didn't show at ${width} px`);
-          continue;
-        }
-        const reached = await page.evaluate(widest);
-        if (reached > width) {
-          errors.push(`${path}: ${reached} px wide on a ${width} px screen`);
-        }
-        for (const element of await page.evaluate(wrapped)) {
-          errors.push(`${path}: ${element} at ${width} px`);
-        }
-      } catch (error) {
-        errors.push(`${path}: not checked at ${width} px, ${error.message}`);
-      }
+    const answer = await page.goto(`${origin}${screen.path}`, {
+      waitUntil: "networkidle",
+    });
+    if (!answer?.ok()) {
+      errors.push(`${where}: answers ${answer?.status()}`);
+      return;
     }
+    // The application has mounted into #app: an empty page would fit any width.
+    if (!(await page.locator("#app > *").count())) {
+      errors.push(`${where}: the application didn't show`);
+      return;
+    }
+    // The screen expected: the welcome has its form, the bag its header.
+    const shown = screen.kept ? "header" : "form";
+    if (!(await page.locator(shown).count())) {
+      errors.push(`${where}: the screen expected didn't show`);
+      return;
+    }
+    const reached = await page.evaluate(widest);
+    if (reached > width) {
+      errors.push(`${where}: ${reached} px wide`);
+    }
+    for (const element of await page.evaluate(wrapped)) {
+      errors.push(`${where}: ${element}`);
+    }
+  } catch (error) {
+    errors.push(`${where}: not checked, ${error.message}`);
+  } finally {
     await context.close();
+  }
+};
+
+try {
+  for (const width of [...phones, ...desktops]) {
+    for (const screen of screens) await check(width, screen);
   }
 } finally {
   await browser.close();

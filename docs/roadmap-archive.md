@@ -2,6 +2,16 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 6a. The server of the bag
+
+Merged on 2026-11-01 in [#11](https://github.com/aunimhsn/ts-svelte-idealan/pull/11). Tools: build.
+
+- The five functions of the bag, each answering the whole bag: `enter` (the nickname and its personal code), `get-bag`, `add-game` (reads the game with `readSteamGame`, keeps the `steam_appid` given by Steam as the id of the game), `vote` and `remove-game`; the temporary `steam-game` of step 5 removed.
+- The personal code hashed with `scrypt` and a salt of its own; 5 wrong codes in a row lock the nickname, each try written as pending in `attempts/<id>` before its code is checked and expired after 2 minutes; `player-busy` (429, `retry-after`) while other calls hold the last tries.
+- `updateJSON` in `netlify/lib/store.ts`: the conditional writes with the ETag (`onlyIfMatch`, `onlyIfNew`), 5 tries at most with a random pause.
+- Two code reviews applied, chosen by the owner; tried with `netlify dev` and on the deploy preview with a script of `outputs/`.
+- The rules of the client that the lock depends on, written into step 6b.
+
 ## 5. Read a Steam game
 
 Merged on 2026-11-01 in [#10](https://github.com/aunimhsn/ts-svelte-idealan/pull/10). Tools: build.
