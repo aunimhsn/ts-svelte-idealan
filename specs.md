@@ -39,7 +39,8 @@ To be turned into the sections below with the next answers; noted here so that t
 - Structure (drawing `docs/wireframes/structure.excalidraw`, 2026-11-01): the screens follow lead A, one page (a single-page application) with panels over it; the data follow lead B, the whole bag in one key of Netlify Blobs.
 - A game is added directly from its link, without a preview of the Steam page (the friend has already seen it).
 - The footer says « Données et images : Steam. Idealan n’est pas affilié à Valve. »
-- Only the admin changes a friend's nickname (their games and votes follow), in a settings panel: one line per friend with a pre-filled field, their number of votes (not what they voted for), a button to reset their personal code, and one to delete the friend (their votes go with them), against the doubled nicknames.
+- Only the admin changes a friend's nickname (their games and votes follow), in a settings panel: one line per friend with a pre-filled field, their number of votes (not what they voted for), a button to reset their personal code, and one to delete the friend (their games and votes go with them, after a confirmation that gives their numbers), against the doubled nicknames.
+- Removing a game asks for a small confirmation that gives its number of votes (« Retirer Valheim du sac ? Il a 4 votes. »).
 - No real time: the bag reloads every 30 seconds while the tab is shown, after each action, and with a « Rafraîchir » button.
 - « Se déconnecter » lets a friend leave their nickname (a PC lent at the LAN); coming back under a new nickname makes a new player.
 - A game already in the bag is refused with an error message (this replaces the vote of the starting notes); a full bag (50 games) too, with a message that says to see the admin.
