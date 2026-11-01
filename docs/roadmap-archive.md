@@ -2,6 +2,15 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 1. Specifications and structure
+
+Merged on 2026-11-01 in [#6](https://github.com/aunimhsn/ts-svelte-idealan/pull/6). Tools: specifications, structure.
+
+- The starting notes turned into the sections of `specs.md` with the owner's answers: the purpose, the design principles, the screens and panels, the Steam links, the stored data, the two codes and the nicknames with a personal code, the errors.
+- Netlify and the Steam Store checked in `docs/external-services.md`, with the risks accepted by the owner.
+- The structure drawn in `docs/wireframes/structure.excalidraw`: one page with panels, the bag in one key of Netlify Blobs.
+- Step 6 split into « The bag » and « Moderation » (7); the Netlify builds stopped until step 5, which turns them back on with `build.ignore`.
+
 ## 0b. The skeleton
 
 Merged on 2026-11-01 in [#2](https://github.com/aunimhsn/ts-svelte-idealan/pull/2). Tools: build.
