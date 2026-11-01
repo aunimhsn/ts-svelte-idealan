@@ -83,6 +83,13 @@ export type Change<Result> =
 
 export class StoreBusyError extends Error {}
 
+// A short pause before trying again, longer at each try (up to 20, 40, 80, 160 ms) and drawn by
+// chance, so that friends who wrote at the same second don't collide again at the next try.
+const pause = (attempt: number) =>
+  new Promise((resolve) =>
+    setTimeout(resolve, Math.random() * 10 * 2 ** attempt),
+  );
+
 // Reads the key, lets `change` decide from its current value (null when it doesn't exist), and
 // writes conditionally; when another friend wrote meanwhile, reads again and starts over, so that
 // no write is ever lost (specs.md, Stored data). `change` may run several times: it must only
@@ -93,6 +100,7 @@ export const updateJSON = async <Result>(
   change: (current: unknown) => Change<Result> | Promise<Change<Result>>,
 ): Promise<Result> => {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (attempt > 0) await pause(attempt);
     const current = await store.getVersioned(key);
     const decision = await change(current?.value ?? null);
     if (!("write" in decision)) return decision.result;

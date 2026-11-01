@@ -1,6 +1,7 @@
 // Reads the Steam page of a game: from the cache of Netlify Blobs (`steam/<appid>`) when it was
 // asked before, otherwise from the Steam Store, then cached (docs/technical-choices.md, Steam).
 // The answer of Steam is untrusted: only the fields the bag needs are kept, checked one by one.
+import { isRecord } from "./is-record";
 import type { JsonStore } from "./store";
 
 export interface SteamCategory {
@@ -38,9 +39,6 @@ const MAX_TEXT_LENGTH = 200;
 
 export const steamDetailsUrl = (appid: number) =>
   `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=fr&l=french&filters=basic,categories,genres`;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
 
 // An appid as Steam writes it: a whole number from 1 to 4,294,967,295.
 const isAppid = (value: unknown): value is number =>

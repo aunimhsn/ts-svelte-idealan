@@ -15,7 +15,8 @@ export const PLAYER_CODE_HEADER = "x-player-code";
 // A body of the bag is a few fields: anything larger is refused before being read as JSON.
 const MAX_BODY_LENGTH = 2048;
 
-const STATUS_OF_PLAYER_ERROR = {
+// The status of each refusal of a player, shared with `enter`.
+export const STATUS_OF_PLAYER_ERROR = {
   "unknown-player": 401,
   "personal-code-reset": 401,
   "wrong-personal-code": 401,

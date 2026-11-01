@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  attemptsKey,
   checkPlayer,
   enterPlayer,
   hashPersonalCode,
@@ -7,6 +8,7 @@ import {
   MAX_PLAYER_COUNT,
   personalCodeMatches,
   PLAYERS_KEY,
+  readFailures,
   readPlayers,
   type Player,
   type Players,
@@ -17,6 +19,18 @@ const NOW = new Date("2026-11-07T18:00:00Z");
 
 const playersIn = (data: Map<string, unknown>) =>
   readPlayers(data.get(PLAYERS_KEY) ?? null);
+
+const failuresIn = (data: Map<string, unknown>, id = "j1") =>
+  readFailures(data.get(attemptsKey(id)) ?? null);
+
+// Resets the personal code of every player, as the admin will (step 7).
+const resetCodes = (data: Map<string, unknown>) => {
+  const players = playersIn(data);
+  data.set(PLAYERS_KEY, {
+    ...players,
+    list: players.list.map((player) => ({ ...player, codeHash: null })),
+  });
+};
 
 describe("the personal code", () => {
   it("is kept hashed with a salt of its own, never readable", async () => {
@@ -50,6 +64,20 @@ describe("readPlayers", () => {
   );
 });
 
+describe("readFailures", () => {
+  it("counts no try for a player without any", () => {
+    expect(readFailures(null)).toBe(0);
+    expect(readFailures({ failures: 3 })).toBe(3);
+  });
+
+  it.each([{}, { failures: -1 }, { failures: "2" }, []])(
+    "fails on the unexpected shape %j rather than unlocking the nickname",
+    (value) => {
+      expect(() => readFailures(value)).toThrow();
+    },
+  );
+});
+
 describe("enterPlayer", () => {
   it("makes a new player for a new nickname, with a fixed id", async () => {
     const { store, data } = memoryStore();
@@ -57,7 +85,7 @@ describe("enterPlayer", () => {
     const second = await enterPlayer(store, "Nova", "0000", NOW);
     expect(first).toMatchObject({
       ok: true,
-      player: { id: "j1", nickname: "Sylent", failures: 0 },
+      player: { id: "j1", nickname: "Sylent" },
     });
     expect(second).toMatchObject({ ok: true, player: { id: "j2" } });
     expect(playersIn(data)).toMatchObject({
@@ -88,34 +116,38 @@ describe("enterPlayer", () => {
     });
   });
 
-  it("gives a nickname whose code was reset the code given", async () => {
+  it("gives a nickname whose code was reset the code given, without its tries", async () => {
     const { store, data } = memoryStore();
     await enterPlayer(store, "Sylent", "1234", NOW);
-    const players = playersIn(data);
-    data.set(PLAYERS_KEY, {
-      ...players,
-      list: players.list.map((player) => ({
-        ...player,
-        codeHash: null,
-        failures: MAX_FAILURES,
-      })),
-    });
+    resetCodes(data);
+    data.set(attemptsKey("j1"), { failures: MAX_FAILURES });
     expect(await enterPlayer(store, "Sylent", "4321", NOW)).toMatchObject({
       ok: true,
-      player: { id: "j1", failures: 0 },
+      player: { id: "j1" },
     });
+    expect(failuresIn(data)).toBe(0);
     expect(await checkPlayer(store, "j1", "4321")).toMatchObject({ ok: true });
     expect(await checkPlayer(store, "j1", "1234")).toMatchObject({ ok: false });
   });
 
-  it("gives a nickname to one of two friends who take it at the same second", async () => {
-    const { store, data } = memoryStore();
-    const [first, second] = await Promise.all([
-      enterPlayer(store, "Sylent", "1234", NOW),
-      enterPlayer(store, "Sylent", "9999", NOW),
-    ]);
+  it("checks the code of a friend who took the nickname meanwhile", async () => {
+    const { store, data, write, onBeforeWrite } = memoryStore();
+    const other = memoryStore();
+    await enterPlayer(other.store, "Sylent", "9999", NOW);
+    let once = true;
+    onBeforeWrite((key) => {
+      // Another friend takes « Sylent » between the read and the write of this one.
+      if (key === PLAYERS_KEY && once) {
+        once = false;
+        write(PLAYERS_KEY, other.data.get(PLAYERS_KEY));
+      }
+    });
+    expect(await enterPlayer(store, "Sylent", "1234", NOW)).toEqual({
+      ok: false,
+      error: "wrong-personal-code",
+    });
     expect(playersIn(data).list).toHaveLength(1);
-    expect([first.ok, second.ok].sort()).toEqual([false, true]);
+    expect(once).toBe(false);
   });
 
   it("refuses a new player once the bag has its most players", async () => {
@@ -125,7 +157,6 @@ describe("enterPlayer", () => {
         id: `j${index + 1}`,
         nickname: `Player${index + 1}`,
         codeHash: null,
-        failures: 0,
         createdAt: NOW.toISOString(),
       }),
     );
@@ -145,14 +176,13 @@ describe("checkPlayer", () => {
     return memory;
   };
 
-  it("lets the player in with their id and personal code, without writing", async () => {
-    const { store } = await withSylent();
-    const before = await store.getVersioned(PLAYERS_KEY);
+  it("lets the player in with their id and personal code, leaving no try counted", async () => {
+    const { store, data } = await withSylent();
     expect(await checkPlayer(store, "j1", "1234")).toMatchObject({
       ok: true,
       player: { id: "j1" },
     });
-    expect((await store.getVersioned(PLAYERS_KEY))?.etag).toBe(before?.etag);
+    expect(failuresIn(data)).toBe(0);
   });
 
   it.each(["j2", "", "1", "constructor", "__proto__"])(
@@ -163,6 +193,18 @@ describe("checkPlayer", () => {
         ok: false,
         error: "unknown-player",
       });
+    },
+  );
+
+  it.each(["", "123", "12345", "abcd"])(
+    "refuses the code %j without counting a try",
+    async (code) => {
+      const { store, data } = await withSylent();
+      expect(await checkPlayer(store, "j1", code)).toEqual({
+        ok: false,
+        error: "wrong-personal-code",
+      });
+      expect(failuresIn(data)).toBe(0);
     },
   );
 
@@ -186,29 +228,89 @@ describe("checkPlayer", () => {
       ok: false,
       error: "player-locked",
     });
-    expect(playersIn(data).list[0]?.failures).toBe(MAX_FAILURES);
+    expect(failuresIn(data)).toBe(MAX_FAILURES);
   });
 
-  it("counts the wrong codes in a row only: the right one clears them", async () => {
+  it("checks at most 5 codes of a burst of parallel calls", async () => {
+    const { store, data } = await withSylent();
+    const codes = Array.from({ length: 30 }, (_, index) =>
+      String(index).padStart(4, "0"),
+    );
+    const results = await Promise.allSettled(
+      codes.map((code) => checkPlayer(store, "j1", code)),
+    );
+    const checked = results.filter(
+      (result) =>
+        result.status === "fulfilled" &&
+        !result.value.ok &&
+        result.value.error === "wrong-personal-code",
+    );
+    expect(checked.length).toBeLessThan(MAX_FAILURES);
+    expect(failuresIn(data)).toBe(MAX_FAILURES);
+    expect(await checkPlayer(store, "j1", "1234")).toEqual({
+      ok: false,
+      error: "player-locked",
+    });
+  });
+
+  it("refuses the right code when the nickname got locked just before its try", async () => {
+    const { store, data, write, onBeforeWrite } = await withSylent();
+    let once = true;
+    onBeforeWrite((key) => {
+      // Other calls lock the nickname between the read and the write of this try.
+      if (key === attemptsKey("j1") && once) {
+        once = false;
+        write(attemptsKey("j1"), { failures: MAX_FAILURES });
+      }
+    });
+    expect(await checkPlayer(store, "j1", "1234")).toEqual({
+      ok: false,
+      error: "player-locked",
+    });
+    expect(failuresIn(data)).toBe(MAX_FAILURES);
+  });
+
+  it("keeps the tries other calls counted while the right code was checked", async () => {
+    const { store, data, write, onBeforeWrite } = await withSylent();
+    let writes = 0;
+    onBeforeWrite((key) => {
+      // A wrong code is counted between the try of this call and its withdrawal.
+      if (key === attemptsKey("j1") && ++writes === 2) {
+        write(attemptsKey("j1"), { failures: failuresIn(data) + 1 });
+      }
+    });
+    expect(await checkPlayer(store, "j1", "1234")).toMatchObject({ ok: true });
+    expect(failuresIn(data)).toBe(1);
+  });
+
+  it("refuses the old code when the admin reset it while it was checked", async () => {
+    const { store, data, onBeforeWrite } = await withSylent();
+    let writes = 0;
+    onBeforeWrite((key) => {
+      if (key === attemptsKey("j1") && ++writes === 2) resetCodes(data);
+    });
+    expect(await checkPlayer(store, "j1", "1234")).toEqual({
+      ok: false,
+      error: "personal-code-reset",
+    });
+  });
+
+  it("clears the tries on an entry by the welcome only, never on a reload", async () => {
     const { store, data } = await withSylent();
     for (let failure = 1; failure < MAX_FAILURES; failure++) {
       await checkPlayer(store, "j1", "0000");
     }
     expect(await checkPlayer(store, "j1", "1234")).toMatchObject({ ok: true });
-    expect(playersIn(data).list[0]?.failures).toBe(0);
-    expect(await checkPlayer(store, "j1", "0000")).toEqual({
-      ok: false,
-      error: "wrong-personal-code",
+    expect(failuresIn(data)).toBe(MAX_FAILURES - 1);
+    expect(await enterPlayer(store, "sylent", "1234", NOW)).toMatchObject({
+      ok: true,
     });
+    expect(failuresIn(data)).toBe(0);
   });
 
   it("sends a player whose code was reset back to the welcome", async () => {
     const { store, data } = await withSylent();
-    const players = playersIn(data);
-    data.set(PLAYERS_KEY, {
-      ...players,
-      list: players.list.map((player) => ({ ...player, codeHash: null })),
-    });
+    resetCodes(data);
     expect(await checkPlayer(store, "j1", "1234")).toEqual({
       ok: false,
       error: "personal-code-reset",

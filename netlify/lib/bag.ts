@@ -1,6 +1,7 @@
 // The games of the bag, kept in the `bag` key (specs.md, Stored data), and the view of the bag
 // that every function of the bag answers.
 import type { BagGame, BagView, Role, Vote } from "../../src/lib/bag";
+import { isRecord } from "./is-record";
 import { isPlayerId, viewOfPlayer, type Player, type Players } from "./players";
 
 export const BAG_KEY = "bag";
@@ -8,9 +9,6 @@ export const BAG_KEY = "bag";
 export interface Bag {
   games: BagGame[];
 }
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
 
 const isVotes = (value: unknown): value is Record<string, Vote> =>
   isRecord(value) &&

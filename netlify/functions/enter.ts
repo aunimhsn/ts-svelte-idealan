@@ -10,6 +10,7 @@ import {
   checkRequest,
   errorResponse,
   readBody,
+  STATUS_OF_PLAYER_ERROR,
   viewResponse,
   withServerErrors,
 } from "../lib/http";
@@ -17,10 +18,7 @@ import { enterPlayer } from "../lib/players";
 import { openStore, type JsonStore } from "../lib/store";
 
 const STATUS_OF_ERROR = {
-  "unknown-player": 401,
-  "personal-code-reset": 401,
-  "wrong-personal-code": 401,
-  "player-locked": 423,
+  ...STATUS_OF_PLAYER_ERROR,
   "too-many-players": 409,
 } as const;
 

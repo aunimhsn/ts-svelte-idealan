@@ -384,14 +384,41 @@ describe("add-game", () => {
     ).toEqual({ status: 502, body: { error: "steam-unavailable" } });
   });
 
-  it("keeps the game of each of two friends who add at the same second", async () => {
-    const { add, getBag, sylent, nova } = await setUp();
-    await Promise.all([
-      add(sylent, "https://store.steampowered.com/app/730/"),
-      add(nova, "https://store.steampowered.com/app/440/"),
-    ]);
+  it("keeps the game another friend added while this one was written", async () => {
+    const { add, getBag, data, write, onBeforeWrite, sylent, nova } =
+      await setUp();
+    await add(nova, "https://store.steampowered.com/app/440/");
+    const novaGame = (data.get(BAG_KEY) as { games: BagGame[] }).games[0];
+    data.set(BAG_KEY, { games: [] });
+    let once = true;
+    onBeforeWrite((key) => {
+      if (key === BAG_KEY && once) {
+        once = false;
+        write(BAG_KEY, { games: [novaGame] });
+      }
+    });
+    expect((await add(sylent)).status).toBe(200);
+    expect(once).toBe(false);
     const games = (await getBag(sylent)).body.games;
-    expect(games.map((game) => game.appid).sort()).toEqual([440, 730]);
+    expect(games.map((game) => game.appid)).toEqual([440, 730]);
+  });
+
+  it("refuses a game another friend added while this one was written", async () => {
+    const { add, data, write, onBeforeWrite, sylent, nova } = await setUp();
+    await add(nova);
+    const bag = data.get(BAG_KEY);
+    data.set(BAG_KEY, { games: [] });
+    let once = true;
+    onBeforeWrite((key) => {
+      if (key === BAG_KEY && once) {
+        once = false;
+        write(BAG_KEY, bag);
+      }
+    });
+    expect(await add(sylent)).toEqual({
+      status: 409,
+      body: { error: "already-in-bag" },
+    });
   });
 
   it("checks the player before reading the link", async () => {
@@ -461,19 +488,31 @@ describe("vote", () => {
     });
   });
 
-  it("loses no vote of two friends who vote at the same second", async () => {
-    const { add, vote, enter, sylent, nova } = await setUp();
+  it("loses no vote another friend gave while this one was written", async () => {
+    const { add, vote, enter, data, write, onBeforeWrite, sylent, nova } =
+      await setUp();
     await enter("Krak", "4242");
     await add(sylent);
-    await Promise.all([
-      vote(nova, 730, "up"),
-      vote({ player: "j3", personalCode: "4242" }, 730, "down"),
-    ]);
+    let once = true;
+    onBeforeWrite((key) => {
+      // Krak votes against between the read and the write of Nova's vote.
+      if (key === BAG_KEY && once) {
+        once = false;
+        const bag = data.get(BAG_KEY) as { games: BagGame[] };
+        write(BAG_KEY, {
+          games: bag.games.map((game) => ({
+            ...game,
+            votes: { ...game.votes, j3: "down" },
+          })),
+        });
+      }
+    });
     expect((await vote(nova, 730, "up")).body.games[0]?.votes).toEqual({
       j1: "up",
       j2: "up",
       j3: "down",
     });
+    expect(once).toBe(false);
   });
 });
 
