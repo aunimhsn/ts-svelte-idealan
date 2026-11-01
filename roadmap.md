@@ -25,7 +25,7 @@ The usual steps of the first cycle of a small application; adapt them at the set
 ### Cycle 1: the bag ready for the LAN
 
 - [x] **0. Project setup** ([#1](https://github.com/aunimhsn/ts-svelte-idealan/pull/1), [#2](https://github.com/aunimhsn/ts-svelte-idealan/pull/2)).
-- [x] **1. Specifications and structure**: the starting notes turned into the sections of `specs.md` with the owner's answers; Netlify and the Steam Store checked in `docs/external-services.md`, with the risks accepted; the structure drawn in `docs/wireframes/structure.excalidraw` (one page and panels, the bag in one key); the Netlify builds stopped until step 5.
+- [x] **1. Specifications and structure** ([#6](https://github.com/aunimhsn/ts-svelte-idealan/pull/6)): the starting notes turned into the sections of `specs.md` with the owner's answers; Netlify and the Steam Store checked in `docs/external-services.md`, with the risks accepted; the structure drawn in `docs/wireframes/structure.excalidraw` (one page and panels, the bag in one key); the Netlify builds stopped until step 5.
 - [ ] **2. Wireframes**: one Excalidraw wireframe per screen of `specs.md` (the welcome, the bag, the panels: who voted, confirmation, settings, emptying), phone first, then a Full HD PC.
 - [ ] **3. Mock-up**: 3 or 4 styles with real covers of Steam games, then every screen and state in `docs/mockups/`, checked on the owner's phone; decisions in `docs/branding.md`.
 - [ ] **4. Design system**: the tokens in `docs/branding.md`, the mock-up rewritten to use only them, an entry in `design-journal.md`.
