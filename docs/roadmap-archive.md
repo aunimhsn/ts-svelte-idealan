@@ -2,6 +2,17 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 6b. The welcome and the bag
+
+Merged on 2026-11-01 in [#12](https://github.com/aunimhsn/ts-svelte-idealan/pull/12). Tools: build.
+
+- The tokens of the mock-up moved to `src/styles/tokens.css`, and its fonts self-hosted.
+- The welcome (the access code without capitals nor corrections, a code beyond U+00FF turned into `wrong-access-code`), the cards sorted by score (the fallback of a missing cover), adding a game, the strip of the errors with the French messages of every error code, « Se déconnecter », the reload every 30 seconds.
+- The three client rules of the lock in `src/lib/api.ts` and `src/lib/app-state.svelte.ts`: any refusal of the player stops the reload and forgets the personal code, a kept session resumes with `get-bag`, one call at a time with `player-busy` tried again after its `retry-after`; credentials once refused are never sent again.
+- The tabs of a browser kept in step by the `storage` event.
+- The width check on the bag with `scripts/check-overflow-bag.json`; `ping` removed.
+- The review applied as chosen by the owner; the 14 px link and the 2.1:1 borders kept.
+
 ## 6a. The server of the bag
 
 Merged on 2026-11-01 in [#11](https://github.com/aunimhsn/ts-svelte-idealan/pull/11). Tools: build.

@@ -5,7 +5,8 @@
 // - a kept session resumes with `get-bag`, never with `enter`, which would clear the failures;
 // - one call at a time, and `player-busy` tried again after its `retry-after` (src/lib/api.ts).
 import { PLAYER_REFUSALS, type Api, type ApiResult } from "./api";
-import type { BagView } from "./bag";
+import type { BagGame, BagView, Vote } from "./bag";
+import { byScore, inOrder, nextVote } from "./games";
 import { readMaxPlayers, readNickname } from "./field-rules";
 import { isNotice, welcomeErrorOf, type Notice } from "./messages";
 import type { WelcomeError } from "./messages";
@@ -39,10 +40,40 @@ const SERVER_ERRORS = new Set(["server-unreachable", "server-error"]);
 
 type Outcome = { ok: true } | { ok: false; error: string | null };
 
+// A vote sent and not answered yet, shown at once on the card.
+interface PendingVote {
+  id: number;
+  appid: number;
+  vote: Vote | null;
+}
+
+// The bag with the votes not answered yet, in the order they were sent.
+const withVotes = (view: BagView, votes: PendingVote[]): BagView => {
+  if (votes.length === 0) return view;
+  const me = view.me.id;
+  const games = view.games.map((game): BagGame => {
+    const mine = votes.filter((pending) => pending.appid === game.appid);
+    const last = mine[mine.length - 1];
+    if (last === undefined || game.addedBy === me) return game;
+    const next = { ...game.votes };
+    const { vote } = last;
+    if (vote === null) delete next[me];
+    else next[me] = vote;
+    return { ...game, votes: next };
+  });
+  return { ...view, games };
+};
+
 export class AppState {
   kept = $state<Kept>({});
   // The bag as last read, or null before the first read.
-  view = $state<BagView | null>(null);
+  #read = $state<BagView | null>(null);
+  #votes = $state<PendingVote[]>([]);
+  // The bag shown: as last read, with the friend's votes not answered yet.
+  view = $derived(this.#read && withVotes(this.#read, this.#votes));
+  // The order of the cards, by appid: by score when the bag is read, kept after a vote.
+  #order = $state<number[]>([]);
+  games = $derived(this.view ? inOrder(this.view.games, this.#order) : []);
   // When the bag shown was read, in milliseconds since 1970.
   loadedAt = $state<number | null>(null);
   // Why the friend is back on the welcome, shown in its banner.
@@ -52,6 +83,8 @@ export class AppState {
   fault = $state<AddFault | null>(null);
   loading = $state(false);
   adding = $state(false);
+  // The appid of the game being removed, or null.
+  removing = $state<number | null>(null);
   session = $derived(sessionOf(this.kept));
 
   #api: Api;
@@ -60,6 +93,7 @@ export class AppState {
   #epoch = 0;
   // A reload that failed already showed it: the next ones don't show it again.
   #reloadFailed = false;
+  #voteId = 0;
 
   constructor(api: Api, storage: KeptStorage | null) {
     this.#api = api;
@@ -88,8 +122,9 @@ export class AppState {
     writeKept(this.#storage, this.kept);
   }
 
-  #show(view: BagView) {
-    this.view = view;
+  #show(view: BagView, keepOrder = false) {
+    this.#read = view;
+    if (!keepOrder) this.#order = byScore(view.games).map((game) => game.appid);
     this.loadedAt = Date.now();
     // The admin may have renamed the friend.
     if (this.kept.nickname !== view.me.nickname) {
@@ -100,12 +135,15 @@ export class AppState {
   // Leaves the bag shown: the answers to the calls asked before are ignored.
   #reset(notice: Notice | null) {
     this.#epoch += 1;
-    this.view = null;
+    this.#read = null;
+    this.#votes = [];
+    this.#order = [];
     this.loadedAt = null;
     this.toast = null;
     this.fault = null;
     this.loading = false;
     this.adding = false;
+    this.removing = null;
     this.notice = notice;
     this.#reloadFailed = false;
   }
@@ -138,9 +176,9 @@ export class AppState {
 
   // What an answer of the bag leads to: the bag shown, the friend sent back to the welcome
   // (no error left to show), or an error to show.
-  #settle(result: ApiResult): Outcome {
+  #settle(result: ApiResult, keepOrder = false): Outcome {
     if (result.ok) {
-      this.#show(result.view);
+      this.#show(result.view, keepOrder);
       return { ok: true };
     }
     const { error } = result;
@@ -249,6 +287,48 @@ export class AppState {
     this.adding = false;
     const outcome = this.#settle(result);
     if (outcome.ok) return true;
+    if (outcome.error !== null) this.#fail(outcome.error);
+    return false;
+  }
+
+  // Taps an arrow of a game: votes, changes the vote or withdraws it. The card shows it at once
+  // and stays where it is; if the server refuses, the vote shown goes back to what it was.
+  async vote(appid: number, tapped: Vote) {
+    const view = this.view;
+    const game = view?.games.find((candidate) => candidate.appid === appid);
+    if (!view || !game || game.addedBy === view.me.id) return;
+    const pending: PendingVote = {
+      id: (this.#voteId += 1),
+      appid,
+      vote: nextVote(game.votes[view.me.id] ?? null, tapped),
+    };
+    this.#votes = [...this.#votes, pending];
+    const epoch = this.#epoch;
+    const result = await this.#api.vote(this.#credentials, appid, pending.vote);
+    if (epoch !== this.#epoch) return;
+    // The answer is shown in the same change, so that the score never flickers.
+    this.#votes = this.#votes.filter(({ id }) => id !== pending.id);
+    const outcome = this.#settle(result, true);
+    if (outcome.ok || outcome.error === null) return;
+    this.#fail(outcome.error);
+    if (outcome.error === "game-not-found") void this.refresh();
+  }
+
+  // Removes a game, once confirmed; a game already gone is simply no longer shown. Answers
+  // whether the game left the bag. The interface locks « Retirer » while a removal runs.
+  async removeGame(appid: number) {
+    if (this.removing !== null) return false;
+    this.removing = appid;
+    const epoch = this.#epoch;
+    const result = await this.#api.removeGame(this.#credentials, appid);
+    if (epoch !== this.#epoch) return false;
+    this.removing = null;
+    const outcome = this.#settle(result);
+    if (outcome.ok) return true;
+    if (outcome.error === "game-not-found") {
+      void this.refresh();
+      return true;
+    }
     if (outcome.error !== null) this.#fail(outcome.error);
     return false;
   }

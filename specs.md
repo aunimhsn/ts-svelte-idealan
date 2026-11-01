@@ -37,6 +37,7 @@ One page (a single-page application): a friend not known to the browser sees the
 - « Jouable à N » hides the games whose maximum number of players is below N; the games without a number stay shown, since nobody knows. N starts at the number of players of the bag, and the friend changes it on the day (« Jouable à 9 »).
 - The games, sorted by score (upvotes minus downvotes): the cover, the name, the categories, « Jusqu’à 8 joueurs » when known, the score, an upvote and a downvote, « ajouté par Nova ».
 - A friend has one vote per game, up or down; a second tap on the same arrow withdraws it, a tap on the other one changes it. The friend who added a game can't vote on it otherwise.
+- A vote shows at once, and goes back if the server refuses it. After the friend's own vote, the cards stay where they are until the bag is read again (the reload, « Rafraîchir », adding or removing a game), so that a card never moves under their finger (chosen in step 6c).
 - « Retirer » on the games the friend added, and on every game for the admin.
 - Footer: « Données et images : Steam. Idealan n’est pas affilié à Valve. »
 - No real time: the bag reloads every 30 seconds while the tab is shown, after each action, and with « Rafraîchir ».

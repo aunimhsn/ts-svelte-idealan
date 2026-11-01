@@ -4,7 +4,7 @@
 // The credentials are read when a call is sent, not when it is asked; and credentials once refused
 // are never sent again until the friend enters anew: a call waiting behind a refusal is dropped,
 // even before the interface has forgotten the personal code.
-import type { BagView } from "./bag";
+import type { BagView, Vote } from "./bag";
 
 export interface Credentials {
   accessCode: string;
@@ -187,16 +187,18 @@ export const createApi = ({
     });
   };
 
-  const sessionCall =
-    (
-      credentials: CredentialsOf,
-      path: string,
-      method: "GET" | "POST",
-      body?: Record<string, unknown>,
-    ) =>
-    (): Call | null => {
+  // A call of the session, sent with the credentials as they are then, and only by the player who
+  // asked it: a call waiting while another tab entered under another nickname is dropped.
+  const sessionCall = (
+    credentials: CredentialsOf,
+    path: string,
+    method: "GET" | "POST",
+    body?: Record<string, unknown>,
+  ) => {
+    const askedBy = credentials()?.playerId;
+    return (): Call | null => {
       const current = credentials();
-      return current === null
+      return current === null || current.playerId !== askedBy
         ? null
         : {
             path,
@@ -214,6 +216,7 @@ export const createApi = ({
             },
           };
     };
+  };
 
   return {
     // How many calls are asked and not settled yet.
@@ -237,6 +240,11 @@ export const createApi = ({
       enqueue(
         sessionCall(credentials, "/api/add-game", "POST", { link, maxPlayers }),
       ),
+    // The vote the friend ends with: null withdraws it.
+    vote: (credentials: CredentialsOf, appid: number, vote: Vote | null) =>
+      enqueue(sessionCall(credentials, "/api/vote", "POST", { appid, vote })),
+    removeGame: (credentials: CredentialsOf, appid: number) =>
+      enqueue(sessionCall(credentials, "/api/remove-game", "POST", { appid })),
   };
 };
 

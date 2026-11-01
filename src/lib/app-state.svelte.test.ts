@@ -231,6 +231,145 @@ describe("AppState", () => {
     ]);
   });
 
+  describe("votes and removing", () => {
+    // Two games added by Krak (j2): A at +2, then B at +1; the friend is Nova (j1).
+    const gameA: BagGame = {
+      ...game,
+      appid: 1,
+      addedBy: "j2",
+      votes: { j2: "up", j3: "up" },
+    };
+    const gameB: BagGame = {
+      ...game,
+      appid: 2,
+      addedBy: "j2",
+      addedAt: "2026-11-01T21:00:00.000Z",
+      votes: { j2: "up" },
+    };
+
+    it("shows a vote at once, and keeps the cards where they are until the next read", async () => {
+      let answer: (() => void) | undefined;
+      const votedB: BagGame = {
+        ...gameB,
+        votes: { j2: "up", j1: "up", j4: "up" },
+      };
+      let games = [gameA, gameB];
+      const { api } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf(games)),
+        "/api/vote": () =>
+          new Promise((resolve) => {
+            answer = () => resolve(Response.json(viewOf([gameA, votedB])));
+          }),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      const voted = app.vote(2, "up");
+      expect(app.view?.games[1]?.votes.j1).toBe("up");
+      await vi.waitFor(() => expect(answer).toBeDefined());
+      answer?.();
+      await voted;
+      expect(app.view?.games[1]?.votes).toEqual(votedB.votes);
+      expect(app.games.map(({ appid }) => appid)).toEqual([1, 2]);
+      games = [gameA, votedB];
+      await app.refresh();
+      expect(app.games.map(({ appid }) => appid)).toEqual([2, 1]);
+    });
+
+    it("puts the vote back when the server refuses it", async () => {
+      const { api } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf([gameB])),
+        "/api/vote": refuse("server-error", 500),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      await app.vote(2, "down");
+      expect(app.view?.games[0]?.votes).toEqual({ j2: "up" });
+      expect(app.toast).toBe("server-error");
+    });
+
+    it("never votes on the friend's own game", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf([game])),
+        "/api/vote": () => Response.json(viewOf([game])),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      await app.vote(730, "down");
+      expect(app.view?.games[0]?.votes).toEqual({ j1: "up" });
+      expect(calls.map((call) => call.path)).toEqual(["/api/get-bag"]);
+    });
+
+    it("withdraws the vote on a second tap, without showing the first answer between", async () => {
+      const answers: Array<() => void> = [];
+      const server: BagGame[] = [
+        { ...gameB, votes: { j2: "up", j1: "up" } },
+        { ...gameB, votes: { j2: "up" } },
+      ];
+      const { api } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf([gameB])),
+        "/api/vote": () =>
+          new Promise((resolve) => {
+            const answer = server[answers.length];
+            answers.push(() =>
+              resolve(Response.json(viewOf(answer ? [answer] : []))),
+            );
+          }),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      const first = app.vote(2, "up");
+      expect(app.view?.games[0]?.votes).toEqual({ j2: "up", j1: "up" });
+      const second = app.vote(2, "up");
+      expect(app.view?.games[0]?.votes).toEqual({ j2: "up" });
+      await vi.waitFor(() => expect(answers).toHaveLength(1));
+      answers[0]?.();
+      await first;
+      expect(app.view?.games[0]?.votes).toEqual({ j2: "up" });
+      await vi.waitFor(() => expect(answers).toHaveLength(2));
+      answers[1]?.();
+      await second;
+      expect(app.view?.games[0]?.votes).toEqual({ j2: "up" });
+    });
+
+    it("removes one game at a time", async () => {
+      let answer: (() => void) | undefined;
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf([gameA, gameB])),
+        "/api/remove-game": () =>
+          new Promise((resolve) => {
+            answer = () => resolve(Response.json(viewOf([gameB])));
+          }),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      const first = app.removeGame(1);
+      expect(app.removing).toBe(1);
+      expect(await app.removeGame(2)).toBe(false);
+      await vi.waitFor(() => expect(answer).toBeDefined());
+      answer?.();
+      expect(await first).toBe(true);
+      expect(app.removing).toBeNull();
+      expect(calls.map((call) => call.path)).toEqual([
+        "/api/get-bag",
+        "/api/remove-game",
+      ]);
+    });
+
+    it("removes a game, and reads the bag again when it was already gone", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf([game])),
+        "/api/remove-game": refuse("game-not-found", 404),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      await app.removeGame(730);
+      expect(app.removing).toBeNull();
+      expect(app.toast).toBeNull();
+      await vi.waitFor(() => expect(calls).toHaveLength(3));
+      expect(calls[2]?.path).toBe("/api/get-bag");
+    });
+  });
+
   it("refuses a wrong link or « Joueurs max » before asking the server", async () => {
     const { api, calls } = fakeServer({
       "/api/get-bag": () => Response.json(viewOf()),
