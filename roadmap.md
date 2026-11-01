@@ -29,7 +29,7 @@ The usual steps of the first cycle of a small application; adapt them at the set
 - [ ] **2. Wireframes**: one Excalidraw wireframe per screen, phone first, then the big screen of the LAN.
 - [ ] **3. Mock-up**: 3 or 4 styles with real covers of Steam games, then every screen and state in `docs/mockups/`, checked on the owner's phone; decisions in `docs/branding.md`.
 - [ ] **4. Design system**: the tokens in `docs/branding.md`, the mock-up rewritten to use only them, an entry in `design-journal.md`.
-- [ ] **5. Read a Steam game** (build): the `appid` read from a link, the function that fetches the game from the Steam Store and caches it, with their tests.
+- [ ] **5. Read a Steam game** (build): the `appid` read from a link, the function that fetches the game from the Steam Store and caches it, with their tests. First, the owner turns the builds of Netlify back on (stopped during the design, to save credits), and `build.ignore` in `netlify.toml` deploys only when what ends up in the site changes (an allowlist: `src/` without its tests, `netlify/functions/`, `index.html`, the dependencies, the config of Vite, Svelte, TypeScript and Netlify, `.nvmrc`); it builds when `$CACHED_COMMIT_REF` is empty.
 - [ ] **6. The bag** (build): add a game with the access code and a nickname, the duplicates turned into votes, the bag shown with the covers.
 - [ ] **7. Launch**: the application checked on the `netlify.app` address, the access code set, the link and the code sent to the friends.
 - [ ] **8. Retrospective**: after the LAN, the friends' feedback in the backlog, the lessons in `process.md`, the memory moved to the files, and the template `ts-svelte-dynamic-website-template` made from this project.
