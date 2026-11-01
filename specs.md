@@ -27,10 +27,11 @@ To be turned into the sections below with the next answers; noted here so that t
 - On the day of the LAN, no shared screen: each friend opens the page in the browser of their own PC (Full HD at least).
 - Two codes: a member code for the friends, and an admin code for the owner, to moderate abuses.
 - Reading the bag also needs a code: only the members and the owner see it.
-- A friend may remove a game they added.
-- The owner, with the admin code, may remove any game.
+- A friend may remove a game they added; the owner, with the admin code, may remove any game.
 - The games are sorted, above all, « by number of players » (to confirm: the number of friends interested, or the number of players the game supports), and may be filtered by kind of game.
-- After the LAN (no answer, Claude Code's recommendation): one bag only, emptied by the owner after the event.
+- One bag only, kept from one LAN to the next. The owner empties it by hand, with the admin code, whenever they like (Claude Code may suggest it after a LAN): they first select the games to keep, then remove all the others.
+- A friend may withdraw their vote.
+- The admin code moderates the games only: the owner votes once per game, like every friend, and can't change the votes of others.
 
 ## Purpose
 
