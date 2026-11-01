@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import ping, { config } from "./ping";
+import ping, { config } from "../functions/ping";
 
 describe("ping", () => {
   it("answers on /api/ping", () => {

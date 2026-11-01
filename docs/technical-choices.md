@@ -33,6 +33,7 @@ Rejected:
 ## Functions
 
 - Each function of `netlify/functions/` gives its address in its `config` (`path: "/api/<name>"`), so that the interface calls `/api/ping` rather than `/.netlify/functions/ping`. The skeleton has one, `ping`, which answers `{ "ok": true }` to a `GET`; the home screen shows whether it answers.
+- The tests of the functions live in `netlify/tests/`, not next to them: Netlify bundles every file of `netlify/functions/` as a function, a test included.
 - An error answers with an error code (`{ "error": "method-not-allowed" }`) and its HTTP status; the interface turns the code into a French message of `src/i18n/fr.json`.
 - The width check serves `dist/` without the functions: a call to `/api/` answers 404 there, so each screen is checked in its error state until the bag gets test data.
 
