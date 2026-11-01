@@ -19,7 +19,7 @@ The technical choices of the [roadmap](../roadmap.md), with their reasons and th
 | Install scripts | Denied in `allowScripts` of `package.json` (`esbuild`, `netlify-cli`, `unix-dgram`) | npm 11 runs no install script that isn't approved: these three are not needed (esbuild and Vite ship their binary as a package, `unix-dgram` is an optional native module of the CLI), so they stay denied. Approve one only if a tool breaks without it. |
 | Width check | A `scripts/check-overflow.mjs` as in the web template, in the Chromium of Playwright | Most of the feedback on sylent.art came from the phone; the friends add their games from theirs. |
 | Checks in CI | GitHub Actions (`.github/workflows/ci.yml`) on every pull request | Runs `npm run check`; it doesn't deploy, Netlify does. |
-| Updates | Dependabot (`.github/dependabot.yml`), weekly | npm packages and GitHub Actions, read with the `dependency-reviewer` subagent. |
+| Updates | Dependabot (`.github/dependabot.yml`), monthly | npm packages and GitHub Actions, read with the `dependency-reviewer` subagent. Monthly rather than weekly: each merge that changes the dependencies is a production deploy, 15 of the 300 credits of the free plan of Netlify (2026-11-01); the major versions of `@types/node` are ignored, raised by hand with `.nvmrc`. |
 
 Rejected:
 
