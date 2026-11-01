@@ -15,11 +15,11 @@ What Idealan does, agreed with the owner on 2026-11-01 (step 1 of [roadmap.md](r
 
 - The covers of the games are the main material of the page.
 - The interface speaks to the friends with « tu », everywhere (« Tu veux vraiment retirer ce jeu ? »).
-- Layout and style are decided in the wireframes (step 2) and the mock-up (step 3): this section is completed then.
+- The layout is set by the wireframes of step 2 (see « Layout » below); the style is decided in the mock-up (step 3), which becomes the reference from then on: this section is completed then.
 
 ## Screens
 
-One page (a single-page application): a friend not known to the browser sees the welcome; otherwise, the bag, with panels that open over it. The wireframes of step 2 will set the layout of each screen.
+One page (a single-page application): a friend not known to the browser sees the welcome; otherwise, the bag, with panels (modals) that open over it. The layout of each screen, agreed with the owner on 2026-11-01, is drawn in [docs/wireframes/screens.excalidraw](docs/wireframes/screens.excalidraw) and summed up in « Layout ».
 
 ### Welcome
 
@@ -31,9 +31,11 @@ One page (a single-page application): a friend not known to the browser sees the
 ### The bag
 
 - Header: the name of the application, the friend's nickname, « Se déconnecter »; for the admin, « Réglages » and « Vider le sac ».
-- Adding: a « Lien Steam » field and an « Ajouter » button. The game goes into the bag at once, without a preview (the friend has already seen its Steam page); the friend who adds it counts as an automatic upvote.
-- A bar: filters by kind of game (Coop, Coop en LAN, JcJ en LAN, Écran partagé, and the genres of Steam), the number of games (« 47 / 50 jeux »), and « Rafraîchir ».
-- The games, sorted by score (upvotes minus downvotes): the cover, the name, the categories, the score, an upvote and a downvote, « ajouté par Nova ».
+- Adding: a « Lien Steam » field, an optional « Joueurs max » field (a whole number from 1 to 99), and an « Ajouter » button. The game goes into the bag at once, without a preview (the friend has already seen its Steam page); the friend who adds it counts as an automatic upvote.
+- The maximum number of players comes only from the friend who adds the game: Steam doesn't give it, and PCGamingWiki, tested on 2026-11-01, had it for 21 of 24 classic LAN games but for none of the new releases, with server limits taken for player counts (Terraria: 255). Left empty, the card shows nothing about it; it can't be changed afterwards.
+- A bar: « Jouable à N » first, then the filters by kind of game (Coop, Coop en LAN, JcJ en LAN, Écran partagé, and the genres of Steam), the number of games (« 47 / 50 jeux »), and « Rafraîchir ».
+- « Jouable à N » hides the games whose maximum number of players is below N; the games without a number stay shown, since nobody knows. N starts at the number of players of the bag, and the friend changes it on the day (« Jouable à 9 »).
+- The games, sorted by score (upvotes minus downvotes): the cover, the name, the categories, « Jusqu’à 8 joueurs » when known, the score, an upvote and a downvote, « ajouté par Nova ».
 - A friend has one vote per game, up or down; a second tap on the same arrow withdraws it, a tap on the other one changes it. The friend who added a game can't vote on it otherwise.
 - « Retirer » on the games the friend added, and on every game for the admin.
 - Footer: « Données et images : Steam. Idealan n’est pas affilié à Valve. »
@@ -45,22 +47,36 @@ One page (a single-page application): a friend not known to the browser sees the
 
 ### Confirmation (panel)
 
-Before what can't be undone, with the numbers at stake, and « Annuler » or the action:
+Before what can't be undone, with the numbers at stake, and « Annuler » or the action. A question, then the name on one line (cut with « … » when too long), then the numbers on the next line:
 
-- Removing a game: « Retirer Valheim du sac ? Il a 4 votes. »
-- Deleting a player: « Supprimer le joueur Nova3 ? Ses 3 jeux et ses 12 votes partent avec lui. »
-- Emptying the bag: « 38 jeux seront retirés. Cette action est définitive. »
+- Removing a game: « Retirer ce jeu du sac ? », « Age of Empires II: Definitive Editi… », « Il a 6 votes. »
+- Deleting a player: « Supprimer ce joueur ? », « Nova2 », « Ses 3 jeux et ses 12 votes partent avec lui. »
+- Emptying the bag: « Vider le sac ? », « 38 jeux seront retirés. Cette action est définitive. »
 
 ### Settings (admin panel)
 
-- One line per player: their nickname in a pre-filled field with « Renommer », their number of votes (not what they voted for), « Remettre à zéro le code perso », « Supprimer ».
+- One line per player: their nickname in a pre-filled field with « Renommer », their number of votes (not what they voted for) and of games, « Réinitialiser le code perso », « Supprimer ».
+- The admin's own line has no « Supprimer », so that the admin never deletes themself by mistake.
 - Renaming: the player's games and votes follow the new nickname.
-- Resetting the personal code: the friend chooses a new one at their next entry.
+- Reinitializing the personal code: the friend chooses a new one at their next entry.
 - Deleting: the player's games and votes go with them, after the confirmation. It is the answer to doubled nicknames (« Nova », « Nova2 ») created to vote twice.
 
 ### Emptying the bag (admin panel)
 
 - The bag with a box per game: the admin checks the games to keep (their votes stay), then « Vider (38 jeux) » opens the confirmation and removes all the others.
+
+### Layout
+
+Agreed with the owner on 2026-11-01 in [docs/wireframes/screens.excalidraw](docs/wireframes/screens.excalidraw), phone first (390 px), then a Full HD PC (1920 px). From step 3, the mock-up is the reference; the wireframe only fixed the first layout.
+
+- **Welcome**: the name and a short line, the three fields one under the other, each with its help or its error below it, « Entrer » across the width; the Steam footer and the signature (« Fait par Sylent ») at the bottom. The errors come one at a time: the access code, then the nickname, then the personal code.
+- **The bag, top to bottom**: the header (name, nickname, « Se déconnecter »; for the admin, « Réglages » and « Vider le sac », on a second row on a phone); the adding block (« Lien Steam » across the width, then « Joueurs max », « facultatif » and « Ajouter »; one row on a PC); the count with « triés par score » and « Rafraîchir »; the filters (« Jouable à N » first, then the kinds), one row that scrolls sideways on a phone and wraps on a PC; the games; the footer. Nothing stays fixed while the page scrolls.
+- **A game card**: the cover across the width of the card, then the name, the categories, « Jusqu’à N joueurs » when known, « ajouté par Krak » (« ajouté par toi » for one's own), « Retirer » when allowed; the votes in a column on the right: upvote, score, downvote. The friend's vote is shown pressed; on their own game, the upvote is pressed and the downvote locked.
+- **The games**: one card per row on a phone (about two per screen), a grid of five per row on a PC (about ten in full view).
+- **Who voted**: a bubble under the score, on a tap on a phone, on hover or keyboard focus on a PC; the page is not dimmed.
+- **Panels**: on a phone, they rise from the bottom of the screen over the dimmed bag (a bottom sheet); on a PC, a window in the middle of the dimmed bag. « Fermer », « Annuler », « Échap » or a click on the dimmed bag closes them. The settings are blocks per player on a phone, a table on a PC; emptying the bag is a list with a box per game on a phone, a grid of covers to check on a PC, with « 9 gardés · 38 retirés » and « Vider (38 jeux) » in a bar that stays at the bottom.
+- **Messages**: the errors of adding (link refused, Steam not answering, bag full, « Joueurs max » wrong) appear under the adding block; « Lecture du jeu sur Steam… » too, with the fields locked and « Lecture… » on the button. The server not answering is a banner under the header, and the bag keeps what it showed. An empty bag shows « Le sac est vide. » without filters; filters with no game show « Aucun jeu ne correspond à ces filtres. » and « Retirer les filtres ».
+- **« Jouable à N »**: a small window under its chip, with − and +, « 9 joueurs dans le sac » and « Retirer ce filtre ».
 
 ## Steam links
 
@@ -84,7 +100,7 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 
 | Key | Holds | Written by |
 |---|---|---|
-| `bag` | Up to 50 games, each with its `appid`, name, cover, categories, genres, the id of the player who added it, the date, and the votes (player id → up or down). About 50 KB. | Adding, voting, removing, emptying, deleting a player. |
+| `bag` | Up to 50 games, each with its `appid`, name, cover, categories, genres, the maximum number of players when given, the id of the player who added it, the date, and the votes (player id → up or down). About 50 KB. | Adding, voting, removing, emptying, deleting a player. |
 | `players` | Each player: a fixed id (`j1`), the nickname as typed, the personal code hashed (never readable), the date of creation. A nickname exists once, without case. | Entering with a new nickname; the admin's settings. |
 | `steam/<appid>` | The Steam page of a game: type, name, cover, categories, genres. Asked to Steam once, kept even when the game leaves the bag. | Adding a game not asked before. |
 
@@ -109,6 +125,7 @@ Each error is a short sentence, with « tu », next to what caused it.
 | Situation | Behavior |
 |---|---|
 | The link is not a Steam game | Refused, with the message of the table « Steam links ». |
+| « Joueurs max » is not a whole number from 1 to 99 | Refused, next to the field: « Indique un nombre de joueurs entre 1 et 99, ou laisse vide. » |
 | The game is already in the bag | Refused: « Ce jeu est déjà dans le sac : vote pour lui. » |
 | The bag holds 50 games | Refused: « Le sac est plein : vois avec l’admin. » |
 | Wrong access code | The welcome says the code is wrong; nothing is shown of the bag. |

@@ -25,7 +25,9 @@ One entry per item, in the section of its kind: what it is in one sentence, what
 
 - A « random draw » button on the day of the LAN, weighted or not by the votes. Noted on 2026-11-01.
 - Vertical covers (`library_600x900.jpg` of the Steam CDN), with the horizontal one (`header_image`) as fallback when a game has none. Needs an exploration: does the vertical cover exist for most of the games of the bag? Noted on 2026-11-01.
+- Change the maximum number of players of a game after adding it (by the friend who added it, or the admin), when it was left empty or is wrong. Depends on: step 6. Noted on 2026-11-01.
 - Games outside Steam (Epic, Battle.net, free games): added by hand, with a name and an image. Noted on 2026-11-01.
+- An invitation link that carries the member code (`#code=…`, never sent to the server): the friends click it and the welcome asks only for the nickname and the personal code; the link is worth the code if forwarded, and stays in the browser history. Set aside for version 1 by the owner, who prefers the typed code. Noted on 2026-11-01.
 - Who already owns each game, with `IPlayerService/GetOwnedGames`: needs a Steam Web API key and public profiles. Waits on: the friends' Steam IDs and their consent. Noted on 2026-11-01.
 - A detail of a game: screenshots, the background of its Steam page, the trailer. Noted on 2026-11-01.
 
@@ -34,6 +36,7 @@ One entry per item, in the section of its kind: what it is in one sentence, what
 <!-- Works of several cycles, or that change the structure. -->
 
 - The template `ts-svelte-dynamic-website-template`, made from this project at the retrospective of the first cycle: what held for idealan and applies to every dynamic site in Svelte on Netlify (the conventions, the process, the checks, the skeleton), without what is specific to the LAN. Named after its language and framework (see the naming of the repositories in `CLAUDE.md`). Noted on 2026-11-01.
+- Several bags (one per group of friends or per LAN), each with its codes: a screen to create a bag, the codes hashed in Netlify Blobs instead of the environment variables, one key per bag instead of `bag`, and a choice between nicknames shared by every bag or one set per bag. Worth it only if the application serves other groups (a product, or the template). Needs the specifications and the structure again. Noted on 2026-11-01.
 - Real time updates (a game appears for everyone as soon as a friend adds it), or user accounts: both would need another service than Netlify Blobs (Supabase, for example). Noted on 2026-11-01.
 
 - Move to TypeScript 7 (the rewrite in Go) once `svelte-check` and `typescript-eslint` accept it (their peer dependencies stop at `^6.0.0` and `<6.1.0` on 2026-11-01): one `build` pull request that raises `typescript`, `svelte-check` and `typescript-eslint` together, runs `npm run check` again and updates `docs/technical-choices.md`; about one session once the tools are ready. Dependabot no longer proposes it once the major version is ignored (#3): check at the end of each cycle. Noted on 2026-11-01.
