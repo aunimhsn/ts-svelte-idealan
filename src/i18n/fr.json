@@ -1,12 +1,104 @@
 {
-  "$comment": "The interface texts, in French: no French text is written in a component or a function (CLAUDE.md, Language).",
+  "$comment": "The interface texts, in French: no French text is written in a component or a function (CLAUDE.md, Language). Before : ; ? ! and inside « », the space is a non-breaking one (U+00A0), as French typography asks: src/lib/messages.test.ts checks it.",
   "app": {
     "name": "Idealan",
-    "description": "Le sac à jeux de la LAN : chacun y glisse les jeux Steam auxquels il aimerait jouer."
+    "description": "Le sac à jeux de la LAN : chacun y glisse les jeux Steam auxquels il aimerait jouer.",
+    "lead": "Le sac à jeux de la LAN"
   },
-  "status": {
-    "checking": "Connexion au serveur…",
-    "ok": "Le serveur répond.",
-    "error": "Le serveur ne répond pas."
+  "welcome": {
+    "accessCode": "Code d’accès",
+    "accessCodePlaceholder": "Reçu dans la conversation",
+    "nickname": "Pseudo du joueur",
+    "nicknamePlaceholder": "Nova",
+    "nicknameHint": "3 à 16 lettres sans accents et chiffres",
+    "personalCode": "Code perso",
+    "personalCodePlaceholder": "4 chiffres",
+    "personalCodeHint": "Nouveau venu : choisis-le. Déjà venu : redonne-le.",
+    "enter": "Entrer",
+    "entering": "Entrée…"
+  },
+  "header": {
+    "admin": "admin",
+    "logout": "Se déconnecter"
+  },
+  "add": {
+    "label": "Ajouter un jeu",
+    "link": "Lien Steam",
+    "linkPlaceholder": "https://store.steampowered.com/app/…",
+    "maxPlayers": "Joueurs max",
+    "optional": "facultatif",
+    "maxPlayersPlaceholder": "10",
+    "submit": "Ajouter",
+    "reading": "Lecture…",
+    "readingNote": "Lecture du jeu sur Steam…"
+  },
+  "bag": {
+    "count": "/ {max} jeux",
+    "sorted": "· triés par score",
+    "refresh": "Rafraîchir",
+    "loading": "Chargement du sac…",
+    "games": "Les jeux du sac",
+    "emptyTitle": "Le sac est vide.",
+    "emptyHint": "Colle le lien d’un jeu Steam ci-dessus pour lancer le premier."
+  },
+  "card": {
+    "addedBy": "ajouté par {nickname}",
+    "addedByMe": "ajouté par toi",
+    "formerPlayer": "un ancien joueur",
+    "maxPlayers": "Jusqu’à {count} joueurs",
+    "maxPlayersOne": "Jusqu’à 1 joueur",
+    "score": "Score"
+  },
+  "kinds": {
+    "coop": "Coop",
+    "lanCoop": "Coop en LAN",
+    "pvp": "JcJ",
+    "lanPvp": "JcJ en LAN",
+    "splitScreen": "Écran partagé"
+  },
+  "footer": {
+    "steam": "Données et images : Steam. Idealan n’est pas affilié à Valve.",
+    "signature": "Sylent, sur sylent.art"
+  },
+  "toast": {
+    "close": "Fermer le message"
+  },
+  "time": "{hours} h {minutes}",
+  "welcomeErrors": {
+    "missing-access-code": "Colle le code d’accès reçu dans la conversation.",
+    "wrong-access-code": "Ce code d’accès n’est pas le bon : vérifie-le dans la conversation.",
+    "server-not-configured": "Le serveur n’est pas encore prêt : préviens l’admin.",
+    "invalid-nickname": "3 à 16 lettres sans accents et chiffres, sans espace.",
+    "too-many-players": "Le sac a déjà 50 joueurs : vois avec l’admin.",
+    "invalid-personal-code": "Le code perso fait 4 chiffres.",
+    "wrong-personal-code": "Ce n’est pas le code perso de {nickname}. Oublié ? Demande à l’admin de le réinitialiser.",
+    "player-locked": "{nickname} est verrouillé après 5 codes perso faux : demande à l’admin de réinitialiser son code.",
+    "personal-code-reset": "Le code perso de {nickname} vient d’être réinitialisé : entre de nouveau pour en choisir un.",
+    "player-busy": "Trop d’essais en même temps : réessaie dans un instant.",
+    "server-unreachable": "Le serveur ne répond pas : réessaie dans un instant.",
+    "server-error": "Le serveur a eu un souci : réessaie dans un instant.",
+    "unexpected": "Le serveur a refusé la demande : recharge la page et réessaie."
+  },
+  "notices": {
+    "access-code-changed": "Le code d’accès a changé : redemande-le dans la conversation.",
+    "unknown-player": "Ton joueur n’est plus dans le sac : entre de nouveau pour revenir.",
+    "personal-code-reset": "Ton code perso a été réinitialisé : entre et choisis-en un nouveau.",
+    "wrong-personal-code": "Ton code perso a changé : redonne-le pour revenir.",
+    "player-locked": "Ton pseudo est verrouillé après 5 codes perso faux : demande à l’admin de réinitialiser ton code."
+  },
+  "bagErrors": {
+    "not-a-steam-link": "Colle le lien d’un jeu de la boutique Steam.",
+    "steam-package": "Ce lien est un pack : colle le lien d’un des jeux.",
+    "not-a-game": "Ce lien ne mène pas à un jeu Steam.",
+    "invalid-max-players": "Indique un nombre de joueurs entre 1 et 99, ou laisse vide.",
+    "already-in-bag": "Ce jeu est déjà dans le sac : vote pour lui.",
+    "bag-full": "Le sac est plein : vois avec l’admin.",
+    "steam-unavailable": "Steam ne répond pas : réessaie dans une minute.",
+    "player-busy": "Trop d’actions en même temps : réessaie dans un instant.",
+    "server-not-configured": "Le serveur n’est pas prêt : préviens l’admin.",
+    "server-unreachable": "Le serveur ne répond pas : « Rafraîchir » réessaie.",
+    "server-unreachable-since": "Le serveur ne répond pas : le sac affiché date de {time}. « Rafraîchir » réessaie.",
+    "server-error": "Le serveur a eu un souci : « Rafraîchir » réessaie.",
+    "unexpected": "Le serveur a refusé la demande : recharge la page et réessaie."
   }
 }

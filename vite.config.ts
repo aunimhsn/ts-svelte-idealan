@@ -29,6 +29,9 @@ const htmlTexts = (): Plugin => ({
 
 export default defineConfig({
   plugins: [svelte(), htmlTexts()],
+  // No file is inlined as a data: address (Vite inlines those under 4 KB): the Content Security
+  // Policy of netlify.toml allows the fonts and the images from the site itself only.
+  build: { assetsInlineLimit: 0 },
   test: {
     include: ["src/**/*.test.ts", "netlify/**/*.test.ts"],
   },

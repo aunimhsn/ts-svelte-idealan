@@ -1,12 +1,40 @@
-/* The base styles of every screen, until the design system of step 4 replaces them. */
-:root {
-  color-scheme: light dark;
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
+/* The base styles of every screen and the components shared by several of them (buttons, fields,
+   messages), copied from the mock-up (docs/mockups/shared/app.css), in the style D · Néon; the
+   other components keep their styles in their own file. Tokens only (tokens.css, written in
+   docs/branding.md); phone first, the PC layout from 900 px. */
+
+/* The fonts, self-hosted (SIL Open Font License, their licenses next to them): the Latin subset,
+   which holds every letter and sign of French; index.html preloads them. */
+@font-face {
+  font-display: swap;
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 500;
+  src: url("../assets/fonts/chakra-petch-latin-500.woff2") format("woff2");
 }
 
-body {
-  margin: 0;
+@font-face {
+  font-display: swap;
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/fonts/chakra-petch-latin-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Manrope;
+  font-style: normal;
+  font-weight: 200 800;
+  src: url("../assets/fonts/manrope-latin-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/fonts/montserrat-latin-800.woff2") format("woff2");
 }
 
 *,
@@ -15,17 +43,176 @@ body {
   box-sizing: border-box;
 }
 
-:focus-visible {
-  outline: 3px solid currentcolor;
-  outline-offset: 2px;
+html {
+  color-scheme: dark;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--weight-text) var(--size-body) / var(--leading-body)
+    var(--font-text);
+  text-size-adjust: 100%;
 }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: var(--stroke) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
+
+/* A text for the screen readers only. */
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Buttons */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-5);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  font: var(--weight-bold) var(--size-small) / var(--leading-none)
+    var(--font-title);
+  letter-spacing: var(--tracking-button);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast);
+}
+
+.button:hover {
+  background: var(--surface-hover);
+}
+
+.button.is-primary {
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--on-signal);
+}
+
+.button.is-primary:hover {
+  background: var(--signal);
+  filter: brightness(0.9);
+}
+
+.button.is-small {
+  min-height: var(--tap-small);
+  padding: 0 var(--space-3);
+  font-size: var(--size-caption);
+}
+
+.button.is-wide {
+  width: 100%;
+}
+
+.button:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.spinner {
+  width: var(--spinner);
+  height: var(--spinner);
+  border: var(--stroke) solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin var(--duration-spin) linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Fields: the label above, a hint or an error below. */
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field > label {
+  font: var(--weight-semibold) var(--size-caption) / var(--leading-snug)
+    var(--font-title);
+  color: var(--secondary);
+}
+
+.field input {
+  min-height: var(--tap);
+  width: 100%;
+  padding: 0 var(--space-3);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--field-bg);
+}
+
+.field input::placeholder {
+  color: var(--dim);
+}
+
+.field small {
+  color: var(--dim);
+  font-size: var(--size-caption);
+}
+
+.field small.is-error {
+  color: var(--error-text);
+}
+
+.field.is-invalid input {
+  border-color: var(--error-text);
+}
+
+.message {
+  margin: 0;
+  color: var(--secondary);
+  font-size: var(--size-small);
+}
+
+.message.is-error {
+  color: var(--error-text);
+}
+
+/* The banner: the welcome after a refusal, a code changed. */
+.banner {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: var(--hairline) solid var(--line-strong);
+  border-left: var(--edge) solid var(--signal);
+  background: var(--signal-tint);
+  font-size: var(--size-small);
+}
+
+/* Nothing moves for a friend who asked to reduce motion. */
 
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
   }
 }

@@ -127,7 +127,7 @@ Each error is a short sentence, with « tu ». On the welcome, it sits under the
 | Situation | Behavior |
 |---|---|
 | The link is not a Steam game | Refused, with the message of the table « Steam links ». |
-| « Joueurs max » is not a whole number from 1 to 99 | Refused, next to the field: « Indique un nombre de joueurs entre 1 et 99, ou laisse vide. » |
+| « Joueurs max » is not a whole number from 1 to 99 | Refused, in the strip, the field in red: « Indique un nombre de joueurs entre 1 et 99, ou laisse vide. » |
 | The game is already in the bag | Refused: « Ce jeu est déjà dans le sac : vote pour lui. » |
 | The bag holds 50 games | Refused: « Le sac est plein : vois avec l’admin. » |
 | Wrong access code | The welcome says the code is wrong; nothing is shown of the bag. |
@@ -137,8 +137,9 @@ Each error is a short sentence, with « tu ». On the welcome, it sits under the
 | A nickname refused (length, characters) | The welcome says what is allowed: 3 to 16 letters without accents and digits. |
 | Steam doesn't answer, or limits the calls | The game is not added: « Steam ne répond pas : réessaie dans une minute. » The bag is not affected. |
 | The game has no cover | A neutral placeholder with the name of the game. |
-| The server doesn't answer | The bag keeps what it showed, with a message; « Rafraîchir » tries again. |
-| A code changed by the owner in Netlify | The next action of a friend sends them back to the welcome. |
+| The server doesn't answer | The bag keeps what it showed, with a message that says when it was read (« le sac affiché date de 21 h 04 »); « Rafraîchir » tries again. A reload every 30 seconds that fails says it once, not at each try. |
+| A code changed by the owner in Netlify | The next action of a friend sends them back to the welcome, with a banner: « Le code d’accès a changé : redemande-le dans la conversation. » The nickname stays filled in. |
+| The friend's player refused in the bag (deleted, code reset, locked, code changed on another device) | The friend goes back to the welcome with a banner that says why; the reload stops, the personal code kept in the browser is forgotten (an old device would otherwise lock the nickname again after a reset), the access code and the nickname stay filled in. |
 
 ## Constraints
 

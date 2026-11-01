@@ -33,7 +33,7 @@ Rejected:
 
 ## Functions
 
-- Each function of `netlify/functions/` gives its address in its `config` (`path: "/api/<name>"`), so that the interface calls `/api/ping` rather than `/.netlify/functions/ping`. The skeleton has one, `ping`, which answers `{ "ok": true }` to a `GET`; the home screen shows whether it answers.
+- Each function of `netlify/functions/` gives its address in its `config` (`path: "/api/<name>"`), so that the interface calls `/api/get-bag` rather than `/.netlify/functions/get-bag`. The `ping` of the skeleton went with step 6b, once the bag answered.
 - The tests of the functions live in `netlify/tests/`, not next to them: Netlify bundles every file of `netlify/functions/` as a function, a test included.
 - The code shared by the functions lives in `netlify/lib/` (the store, the access codes, Steam), for the same reason; the reading of a Steam link, needed by the interface too, lives in `src/lib/steam-link.ts`.
 - Every function checks the access code first (`netlify/lib/access.ts`), sent in the `x-access-code` header rather than in the query, which the logs of Netlify keep. The codes are the environment variables `MEMBER_CODE` and `ADMIN_CODE`, secret values of the contexts Production, Deploy previews and Branch deploys, for the Functions scope only (set by the owner on 2026-11-01): Netlify never shows them again and fails a build whose files contain one. They are compared by their SHA-256 digests, so that the time of the answer tells nothing; without `MEMBER_CODE`, a function answers `server-not-configured` rather than « wrong code ».
@@ -42,7 +42,7 @@ Rejected:
 - A body is a small JSON object (2 KB at most); an unexpected one answers `invalid-request`. What a function doesn't expect (Blobs down, a bug) answers `server-error`, logged.
 - The rules of the fields (`src/lib/field-rules.ts`: nickname, personal code, « Joueurs max ») are shared by the interface, which explains them, and the functions, which enforce them.
 - An error answers with an error code (`{ "error": "method-not-allowed" }`) and its HTTP status; the interface turns the code into a French message of `src/i18n/fr.json`.
-- The width check serves `dist/` without the functions: a call to `/api/` answers 404 there, so each screen is checked in its error state until the bag gets test data.
+- The width check serves `dist/` without the functions: it checks the welcome, then the bag with the test data of `scripts/check-overflow-bag.json` (a nickname of 16 letters, a long name, many tags, no cover) for a friend written in the storage of the browser, and the bag whose server doesn't answer.
 
 ## Data
 
@@ -54,6 +54,22 @@ Rejected:
 - `add-game` keeps the `steam_appid` of the answer of Steam as the id of the game (it may differ from the link), and checks the duplicates on it again when writing.
 - The votes and the adder of a game point to the fixed id of a player (`j1`), so that renaming writes only `players`.
 - The reads use the strong consistency of Blobs, so that a friend sees their own vote at once (the default, eventual, takes up to 60 seconds).
+
+## Interface
+
+Built in step 6b, from the mock-up (`docs/mockups/`), which stays the visual reference.
+
+- One page and one state: `src/lib/app-state.svelte.ts` (a class with runes) holds who the friend is, the bag as last read and the messages; the screens (`src/components/`) read it and call its actions. The welcome shows when the browser keeps no session, the bag otherwise.
+- The browser keeps the friend in `localStorage` under the key `idealan` (`src/lib/session.ts`): the access code, the id, the nickname and the personal code, read field by field (a field malformed is left out). A storage that refuses (a private window) keeps the friend for the visit only.
+- The calls go through `src/lib/api.ts`, one at a time, in the order asked: a friend's calls never race, so that they can't spend the tries of their personal code together. The credentials are read when a call is sent, and credentials once refused (a refusal of the player, or `wrong-access-code`) are never sent again until the friend enters anew: a call waiting behind a refusal is dropped, even before the screen has gone back to the welcome. `player-busy` is tried again after its `retry-after` (10 seconds at most), 3 times; a call gives up after 25 seconds (`server-unreachable`), so that it never holds the others.
+- The three rules the lock of the nicknames depends on (the second review of step 6a): any refusal of the player sends the friend back to the welcome, forgets the personal code and stops the reload; a kept session resumes with `get-bag`, never `enter` (which would clear the failures); one call at a time. Tested in `src/lib/app-state.svelte.test.ts` and `src/lib/api.test.ts`.
+- An access code with a character beyond U+00FF (or a line break), which `fetch` refuses in a header, is `wrong-access-code` without calling. The access code is trimmed, the nickname capitalized as the server would.
+- The bag reloads every 30 seconds while the tab is shown, and at once when the tab comes back after longer; a reload is skipped while another call runs. Every answer of a function is the whole bag, so an action shows its result without a reload.
+- The interface checks the link (`readSteamLink`) and « Joueurs max » (`readMaxPlayers`) before calling, with the rules the functions use.
+- The cards: sorted by score, then the oldest first; the kinds of a LAN named in short from the id of their Steam category (`src/lib/games.ts`: 9 Coop, 48 Coop en LAN, 49 JcJ, 47 JcJ en LAN, 24 Écran partagé), then the genres as Steam names them. A cover missing or that doesn't load becomes the striped block with the name.
+- Fonts: the Latin subset of each, in WOFF2, from the npm packages of Fontsource 5.3.0 (`@fontsource/chakra-petch` 500 and 700, `@fontsource-variable/manrope`, `@fontsource/montserrat` 800), with their licenses (SIL Open Font License), in `src/assets/fonts/`, preloaded by `index.html`; copied rather than installed, since only four files are needed. `font-display: swap`: the text shows at once in the font of the system.
+- `build.assetsInlineLimit: 0` in `vite.config.ts`: Vite would inline a file under 4 KB as a `data:` address, which the Content Security Policy refuses.
+- `src/styles/tokens.css` is the tokens file of the mock-up, moved there: the mock-up reads it from `src/`, so that both share it. Stylelint lets its groups of custom properties be separated by an empty line (`.stylelintrc.json`).
 
 ## Steam
 
