@@ -15,11 +15,11 @@ What Idealan does, agreed with the owner on 2026-11-01 (step 1 of [roadmap.md](r
 
 - The covers of the games are the main material of the page.
 - The interface speaks to the friends with « tu », everywhere (« Tu veux vraiment retirer ce jeu ? »).
-- The layout is set by the wireframes of step 2 (see « Layout » below); the style is decided in the mock-up (step 3), which becomes the reference from then on: this section is completed then.
+- The style « Néon » of the mock-up (step 3): the room of a LAN at night, the covers as the material, the electric blue as the light of the room; its principles and decisions are in [docs/branding.md](docs/branding.md).
 
 ## Screens
 
-One page (a single-page application): a friend not known to the browser sees the welcome; otherwise, the bag, with panels (modals) that open over it. The layout of each screen, agreed with the owner on 2026-11-01, is drawn in [docs/wireframes/screens.excalidraw](docs/wireframes/screens.excalidraw) and summed up in « Layout ».
+One page (a single-page application): a friend not known to the browser sees the welcome; otherwise, the bag, with panels (modals) that open over it. The layout of each screen is summed up in « Layout »; the look of every screen and state is set by the mock-up, [docs/mockups/index.html](docs/mockups/index.html), the reference of the interface since step 3.
 
 ### Welcome
 
@@ -43,11 +43,11 @@ One page (a single-page application): a friend not known to the browser sees the
 
 ### Who voted (panel)
 
-- On hover on a computer, on a tap on a phone, the score of a game shows the nicknames of its voters: « Pour : Nova (a ajouté), Krak · Contre : Pixel ».
+- On hover on a computer, on a tap on a phone, the score of a game shows the nicknames of its voters in two columns, « Pour » and « Contre », each with its count and one nickname per line; who added the game is not marked there, since the card already says it (asked by the owner on 2026-11-01).
 
 ### Confirmation (panel)
 
-Before what can't be undone, with the numbers at stake, and « Annuler » or the action. A question, then the name on one line (cut with « … » when too long), then the numbers on the next line:
+Before what can't be undone, with the numbers at stake, and « Annuler » or the action. The action button fills in blue for 2 seconds before it can be clicked, so that a quick double tap never removes a game, a player or the bag (asked by the owner on 2026-11-01 for removing a game, kept for the two others). A question, then the name on one line (cut with « … » when too long), then the numbers on the next line:
 
 - Removing a game: « Retirer ce jeu du sac ? », « Age of Empires II: Definitive Editi… », « Il a 6 votes. »
 - Deleting a player: « Supprimer ce joueur ? », « Nova2 », « Ses 3 jeux et ses 12 votes partent avec lui. »
@@ -67,15 +67,15 @@ Before what can't be undone, with the numbers at stake, and « Annuler » or the
 
 ### Layout
 
-Agreed with the owner on 2026-11-01 in [docs/wireframes/screens.excalidraw](docs/wireframes/screens.excalidraw), phone first (390 px), then a Full HD PC (1920 px). From step 3, the mock-up is the reference; the wireframe only fixed the first layout.
+Agreed with the owner on 2026-11-01 in an Excalidraw wireframe, phone first (390 px), then a Full HD PC (1920 px); the wireframe only fixed the first layout and was removed with the mock-up (step 3, the Git history keeps it). **The mock-up is the reference**: [docs/mockups/index.html](docs/mockups/index.html), served with `python3 docs/mockups/serve.py 8742`; where this section and the mock-up disagree, the mock-up wins and this section is fixed.
 
-- **Welcome**: the name and a short line, the three fields one under the other, each with its help or its error below it, « Entrer » across the width; the Steam footer and the signature (« Fait par Sylent ») at the bottom. The errors come one at a time: the access code, then the nickname, then the personal code.
+- **Welcome**: the name and a short line, the three fields one under the other, each with its help or its error below it, « Entrer » across the width; the Steam footer and the signature (the wordmark of Sylent, linked to sylent.art, over the mark of Sylent as a large faint watermark) at the bottom. Under « Code perso »: « Nouveau venu : choisis-le. Déjà venu : redonne-le. » The errors come one at a time: the access code, then the nickname, then the personal code.
 - **The bag, top to bottom**: the header (name, nickname, « Se déconnecter »; for the admin, « Réglages » and « Vider le sac », on a second row on a phone); the adding block (« Lien Steam » across the width, then « Joueurs max », « facultatif » and « Ajouter »; one row on a PC); the count with « triés par score » and « Rafraîchir »; the filters (« Jouable à N » first, then the kinds), one row that scrolls sideways on a phone and wraps on a PC; the games; the footer. Nothing stays fixed while the page scrolls.
 - **A game card**: the cover across the width of the card, then the name, the categories, « Jusqu’à N joueurs » when known, « ajouté par Krak » (« ajouté par toi » for one's own), « Retirer » when allowed; the votes in a column on the right: upvote, score, downvote. The friend's vote is shown pressed; on their own game, the upvote is pressed and the downvote locked.
 - **The games**: one card per row on a phone (about two per screen), a grid of five per row on a PC (about ten in full view).
 - **Who voted**: a bubble under the score, on a tap on a phone, on hover or keyboard focus on a PC; the page is not dimmed.
 - **Panels**: on a phone, they rise from the bottom of the screen over the dimmed bag (a bottom sheet); on a PC, a window in the middle of the dimmed bag. « Fermer », « Annuler », « Échap » or a click on the dimmed bag closes them. The settings are blocks per player on a phone, a table on a PC; emptying the bag is a list with a box per game on a phone, a grid of covers to check on a PC, with « 9 gardés · 38 retirés » and « Vider (38 jeux) » in a bar that stays at the bottom.
-- **Messages**: the errors of adding (link refused, Steam not answering, bag full, « Joueurs max » wrong) appear under the adding block; « Lecture du jeu sur Steam… » too, with the fields locked and « Lecture… » on the button. The server not answering is a banner under the header, and the bag keeps what it showed. An empty bag shows « Le sac est vide. » without filters; filters with no game show « Aucun jeu ne correspond à ces filtres. » and « Retirer les filtres ».
+- **Messages**: the errors of the bag (link refused, Steam not answering, bag full, « Joueurs max » wrong, the server not answering) show in a strip of translucent red under the header, closed with its cross; the bag keeps what it showed. « Lecture du jeu sur Steam… » appears under the adding block, with the fields locked and « Lecture… » on the button. An empty bag shows « Le sac est vide. » without filters; filters with no game show « Aucun jeu ne correspond à ces filtres. » and « Retirer les filtres ».
 - **« Jouable à N »**: a small window under its chip, with − and +, « 9 joueurs dans le sac » and « Retirer ce filtre ».
 
 ## Steam links
@@ -120,7 +120,7 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 
 ## Error handling
 
-Each error is a short sentence, with « tu », next to what caused it.
+Each error is a short sentence, with « tu ». On the welcome, it sits under the field that caused it; in the bag, it shows in a strip of translucent red under the header, over the page, with white text and a cross to close it (asked by the owner on 2026-11-01); the field at fault keeps a red border.
 
 | Situation | Behavior |
 |---|---|
