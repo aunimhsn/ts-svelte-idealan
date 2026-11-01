@@ -1,10 +1,14 @@
 {
-  "$comment": "The bag served to scripts/check-overflow.mjs: the longest names and texts a card meets (a nickname of 16 letters, a long game name, many tags, no cover).",
+  "$comment": "The bag served to scripts/check-overflow.mjs: the longest names and texts a card meets (a nickname of 16 letters, a long game name, many tags, no cover), and the accounts of the settings with their longest labels.",
   "role": "admin",
   "me": { "id": "j1", "nickname": "Abcdefghijklmnop" },
   "players": [
     { "id": "j1", "nickname": "Abcdefghijklmnop" },
     { "id": "j2", "nickname": "Wwwwwwwwwwwwwwww" }
+  ],
+  "accounts": [
+    { "id": "j1", "nickname": "Abcdefghijklmnop", "state": "reset" },
+    { "id": "j2", "nickname": "Wwwwwwwwwwwwwwww", "state": "locked" }
   ],
   "games": [
     {

@@ -2,6 +2,15 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 6d. Filters
+
+Merged on 2026-11-01 in [#14](https://github.com/aunimhsn/ts-svelte-idealan/pull/14). Tools: build.
+
+- The filters in `src/lib/filters.ts` and `src/components/bag-filters.svelte`: every tag pressed is required (AND), only the kinds and genres of the bag are offered, « JcJ » added.
+- « Jouable à N » off at start, N from 1 to 99 following the players of the bag until changed, its window fading in 4 px under its chip; every filter off after a reload; the count « 12 jeux sur 47 · filtres actifs ».
+- On a PC, « Joueurs max » and « Ajouter » under the link, and « Rafraîchir » filled blue at the end of the row of the filters, outlined by the count on a phone.
+- The review applied in full.
+
 ## 6c. Votes and removing
 
 Merged on 2026-11-01 in [#13](https://github.com/aunimhsn/ts-svelte-idealan/pull/13). Tools: build.

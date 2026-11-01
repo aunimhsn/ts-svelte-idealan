@@ -30,12 +30,10 @@ The usual steps of the first cycle of a small application; adapt them at the set
 - [x] **3. Mock-up** ([#8](https://github.com/aunimhsn/ts-svelte-idealan/pull/8)).
 - [x] **4. Design system** ([#9](https://github.com/aunimhsn/ts-svelte-idealan/pull/9)).
 - [x] **5. Read a Steam game** ([#10](https://github.com/aunimhsn/ts-svelte-idealan/pull/10)).
-- [x] **6. The bag** (build), in sub-steps agreed with the owner on 2026-11-01 (6c split into 6c and 6d the same day):
-  - [x] **6a. The server** ([#11](https://github.com/aunimhsn/ts-svelte-idealan/pull/11)).
-  - [x] **6b. The welcome and the bag** ([#12](https://github.com/aunimhsn/ts-svelte-idealan/pull/12)).
-  - [x] **6c. Votes and removing** ([#13](https://github.com/aunimhsn/ts-svelte-idealan/pull/13)).
-  - [x] **6d. Filters**: the filters by kind of game with « Jouable à N », « Aucun jeu ne correspond à ces filtres. » and « Retirer les filtres » (the sort by score came with 6b).
-- [ ] **7. Moderation** (build): the admin's settings (rename, reset a personal code, which also clears `attempts/<id>` and unlocks the nickname, delete a player and its `attempts/<id>` (an orphan one is harmless); after a reset, the first one to enter with the nickname chooses its code: the admin tells the friend to enter at once — from the review of step 6a) and emptying the bag; needed before the LAN, since only the admin unlocks a nickname.
+- [x] **6. The bag** ([#11](https://github.com/aunimhsn/ts-svelte-idealan/pull/11), [#12](https://github.com/aunimhsn/ts-svelte-idealan/pull/12), [#13](https://github.com/aunimhsn/ts-svelte-idealan/pull/13), [#14](https://github.com/aunimhsn/ts-svelte-idealan/pull/14)).
+- [ ] **7. Moderation** (build), in two sub-steps agreed with the owner on 2026-11-02; needed before the LAN, since only the admin unlocks a nickname:
+  - [x] **7a. Settings** ([#15](https://github.com/aunimhsn/ts-svelte-idealan/pull/15)): the admin's panel « Réglages », one line per player with their votes and games: rename (the games and votes follow the id; a friend renamed must enter with their new nickname, accepted by the owner), reset a personal code (also clears `attempts/<id>` and unlocks the nickname; the first one to enter with the nickname then chooses its code: the admin tells the friend to enter at once), delete a player with the confirmation (their games, their votes and `attempts/<id>` go with them; neither « Réinitialiser » nor « Supprimer » on the admin's own line). A refused rename shows in a red bubble under its line; a locked nickname shows a label « verrouillé », a reset code not chosen yet « code à choisir » (mock-up decided on 2026-11-02).
+  - [ ] **7b. Emptying the bag**: the admin's panel « Vider le sac », the games to keep checked, « 9 gardés · 38 retirés », the confirmation, and the function that removes the others.
 - [ ] **8. Launch**: the application checked on the `netlify.app` address, the two codes set, the link and the member code sent to the friends.
 - [ ] **9. Retrospective**: after the LAN, the friends' feedback in the backlog, the lessons in `process.md`, the memory moved to the files, and the template `ts-svelte-dynamic-website-template` made from this project.
 

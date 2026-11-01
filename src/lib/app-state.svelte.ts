@@ -5,7 +5,7 @@
 // - a kept session resumes with `get-bag`, never with `enter`, which would clear the failures;
 // - one call at a time, and `player-busy` tried again after its `retry-after` (src/lib/api.ts).
 import { PLAYER_REFUSALS, type Api, type ApiResult } from "./api";
-import type { BagGame, BagView, Vote } from "./bag";
+import type { BagGame, BagView, PlayerAccount, Vote } from "./bag";
 import { byScore, inOrder, nextVote } from "./games";
 import { readMaxPlayers, readNickname } from "./field-rules";
 import { isNotice, welcomeErrorOf, type Notice } from "./messages";
@@ -39,6 +39,14 @@ const FAULT_OF_ERROR: Record<string, AddFault> = {
 const SERVER_ERRORS = new Set(["server-unreachable", "server-error"]);
 
 type Outcome = { ok: true } | { ok: false; error: string | null };
+
+// An error of the settings, under the line of its player (`id`), or under the note of the panel
+// when the players couldn't be read (null). `nickname`: the one typed, for « … existe déjà ».
+export interface SettingsError {
+  id: string | null;
+  code: string;
+  nickname?: string;
+}
 
 // A vote sent and not answered yet, shown at once on the card.
 interface PendingVote {
@@ -85,6 +93,11 @@ export class AppState {
   adding = $state(false);
   // The appid of the game being removed, or null.
   removing = $state<number | null>(null);
+  // The settings of the admin: the accounts as last read, the error to show, and the player
+  // being changed ("" while the players are read).
+  accounts = $state<PlayerAccount[] | null>(null);
+  settingsError = $state<SettingsError | null>(null);
+  settingsBusy = $state<string | null>(null);
   session = $derived(sessionOf(this.kept));
 
   #api: Api;
@@ -126,6 +139,7 @@ export class AppState {
     this.#read = view;
     if (!keepOrder) this.#order = byScore(view.games).map((game) => game.appid);
     this.loadedAt = Date.now();
+    if (view.accounts !== undefined) this.accounts = view.accounts;
     // The admin may have renamed the friend.
     if (this.kept.nickname !== view.me.nickname) {
       this.#keep({ ...this.kept, nickname: view.me.nickname });
@@ -144,6 +158,9 @@ export class AppState {
     this.loading = false;
     this.adding = false;
     this.removing = null;
+    this.accounts = null;
+    this.settingsError = null;
+    this.settingsBusy = null;
     this.notice = notice;
     this.#reloadFailed = false;
   }
@@ -331,6 +348,73 @@ export class AppState {
     }
     if (outcome.error !== null) this.#fail(outcome.error);
     return false;
+  }
+
+  // Runs a call of the settings for the player of `id` ("" for reading them all), one at a time;
+  // its error shows under the line of the player. Answers whether it succeeded.
+  async #settings(
+    id: string,
+    call: () => Promise<ApiResult>,
+    nickname?: string,
+  ) {
+    if (this.settingsBusy !== null) return false;
+    this.settingsBusy = id;
+    this.settingsError = null;
+    const epoch = this.#epoch;
+    const result = await call();
+    if (epoch !== this.#epoch) return false;
+    this.settingsBusy = null;
+    const outcome = this.#settle(result);
+    if (outcome.ok) return true;
+    // The player was deleted meanwhile: the players are read again, and their line goes.
+    if (outcome.error === "player-not-found" && id !== "") {
+      void this.openSettings();
+      return false;
+    }
+    if (outcome.error !== null) {
+      this.settingsError = {
+        id: id === "" ? null : id,
+        code: outcome.error,
+        nickname,
+      };
+    }
+    return false;
+  }
+
+  // Opens the settings: reads the players and the state of their accounts.
+  openSettings() {
+    return this.#settings("", () => this.#api.getSettings(this.#credentials));
+  }
+
+  closeSettings() {
+    this.settingsError = null;
+  }
+
+  // Renames a player, the nickname checked first with the rules of the welcome.
+  renamePlayer(id: string, text: string) {
+    const nickname = readNickname(text);
+    if (nickname === null) {
+      this.settingsError = { id, code: "invalid-nickname" };
+      return Promise.resolve(false);
+    }
+    return this.#settings(
+      id,
+      () => this.#api.renamePlayer(this.#credentials, id, nickname),
+      nickname,
+    );
+  }
+
+  resetPlayerCode(id: string) {
+    return this.#settings(id, () =>
+      this.#api.resetPlayerCode(this.#credentials, id),
+    );
+  }
+
+  // Deletes a player, once confirmed.
+  deletePlayer(id: string) {
+    return this.#settings(id, () =>
+      this.#api.deletePlayer(this.#credentials, id),
+    );
   }
 
   closeToast() {

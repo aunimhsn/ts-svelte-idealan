@@ -10,10 +10,12 @@ import { BAG_KEY, readBag, viewOfBag, type Bag } from "../lib/bag";
 import {
   errorResponse,
   openSession,
+  playerRefusalResponse,
   readBody,
   viewResponse,
   withServerErrors,
 } from "../lib/http";
+import { isStillPlayer } from "../lib/players";
 import { readSteamGame, type SteamGameDependencies } from "../lib/steam-game";
 import { openStore, updateJSON } from "../lib/store";
 
@@ -69,8 +71,13 @@ export const handleAddGame = async (
   // Checked again on the bag as it stands when written: the appid of Steam may differ from the
   // link's, and another friend may have added a game meanwhile.
   const added = await updateJSON<
-    { ok: true; bag: Bag } | { ok: false; refusal: AddError }
-  >(store, BAG_KEY, (current) => {
+    | { ok: true; bag: Bag }
+    | { ok: false; refusal: AddError }
+    | { ok: false; refusal: "unknown-player" }
+  >(store, BAG_KEY, async (current) => {
+    if (!(await isStillPlayer(store, session.player.id))) {
+      return { result: { ok: false, refusal: "unknown-player" } };
+    }
     const bag = readBag(current);
     const refusal = refusalOf(bag.games, game.appid);
     if (refusal !== null) return { result: { ok: false, refusal } };
@@ -92,7 +99,11 @@ export const handleAddGame = async (
     };
     return { write: next, result: { ok: true, bag: next } };
   });
-  if (!added.ok) return refuse(added.refusal);
+  if (!added.ok) {
+    return added.refusal === "unknown-player"
+      ? playerRefusalResponse(added.refusal)
+      : refuse(added.refusal);
+  }
   return viewResponse(
     viewOfBag(added.bag, session.players, session.player, session.role),
   );

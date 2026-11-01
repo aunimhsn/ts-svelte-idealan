@@ -31,6 +31,10 @@ export const memoryStore = (entries: Record<string, unknown> = {}) => {
       write(key, value);
       return true;
     },
+    delete: async (key) => {
+      data.delete(key);
+      etags.delete(key);
+    },
   };
   return {
     store,

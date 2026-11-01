@@ -55,7 +55,8 @@ const isBagView = (value: unknown): value is BagView => {
     typeof me.id === "string" &&
     typeof me.nickname === "string" &&
     Array.isArray(view.players) &&
-    Array.isArray(view.games)
+    Array.isArray(view.games) &&
+    (view.accounts === undefined || Array.isArray(view.accounts))
   );
 };
 
@@ -245,6 +246,22 @@ export const createApi = ({
       enqueue(sessionCall(credentials, "/api/vote", "POST", { appid, vote })),
     removeGame: (credentials: CredentialsOf, appid: number) =>
       enqueue(sessionCall(credentials, "/api/remove-game", "POST", { appid })),
+    // The settings of the admin: each answers the bag with the accounts.
+    getSettings: (credentials: CredentialsOf) =>
+      enqueue(sessionCall(credentials, "/api/get-settings", "GET")),
+    renamePlayer: (credentials: CredentialsOf, id: string, nickname: string) =>
+      enqueue(
+        sessionCall(credentials, "/api/rename-player", "POST", {
+          id,
+          nickname,
+        }),
+      ),
+    resetPlayerCode: (credentials: CredentialsOf, id: string) =>
+      enqueue(
+        sessionCall(credentials, "/api/reset-player-code", "POST", { id }),
+      ),
+    deletePlayer: (credentials: CredentialsOf, id: string) =>
+      enqueue(sessionCall(credentials, "/api/delete-player", "POST", { id })),
   };
 };
 

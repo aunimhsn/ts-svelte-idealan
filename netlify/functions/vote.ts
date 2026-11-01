@@ -9,10 +9,12 @@ import { BAG_KEY, readBag, viewOfBag, type Bag } from "../lib/bag";
 import {
   errorResponse,
   openSession,
+  playerRefusalResponse,
   readBody,
   viewResponse,
   withServerErrors,
 } from "../lib/http";
+import { isStillPlayer } from "../lib/players";
 import { openStore, updateJSON, type JsonStore } from "../lib/store";
 
 const STATUS_OF_ERROR = {
@@ -39,8 +41,13 @@ export const handleVote = async (
   }
   const me = session.player.id;
   const voted = await updateJSON<
-    { ok: true; bag: Bag } | { ok: false; error: keyof typeof STATUS_OF_ERROR }
-  >(store, BAG_KEY, (current) => {
+    | { ok: true; bag: Bag }
+    | { ok: false; error: keyof typeof STATUS_OF_ERROR }
+    | { ok: false; error: "unknown-player" }
+  >(store, BAG_KEY, async (current) => {
+    if (!(await isStillPlayer(store, me))) {
+      return { result: { ok: false, error: "unknown-player" } };
+    }
     const bag = readBag(current);
     const game = bag.games.find((candidate) => candidate.appid === appid);
     if (game === undefined) {
@@ -62,7 +69,9 @@ export const handleVote = async (
     return { write: next, result: { ok: true, bag: next } };
   });
   if (!voted.ok) {
-    return errorResponse(voted.error, STATUS_OF_ERROR[voted.error]);
+    return voted.error === "unknown-player"
+      ? playerRefusalResponse(voted.error)
+      : errorResponse(voted.error, STATUS_OF_ERROR[voted.error]);
   }
   return viewResponse(
     viewOfBag(voted.bag, session.players, session.player, session.role),

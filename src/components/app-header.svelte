@@ -1,5 +1,6 @@
 <!-- The header of the bag: the name, the friend's nickname (« admin » for the owner, on a PC) and
-     « Se déconnecter »; the strip of the errors hangs under it. -->
+     « Se déconnecter »; for the admin, « Réglages », on a second row on a phone. The strip of the
+     errors hangs under it. -->
 <script lang="ts">
   import fr from "../i18n/fr.json";
   import type { AppState } from "../lib/app-state.svelte";
@@ -7,13 +8,23 @@
   import AppLogo from "./app-logo.svelte";
   import ErrorStrip from "./error-strip.svelte";
 
-  let { app }: { app: AppState } = $props();
+  let { app, onsettings }: { app: AppState; onsettings: () => void } = $props();
 </script>
 
 <header class="header">
   <div class="inner">
     <h1 class="brand"><AppLogo size={28} /><span>{fr.app.name}</span></h1>
     <div class="actions">
+      {#if app.view?.role === "admin"}
+        <button
+          type="button"
+          class="button admin"
+          aria-haspopup="dialog"
+          onclick={onsettings}
+        >
+          {fr.header.settings}
+        </button>
+      {/if}
       <span class="nick" data-one-line>
         {app.view?.me.nickname ?? app.kept.nickname}
         {#if app.view?.role === "admin"}
@@ -82,6 +93,7 @@
 
   .nick {
     overflow: hidden;
+    min-width: 0;
     font: var(--weight-bold) var(--size-small) / var(--leading-none)
       var(--font-title);
     text-overflow: ellipsis;
@@ -100,6 +112,26 @@
     .role {
       display: none;
     }
+
+    /* The buttons of the admin go to a second row, under the name and the nickname. */
+    .inner:has(.admin)::after {
+      content: "";
+      order: 2;
+      flex-basis: 100%;
+      height: 0;
+    }
+
+    .inner:has(.admin) .actions {
+      display: contents;
+    }
+
+    .inner:has(.admin) .nick {
+      margin-left: auto;
+    }
+
+    .admin {
+      order: 3;
+    }
   }
 
   @media (width >= 900px) {
@@ -109,6 +141,12 @@
 
     .nick {
       margin: 0 var(--space-2) 0 var(--space-4);
+    }
+
+    .admin {
+      min-height: var(--tap-small);
+      padding: 0 var(--space-4);
+      font-size: var(--size-caption);
     }
   }
 </style>

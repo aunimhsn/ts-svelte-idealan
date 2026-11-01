@@ -51,6 +51,7 @@ const STATES = {
   "server-down": { toast: "Le serveur ne répond pas&nbsp;: le sac affiché date de 21&nbsp;h&nbsp;04. « Rafraîchir » réessaie." },
   "no-cover": { noCover: true },
   "players-open": { playersOpen: true },
+  "rename-taken": { renameError: { index: 2, value: "Lou", text: "Lou existe déjà&nbsp;: choisis un autre pseudo." } },
   "no-result": { games: [], count: 47, active: ["players", "Coop en LAN", "Écran partagé"], noResult: true },
 };
 const state = STATES[params.get("state")] || {};
@@ -243,17 +244,29 @@ function confirmDialog(title, name, text, action, arm) {
     </div>`);
 }
 
+// Step 7a: a rename refused shows in a red bubble under its line, pointing to the field; a locked
+// nickname (5 wrong personal codes) and a reset code not chosen yet show as a label next to the
+// counts (chosen by the owner on 2026-11-02, docs/branding.md).
+function playerStatus(status) {
+  if (!status) return "";
+  return `<span class="app-player-status is-${status}">${status === "locked" ? "verrouillé" : "code à choisir"}</span>`;
+}
+
 function settingsDialog() {
+  const failed = state.renameError;
   return dialog(`<div class="app-dialog-head"><h2 id="dialog-title" class="app-dialog-title">Réglages</h2>
       <button type="button" class="app-button is-ghost is-small" data-close>Fermer</button></div>
     <p class="app-dialog-note">${PLAYERS.length} joueurs. Un pseudo en double se supprime ici.</p>
-    <ul class="app-players">${PLAYERS.map(([nick, votes, games]) => `<li class="app-player">
-      <input class="app-player-name" value="${nick}" aria-label="Pseudo de ${nick}">
+    <ul class="app-players">${PLAYERS.map(([nick, votes, games, status], i) => {
+      const error = failed && failed.index === i;
+      return `<li class="app-player${error ? " is-invalid" : ""}">
+      <input class="app-player-name" value="${error ? failed.value : nick}" aria-label="Pseudo de ${nick}"${error ? ' aria-invalid="true" aria-describedby="rename-error"' : ""}>
       <button type="button" class="app-button is-ghost is-small app-player-rename">Renommer</button>
-      <span class="app-player-stats"><strong>${votes}</strong> votes · <strong>${games}</strong> jeux</span>
-      <button type="button" class="app-button is-ghost is-small app-player-reset">Réinitialiser le code perso</button>
-      ${nick === viewer ? `<span class="app-player-self">toi</span>` : `<button type="button" class="app-button is-ghost is-small app-player-delete" data-delete="${nick}" data-games="${games}" data-votes="${votes}">Supprimer</button>`}
-    </li>`).join("")}</ul>`, true);
+      <span class="app-player-stats"><strong>${votes}</strong> votes · <strong>${games}</strong> jeux${playerStatus(status)}</span>
+      ${nick === viewer ? `<span class="app-player-self">toi</span>` : `<button type="button" class="app-button is-ghost is-small app-player-reset">Réinitialiser le code perso</button><button type="button" class="app-button is-ghost is-small app-player-delete" data-delete="${nick}" data-games="${games}" data-votes="${votes}">Supprimer</button>`}
+      ${error ? `<p class="app-player-error" id="rename-error">${failed.text}</p>` : ""}
+    </li>`;
+    }).join("")}</ul>`, true);
 }
 
 const KEPT = new Set([0, 1, 2, 4, 7]);

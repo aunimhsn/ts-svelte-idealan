@@ -446,4 +446,113 @@ describe("AppState", () => {
       "5678",
     ]);
   });
+
+  describe("the settings of the admin", () => {
+    const adminView = (accounts?: BagView["accounts"]): BagView => ({
+      ...viewOf(),
+      role: "admin",
+      players: [
+        { id: "j1", nickname: "Nova" },
+        { id: "j2", nickname: "Krak" },
+      ],
+      ...(accounts ? { accounts } : {}),
+    });
+    const accounts = [
+      { id: "j1", nickname: "Nova", state: "active" as const },
+      { id: "j2", nickname: "Krak", state: "locked" as const },
+    ];
+
+    it("reads the accounts, and keeps them through the reloads of the bag", async () => {
+      const { api } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/get-settings": () => Response.json(adminView(accounts)),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.openSettings()).toBe(true);
+      expect(app.accounts).toEqual(accounts);
+      await app.refresh();
+      expect(app.accounts).toEqual(accounts);
+    });
+
+    it("refuses a nickname against the rules before asking the server", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.renamePlayer("j2", "Kr ak")).toBe(false);
+      expect(app.settingsError).toEqual({ id: "j2", code: "invalid-nickname" });
+      expect(calls.map((call) => call.path)).toEqual(["/api/get-bag"]);
+    });
+
+    it("shows a refusal under the line of its player, with the nickname typed", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/rename-player": refuse("nickname-taken", 409),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.renamePlayer("j2", "nova")).toBe(false);
+      expect(app.settingsError).toEqual({
+        id: "j2",
+        code: "nickname-taken",
+        nickname: "Nova",
+      });
+      expect(app.toast).toBeNull();
+      expect(calls.at(-1)?.path).toBe("/api/rename-player");
+    });
+
+    it("reads the players again when the one changed is gone", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/reset-player-code": refuse("player-not-found", 404),
+        "/api/get-settings": () => Response.json(adminView(accounts)),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.resetPlayerCode("j2")).toBe(false);
+      await vi.waitFor(() => expect(app.accounts).toEqual(accounts));
+      expect(app.settingsError).toBeNull();
+      expect(calls.map((call) => call.path)).toEqual([
+        "/api/get-bag",
+        "/api/reset-player-code",
+        "/api/get-settings",
+      ]);
+    });
+
+    it("runs one change at a time", async () => {
+      let answer: (response: Response) => void = () => {};
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/reset-player-code": () =>
+          new Promise<Response>((resolve) => (answer = resolve)),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      const first = app.resetPlayerCode("j2");
+      expect(await app.deletePlayer("j2")).toBe(false);
+      await vi.waitFor(() => expect(calls).toHaveLength(2));
+      answer(Response.json(adminView(accounts)));
+      expect(await first).toBe(true);
+      expect(calls.map((call) => call.path)).toEqual([
+        "/api/get-bag",
+        "/api/reset-player-code",
+      ]);
+    });
+
+    it("sends the admin back to the welcome when their own player is refused", async () => {
+      const { api } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/delete-player": refuse("personal-code-reset"),
+      });
+      const { storage, kept } = memoryStorage(session);
+      const app = new AppState(api, storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.deletePlayer("j2")).toBe(false);
+      expect(app.session).toBeNull();
+      expect(app.settingsError).toBeNull();
+      expect(kept().personalCode).toBeUndefined();
+    });
+  });
 });
