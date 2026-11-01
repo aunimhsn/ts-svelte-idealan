@@ -216,6 +216,15 @@
     border: var(--hairline) solid var(--line-strong);
     background: var(--surface-solid);
     box-shadow: var(--shadow-pop);
+    animation: popover-in var(--duration) ease-out;
+  }
+
+  /* The window fades in as it comes down from its chip (asked by the owner on 2026-11-01). */
+  @keyframes popover-in {
+    from {
+      opacity: 0;
+      transform: translateY(calc(-1 * var(--space-2)));
+    }
   }
 
   .popover[hidden] {

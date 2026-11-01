@@ -148,7 +148,7 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 <!-- What moves, how long, and what happens when the friend asked to reduce motion. -->
 
 - **The light of the room**: the floor, a grid of `--floor-line` (the blue at 32 %) with cells of `--floor-cell` 56 px seen in perspective (`--floor-depth`), on the lower 46 % of the screen; scanlines over the page (`--scanline`, a dark line every `--scanline-pitch` 3 px); « Idealan » and the logo glow (`--glow-text`, `--glow-logo`), the header too (`--glow-header`).
-- **What moves**: the floor runs one cell every `--duration-floor` (2.6 s); a card tilts under the pointer in `--duration` (200 ms); the colors of a button change in `--duration-fast` (150 ms); the score jumps in `--duration-bump` (350 ms) when voting; the strip of the errors slides in, in 200 ms; the spinner turns in `--duration-spin` (800 ms); the action of a confirmation fills in `--duration-arm` (2 s).
+- **What moves**: the floor runs one cell every `--duration-floor` (2.6 s); a card tilts under the pointer in `--duration` (200 ms); the colors of a button change in `--duration-fast` (150 ms); the score jumps in `--duration-bump` (350 ms) when voting; the strip of the errors slides in, in 200 ms; the window of « Jouable à N » fades in as it comes down 8 px from its chip, in `--duration` (200 ms, asked by the owner on 2026-11-01); the spinner turns in `--duration-spin` (800 ms); the action of a confirmation fills in `--duration-arm` (2 s).
 - **When the friend asked to reduce motion** (`prefers-reduced-motion`): every animation and transition stops, the cards don't tilt; the action of a confirmation keeps its delay of 2 s, a guard against a double tap, without the fill.
 
 ## Tone of the texts
