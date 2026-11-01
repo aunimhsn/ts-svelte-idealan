@@ -1263,7 +1263,7 @@ input {
     order: 3;
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 0 var(--space-1);
     overflow: visible;
   }
 

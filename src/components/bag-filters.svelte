@@ -164,6 +164,8 @@
 </div>
 
 <style>
+  /* The space under the chips, as under the row that scrolls on a phone, keeps a small gap
+     between « Jouable à N » and its window (chosen by the owner on 2026-11-01). */
   .chips {
     display: flex;
     gap: var(--space-2);
@@ -258,7 +260,7 @@
       flex-wrap: wrap;
       width: 100%;
       margin: 0;
-      padding: 0;
+      padding: 0 0 var(--space-1);
       overflow: visible;
     }
   }
