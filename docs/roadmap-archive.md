@@ -2,6 +2,15 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 3. Mock-up
+
+Merged on 2026-11-01 in [#8](https://github.com/aunimhsn/ts-svelte-idealan/pull/8). Tools: mock-up.
+
+- `docs/mockups/`: a viewer that shows the application (`app.html`) in a phone frame (390 px) and a PC frame (1920 px), with one tab group per open decision; every screen and state of the wireframe (the bag, the welcome and its errors, who voted, the confirmations, the admin's settings and the emptying, the empty bag, a link being read, the errors in a red strip, a game without cover, « Jouable à N », filters with no game). The covers come from the Steam CDN.
+- The owner's decisions in `docs/branding.md`, with the options set aside: the style D · Néon (among four), the electric blue `#2e6bff` (among six), the logo « Bloc évidé » (an RJ45 jack), « Idealan » in Montserrat 800 at −0.02 em, the signature with the wordmark of Sylent over a watermark of its mark.
+- `specs.md`: the mock-up is the reference of the interface; the wireframe of the screens removed.
+- Checked on the owner's phone.
+
 ## 2. Wireframes
 
 Merged on 2026-11-01 in [#7](https://github.com/aunimhsn/ts-svelte-idealan/pull/7). Tools: wireframes.

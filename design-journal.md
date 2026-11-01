@@ -4,6 +4,47 @@ One entry per application: the design choices made with the owner, the ones reje
 
 **This journal is a source of ideas, not a set of rules.** Each application has its own users, subject and constraints: its design starts from its own wireframes and explores new directions (see the mock-up phase of [process.md](process.md)). An entry of this journal may inspire one of the styles compared, never all of them, and nothing here is a default.
 
+## ts-svelte-idealan (2026-11)
+
+A small web application for a LAN party between friends: each friend drops the Steam games they want to play into a shared bag, the group votes and picks on the day ([mock-up](https://github.com/aunimhsn/ts-svelte-idealan/tree/main/docs/mockups), [branding and tokens](https://github.com/aunimhsn/ts-svelte-idealan/blob/main/docs/branding.md), [specs](https://github.com/aunimhsn/ts-svelte-idealan/blob/main/specs.md)).
+
+### Context
+
+- A handful of friends, most of them on their phone when they paste a link, everyone on a PC on the day; a deadline: the LAN, a week later.
+- The covers of the Steam games are the material: colorful, all different, the interface must frame them without fighting them.
+- An owner with a strong family style (sylent.art: night, sharp corners, one rare signal color).
+
+### How it went
+
+1. Excalidraw wireframes of the welcome and the bag, on a phone and a Full HD PC, then the panels and the states, agreed in four iterations.
+2. Four styles on the mock-up with real covers: three in the family of sylent.art (A · Nuit, B · Écran de LAN, C · Tableau des scores) and a fourth asked to « raise the temperature », D · Néon. The owner chose the fourth, and loved the method: the wireframes first, then a bold variant beside the safe ones.
+3. One tab group per decision on the chosen style: six blues, six symbols then four drawings of the logo, the letter spacing of the name, the signature; every screen and state checked on the owner's phone.
+4. The design system: every raw value into a role token, the leftovers of the four styles merged into their components, screenshots of the 24 states before and after (1 to 2 px of shift); then two last touches, a darker red and a smaller link.
+
+### Choices kept
+
+- **Néon**: the room of a LAN at night; a grid floor running to the horizon, scanlines, a glowing name, glass cards that tilt under the pointer, covers chamfered at their top right corner.
+- **Blue as the light of the room** (`#2e6bff`): unlike sylent.art, where the signal is rare, the blue lights the main buttons, the borders, the friend's vote and the active filters.
+- **Sharp corners**, the chamfer as the only shape.
+- **Chakra Petch** for the titles and the scores, **Manrope** for the text, **Montserrat 800** for the name, like the wordmark of Sylent.
+- **A logo readable at 16 px**: an RJ45 jack cut out of a solid square (« Bloc évidé »).
+- **The signature of the family**: the wordmark of Sylent in the footer, over a large faint watermark of its mark.
+- **A bordeaux strip for the errors** (`#8c1626`): the first red « hurt the eyes » on the black.
+
+### Choices rejected
+
+- The three styles close to sylent.art: right, but the bolder one gave the design its life.
+- The blue of Steam (`#1a9fff`): it would have made the application look like a product of Valve.
+- A light bulb on a plug for the logo: the clearest idea, unreadable at 16 px.
+- Borders at 3:1 for WCAG 1.4.11: the owner kept the softer blue borders, for a few friends rather than the public.
+
+### Lessons
+
+- **Always include one style that goes clearly beyond the owner's references**: the safe family alone would have missed the chosen one.
+- Comparing the styles with real covers, not placeholders, decided the colors: the blue had to hold beside every cover.
+- Writing the tokens at the end was cheap here because the mock-up started from a scale: only the line heights were rounded.
+- A small text in a field on a phone has a hidden cost: an iPhone zooms on a field under 16 px; say it before shrinking one.
+
 ## rust-exile-market (2026-10)
 
 A small desktop window, a companion to Path of Exile 2, that prices a copied item ([mock-up](https://github.com/aunimhsn/rust-exile-market/blob/main/docs/mockups/narrow-styles.html), [specs](https://github.com/aunimhsn/rust-exile-market/blob/main/specs.md)).
