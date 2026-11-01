@@ -80,6 +80,8 @@ The electric blue, chosen on 2026-11-01 among six blues (contrasts on #0a0a0a). 
 
 <!-- Contrast, focus, the minimum size of touch targets, the alternative texts. -->
 
+- The borders of the fields and buttons stay the blue at 55 % (`--line-strong`, 2.1:1 on the background), below the 3:1 that WCAG 1.4.11 asks for the border of a field: kept by the owner on 2026-11-01, over the fields alone at 80 % (3.2:1) or everything at 80 %, since the application is for a few friends at a LAN, not for the public. The texts themselves all pass AA.
+
 ## Set aside
 
 <!-- The options compared and not kept, with the reason, so that they are not proposed again. -->
@@ -90,3 +92,7 @@ On 2026-11-01, in the mock-up:
 - **Blues**: cobalt `#2a52e0`, ultramarine `#4338ff`, azure `#0a7cff`, sky `#1a9fff` (the blue of Steam, which would make the application look like a product of Valve), glacier `#56c6ff`.
 - **Symbols**: a light bulb on an RJ45 plug (the clearest for « idée + LAN », unreadable at 16 px), a bag with a vote, an « i » whose dot is a vote, three rising chevrons, three linked computers.
 - **Drawings of the RJ45 jack**: in a frame of lines (too thin at 16 px), a solid jack without frame, a plug with its cable.
+
+On 2026-11-01, in the design system:
+
+- **Borders at 80 %** of the blue, for the fields alone or for everything, to reach the 3:1 of WCAG 1.4.11: the owner kept 55 % (see [Accessibility](#accessibility)).

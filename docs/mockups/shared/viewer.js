@@ -3,17 +3,17 @@
 // cut out of a square), the name in Montserrat 800 at −0.02 em (docs/branding.md).
 const LOGO_NAMES = { tile: "Bloc évidé" };
 const VARIANTS = {
-  line: { label: "Bordures", fallback: "now", options: { now: "Actuelles · 55 %", fields: "Champs à 80 %", all: "Tout à 80 %" } },
+  error: { label: "Rouge des erreurs", fallback: "bordeaux", options: { now: "Actuel", carmine: "Carmin sombre", bordeaux: "Bordeaux", garnet: "Grenat" } },
 };
 const params = new URLSearchParams(location.search);
 const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, v]) => [key, params.get(key) in v.options ? params.get(key) : v.fallback]));
 
 // The newest section first. Each slot: [label, device, address of app.html].
 const SECTIONS = [
-  ["Design system · the borders", "Today the borders of the fields and buttons are the blue at 55 % (2.1:1 on the background); WCAG asks 3:1 for the border that shows where a field is. « Champs à 80 % » lights only the fields (3.2:1), « Tout à 80 % » also the buttons, chips and votes.", [
-    ["Phone · welcome", "phone", "screen=welcome"],
-    ["Phone · the bag", "phone", "screen=bag"],
-    ["PC · settings", "pc", "screen=bag&as=admin&panel=settings"],
+  ["Design system · the red of the errors", "The strip of the errors, darker than the first red that hurt the eyes; still translucent over the page. The link of the PC is now written 2 px smaller (14 px); on a phone it stays at 16 px, so that an iPhone doesn't zoom when the field is tapped.", [
+    ["Phone · a link refused", "phone", "screen=bag&state=refused"],
+    ["Phone · the server doesn’t answer", "phone", "screen=bag&state=server-down"],
+    ["PC · Steam doesn’t answer", "pc", "screen=bag&state=steam-down"],
   ]],
   ["States of the bag", "Each message sits where it comes from: under the adding block, or in a banner under the header.", [
     ["Phone · empty bag", "phone", "screen=bag&state=empty"],

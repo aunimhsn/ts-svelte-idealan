@@ -301,7 +301,7 @@ input {
   min-height: var(--tap);
   width: 100%;
   padding: 0 var(--space-3);
-  border: var(--hairline) solid var(--field-line);
+  border: var(--hairline) solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--field-bg);
 }
@@ -1035,7 +1035,7 @@ input {
   min-height: var(--tap-small);
   min-width: 0;
   padding: 0 var(--space-3);
-  border: var(--hairline) solid var(--field-line);
+  border: var(--hairline) solid var(--line-strong);
   background: var(--field-bg);
   font: var(--weight-bold) var(--size-small) / var(--leading-none) var(--font-title);
 }
@@ -1247,6 +1247,10 @@ input {
   .app-field-link,
   .app-field-players {
     grid-column: auto;
+  }
+
+  .app-field-link input {
+    font-size: var(--size-small);
   }
 
   .app-bar {

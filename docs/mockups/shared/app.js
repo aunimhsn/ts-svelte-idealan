@@ -6,8 +6,8 @@ const view = {
   as: params.get("as") || "friend",
   panel: params.get("panel") || "",
 };
-// The open decision of the viewer (?line=…), set on the root for tokens.css.
-if (params.get("line")) document.documentElement.dataset.line = params.get("line");
+// The open decision of the viewer (?error=…), set on the root for tokens.css.
+if (params.get("error")) document.documentElement.dataset.error = params.get("error");
 const viewer = view.as === "admin" ? "Sylent" : "Nova";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
