@@ -35,7 +35,7 @@ Checked on 2026-11-01 in the [pricing](https://www.netlify.com/pricing/), [How c
 ### Deploy previews and the badge
 
 - Visitor access is turned off: production and previews are public (`https://deploy-preview-<n>--ts-svelte-idealan-sylent.netlify.app`); the bag stays protected by the codes, checked by the functions.
-- The projects created on the free plan since 2026-08-19 show a « Powered by Netlify » badge, injected by Netlify in every page. It is not required: the owner turns it off in **Project configuration > General > Powered by Netlify badge**, with no redeploy. The Content Security Policy of `netlify.toml` blocks it anyway (the documentation calls it a side effect: « nothing else on your project is affected »), with an error in the console of the browser; turning it off removes the error too.
+- The projects created on the free plan since 2026-08-19 show a « Powered by Netlify » badge, injected by Netlify in every page. The documentation says it can be turned off in **Project configuration > General > Powered by Netlify badge**, but on the free plan the setting is locked (« Upgrade to unlock », seen by the owner on 2026-11-01): the badge stays injected (`data-account-tier="free"`). The Content Security Policy of `netlify.toml` blocks it anyway (the documentation calls it a side effect: « nothing else on your project is affected »), with an error in the console of the browser.
 
 ## Steam Store (games and covers)
 
