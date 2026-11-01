@@ -12,7 +12,7 @@
 
 - Idealan (« idée » + « LAN ») is a small web application for a LAN party between friends: before the event, each friend pastes the link of a Steam game they would like to play into a shared « bag »; on the day, the group opens the page and picks what to play.
 - Built with Svelte 5 (runes) and Vite in TypeScript; the server part is Netlify Functions, the data lives in Netlify Blobs; hosted on Netlify at `ts-svelte-idealan-sylent.netlify.app`, signed with the owner's name like every product they make.
-- No user accounts: a shared access code, checked by the functions on the server, protects the writes; each friend gives a nickname, kept in their browser.
+- No user accounts: two shared codes, checked by the functions on the server, protect the bag (a member code for reading, adding and voting; an admin code, the owner's only, for moderating); each friend gives a nickname, protected by a personal code of 4 digits kept hashed on the server, and kept in their browser.
 - The Steam data (name, cover, categories) comes from the public Steam Store; no Steam key is needed for version 1. Any key or code lives in the Netlify environment variables, never in the repository or in the code sent to the browser.
 - The repository is public: never commit secrets, the access code, the friends' nicknames or any personal data.
 - Out of scope for version 1: user accounts, Steam sign-in, real time updates, games outside Steam (see `backlog.md`).
