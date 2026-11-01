@@ -30,6 +30,14 @@ const kept = JSON.stringify({
 const screens = [
   { name: "the welcome", path: "/" },
   { name: "the bag", path: "/", kept, bag: "answers" },
+  // The small window of « Jouable à N », opened under the filters.
+  {
+    name: "the bag with « Jouable à » open",
+    path: "/",
+    kept,
+    bag: "answers",
+    click: "[aria-controls$='-players']",
+  },
   { name: "the bag without the server", path: "/", kept, bag: "down" },
 ];
 
@@ -189,6 +197,7 @@ const check = async (width, screen) => {
       errors.push(`${where}: the screen expected didn't show`);
       return;
     }
+    if (screen.click) await page.locator(screen.click).click();
     const reached = await page.evaluate(widest);
     if (reached > width) {
       errors.push(`${where}: ${reached} px wide`);

@@ -35,11 +35,26 @@
   "bag": {
     "count": "/ {max} jeux",
     "sorted": "· triés par score",
+    "filtered": "jeux sur {count}",
+    "filteredOne": "jeu sur {count}",
+    "filtering": "· filtres actifs",
     "refresh": "Rafraîchir",
     "loading": "Chargement du sac…",
     "games": "Les jeux du sac",
     "emptyTitle": "Le sac est vide.",
-    "emptyHint": "Colle le lien d’un jeu Steam ci-dessus pour lancer le premier."
+    "emptyHint": "Colle le lien d’un jeu Steam ci-dessus pour lancer le premier.",
+    "noMatchTitle": "Aucun jeu ne correspond à ces filtres.",
+    "clearFilters": "Retirer les filtres"
+  },
+  "filters": {
+    "label": "Filtres",
+    "players": "Jouable à",
+    "playersOn": "filtre actif",
+    "fewer": "Un joueur de moins",
+    "more": "Un joueur de plus",
+    "inBag": "{count} joueurs dans le sac. Les jeux sans nombre restent affichés.",
+    "inBagOne": "1 joueur dans le sac. Les jeux sans nombre restent affichés.",
+    "clear": "Retirer ce filtre"
   },
   "card": {
     "addedBy": "ajouté par {nickname}",
