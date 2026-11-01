@@ -43,11 +43,11 @@ One page (a single-page application): a friend not known to the browser sees the
 
 ### Who voted (panel)
 
-- On hover on a computer, on a tap on a phone, the score of a game shows the nicknames of its voters: « Pour : Nova (a ajouté), Krak · Contre : Pixel ».
+- On hover on a computer, on a tap on a phone, the score of a game shows the nicknames of its voters in two columns, « Pour » and « Contre », each with its count and one nickname per line; who added the game is not marked there, since the card already says it (asked by the owner on 2026-11-01).
 
 ### Confirmation (panel)
 
-Before what can't be undone, with the numbers at stake, and « Annuler » or the action. A question, then the name on one line (cut with « … » when too long), then the numbers on the next line:
+Before what can't be undone, with the numbers at stake, and « Annuler » or the action. For removing a game, the action button fills in blue for 2 seconds before it can be clicked, so that a quick double tap never removes a game (asked by the owner on 2026-11-01). A question, then the name on one line (cut with « … » when too long), then the numbers on the next line:
 
 - Removing a game: « Retirer ce jeu du sac ? », « Age of Empires II: Definitive Editi… », « Il a 6 votes. »
 - Deleting a player: « Supprimer ce joueur ? », « Nova2 », « Ses 3 jeux et ses 12 votes partent avec lui. »
@@ -69,7 +69,7 @@ Before what can't be undone, with the numbers at stake, and « Annuler » or the
 
 Agreed with the owner on 2026-11-01 in [docs/wireframes/screens.excalidraw](docs/wireframes/screens.excalidraw), phone first (390 px), then a Full HD PC (1920 px). From step 3, the mock-up is the reference; the wireframe only fixed the first layout.
 
-- **Welcome**: the name and a short line, the three fields one under the other, each with its help or its error below it, « Entrer » across the width; the Steam footer and the signature (« Fait par Sylent ») at the bottom. The errors come one at a time: the access code, then the nickname, then the personal code.
+- **Welcome**: the name and a short line, the three fields one under the other, each with its help or its error below it, « Entrer » across the width; the Steam footer and the signature (the mark and the wordmark of Sylent, linked to sylent.art) at the bottom. Under « Code perso »: « Nouveau venu : choisis-le. Déjà venu : redonne-le. » The errors come one at a time: the access code, then the nickname, then the personal code.
 - **The bag, top to bottom**: the header (name, nickname, « Se déconnecter »; for the admin, « Réglages » and « Vider le sac », on a second row on a phone); the adding block (« Lien Steam » across the width, then « Joueurs max », « facultatif » and « Ajouter »; one row on a PC); the count with « triés par score » and « Rafraîchir »; the filters (« Jouable à N » first, then the kinds), one row that scrolls sideways on a phone and wraps on a PC; the games; the footer. Nothing stays fixed while the page scrolls.
 - **A game card**: the cover across the width of the card, then the name, the categories, « Jusqu’à N joueurs » when known, « ajouté par Krak » (« ajouté par toi » for one's own), « Retirer » when allowed; the votes in a column on the right: upvote, score, downvote. The friend's vote is shown pressed; on their own game, the upvote is pressed and the downvote locked.
 - **The games**: one card per row on a phone (about two per screen), a grid of five per row on a PC (about ten in full view).

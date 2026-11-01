@@ -1,12 +1,15 @@
 // The application, drawn from its address: ?screen=bag|welcome|logo, as=friend|admin,
-// panel=voters|remove, logo. The viewer (index.html) shows this page in a phone frame and a PC frame.
+// panel=voters|remove|settings|empty|delete|confirm-empty, state=…, logo. The viewer (index.html) shows this page in a phone frame and a PC frame.
 const params = new URLSearchParams(location.search);
 const view = {
   screen: params.get("screen") || "bag",
   as: params.get("as") || "friend",
   panel: params.get("panel") || "",
   logo: params.get("logo") || "frame",
+  tracking: Number(params.get("tracking") || 0),
 };
+// The spacing of the letters of « Idealan », in px, compared with a tab of the viewer.
+document.documentElement.style.setProperty("--brand-tracking", `${view.tracking}px`);
 const viewer = view.as === "admin" ? "Sylent" : "Nova";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -39,10 +42,29 @@ const score = game => game.up.length - game.down.length;
 const signed = n => (n > 0 ? `+${n}` : String(n));
 const escape = text => text.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
+
+// The states drawn from the address (?state=…): the errors of the welcome, the states of the bag.
+const STATES = {
+  "wrong-code": { values: { code: "••••••••" }, errors: { code: "Ce code d’accès n’est pas le bon&nbsp;: vérifie-le dans la conversation." } },
+  "nick-refused": { values: { code: "••••••••", nick: "Nova 2" }, errors: { nick: "3 à 16 lettres sans accents et chiffres, sans espace." } },
+  "wrong-pin": { values: { code: "••••••••", nick: "Nova", pin: "••••" }, errors: { pin: "Ce n’est pas le code perso de Nova. Oublié&nbsp;? Demande à l’admin de le réinitialiser." } },
+  "code-changed": { values: { nick: "Nova" }, banner: "Le code d’accès a changé&nbsp;: redemande-le dans la conversation." },
+  empty: { games: [], count: 0 },
+  reading: { add: { link: "https://store.steampowered.com/app/1966720/Lethal_Company/", players: "4", busy: true, note: "Lecture du jeu sur Steam…" } },
+  refused: { add: { link: "https://store.steampowered.com/bundle/232/", players: "4", error: "Ce lien est un pack&nbsp;: colle le lien d’un des jeux." } },
+  "steam-down": { add: { link: "https://store.steampowered.com/app/1966720/", players: "4", error: "Steam ne répond pas&nbsp;: réessaie dans une minute." } },
+  full: { count: 50, add: { link: "https://store.steampowered.com/app/1966720/", error: "Le sac est plein&nbsp;: vois avec l’admin." } },
+  "server-down": { banner: "Le serveur ne répond pas&nbsp;: le sac affiché date de 21&nbsp;h&nbsp;04. « Rafraîchir » réessaie." },
+  "no-cover": { noCover: true },
+  "players-open": { playersOpen: true },
+  "no-result": { games: [], count: 47, active: ["players", "Coop en LAN", "Écran partagé"], noResult: true },
+};
+const state = STATES[params.get("state")] || {};
+
 function footer() {
   return `<footer class="app-footer">
     <p>Données et images&nbsp;: Steam. Idealan n’est pas affilié à Valve.</p>
-    <a class="app-signature" href="https://sylent.art">${MARK}<span>Fait par Sylent</span></a>
+    <a class="app-signature" href="https://sylent.art" aria-label="Sylent, sur sylent.art">${MARK}<span class="app-wordmark" aria-hidden="true"></span></a>
   </footer>`;
 }
 
@@ -52,7 +74,7 @@ function header() {
     <div class="app-header-in">
       <span class="app-brand">${logo(28)}<span>Idealan</span></span>
       <div class="app-header-actions">
-        ${admin ? `<button type="button" class="app-button is-ghost">Réglages</button><button type="button" class="app-button is-ghost">Vider le sac</button>` : ""}
+        ${admin ? `<button type="button" class="app-button is-ghost" data-open="settings">Réglages</button><button type="button" class="app-button is-ghost" data-open="empty">Vider le sac</button>` : ""}
         <span class="app-nick">${viewer}${admin ? ` <span class="app-role">admin</span>` : ""}</span>
         <button type="button" class="app-button is-ghost is-small">Se déconnecter</button>
       </div>
@@ -60,34 +82,64 @@ function header() {
   </header>`;
 }
 
-function addBlock() {
-  return `<section class="app-add" aria-label="Ajouter un jeu">
+function banner(text) {
+  return text ? `<p class="app-banner" role="status">${text}</p>` : "";
+}
+
+function addBlock(add = {}) {
+  const message = add.error || add.note;
+  return `<section class="app-add${add.busy ? " is-busy" : ""}" aria-label="Ajouter un jeu">
     <label class="app-field app-field-link"><span>Lien Steam</span>
-      <input type="url" placeholder="https://store.steampowered.com/app/…"></label>
-    <label class="app-field app-field-players"><span>Joueurs max</span>
-      <input type="text" inputmode="numeric" placeholder="10" size="3"><small>facultatif</small></label>
-    <button type="button" class="app-button is-primary app-add-button">Ajouter</button>
+      <input type="url" placeholder="https://store.steampowered.com/app/…" value="${add.link || ""}" ${add.busy ? "disabled" : ""}></label>
+    <label class="app-field app-field-players"><span class="app-field-name">Joueurs max<small>facultatif</small></span>
+      <input type="text" inputmode="numeric" placeholder="10" size="3" value="${add.players || ""}" ${add.busy ? "disabled" : ""}></label>
+    <button type="button" class="app-button is-primary app-add-button" ${add.busy ? "disabled" : ""}>${add.busy ? `<span class="app-spinner" aria-hidden="true"></span>Lecture…` : "Ajouter"}</button>
+    ${message ? `<p class="app-message${add.error ? " is-error" : ""}" role="${add.error ? "alert" : "status"}">${message}</p>` : ""}
   </section>`;
 }
 
-function bar() {
-  return `<div class="app-bar">
-    <p class="app-count"><strong>${BAG_COUNT}</strong> / 50 jeux <span>· triés par score</span></p>
-    <button type="button" class="app-button is-ghost is-small app-refresh">${ICON.refresh(16)}<span>Rafraîchir</span></button>
-    <div class="app-chips" role="group" aria-label="Filtres">
-      <button type="button" class="app-chip is-players" aria-pressed="false">${ICON.people(16)}Jouable à 9${ICON.chevron(14)}</button>
-      ${FILTERS.map(f => `<button type="button" class="app-chip" aria-pressed="false">${f}</button>`).join("")}
+function playersPopover() {
+  return `<div class="app-popover" role="dialog" aria-label="Jouable à">
+    <p class="app-popover-title">Jouable à</p>
+    <div class="app-stepper">
+      <button type="button" class="app-button is-ghost" data-step="-1" aria-label="Un joueur de moins">−</button>
+      <output class="app-stepper-value">9</output>
+      <button type="button" class="app-button is-ghost" data-step="1" aria-label="Un joueur de plus">+</button>
     </div>
+    <p class="app-popover-note">9 joueurs dans le sac. Les jeux sans nombre restent affichés.</p>
+    <button type="button" class="app-button is-ghost is-small" data-clear-players>Retirer ce filtre</button>
   </div>`;
+}
+
+function bar() {
+  const active = new Set(state.active || (state.playersOpen ? ["players"] : []));
+  const count = state.count ?? BAG_COUNT;
+  const text = state.noResult
+    ? `<strong>0</strong> jeu sur ${count} <span>· filtres actifs</span>`
+    : `<strong>${count}</strong> / 50 jeux <span>· triés par score</span>`;
+  const chips = count === 0 ? "" : `<div class="app-chips" role="group" aria-label="Filtres">
+      <button type="button" class="app-chip is-players" aria-pressed="${active.has("players")}" aria-expanded="${!!state.playersOpen}">${ICON.people(16)}Jouable à <span class="app-players-n">9</span>${ICON.chevron(14)}</button>
+      ${FILTERS.map(f => `<button type="button" class="app-chip" aria-pressed="${active.has(f)}">${f}</button>`).join("")}
+    </div>`;
+  return `<div class="app-bar">
+    <p class="app-count">${text}</p>
+    <button type="button" class="app-button is-ghost is-small app-refresh">${ICON.refresh(16)}<span>Rafraîchir</span></button>
+    ${chips}
+    ${state.playersOpen ? playersPopover() : ""}
+  </div>`;
+}
+
+function cover(game, missing) {
+  return missing
+    ? `<div class="app-cover is-missing"><span>${escape(game.name)}</span></div>`
+    : `<div class="app-cover"><img src="${COVER(game.appid)}" alt="" loading="lazy" width="460" height="215" onerror="this.parentElement.classList.add('is-missing');this.parentElement.innerHTML='<span>${escape(game.name).replace(/'/g, "\\'")}</span>'"></div>`;
 }
 
 function card(game, index) {
   const vote = voteOf(game);
   const canRemove = vote === "own" || view.as === "admin";
-  return `<li class="app-card" style="--cover: url('${COVER(game.appid)}')" data-index="${index}">
-    <div class="app-cover">
-      <img src="${COVER(game.appid)}" alt="" loading="lazy" width="460" height="215">
-    </div>
+  return `<li class="app-card" data-index="${index}">
+    ${cover(game, state.noCover && index === 0)}
     <div class="app-card-body">
       <div class="app-card-info">
         <h3 class="app-card-title">${escape(game.name)}</h3>
@@ -106,39 +158,60 @@ function card(game, index) {
   </li>`;
 }
 
+// Who voted: two columns, « Pour » and « Contre », one nickname per line.
 function voters(game) {
-  const up = game.up.map(n => (n === game.by ? `${n} (a ajouté)` : n)).join(", ");
-  const down = game.down.length ? game.down.join(", ") : "personne";
-  return `<p><strong>Pour&nbsp;:</strong> ${up}</p><p><strong>Contre&nbsp;:</strong> ${down}</p>`;
+  const column = (title, names) => `<div class="app-voters-column"><p class="app-voters-title">${title} <span>${names.length}</span></p>
+    <ul>${names.length ? names.map(n => `<li>${n}</li>`).join("") : `<li class="is-none">personne</li>`}</ul></div>`;
+  return column("Pour", game.up) + column("Contre", game.down);
+}
+
+function emptyBox() {
+  if (state.noResult) {
+    return `<div class="app-empty"><p class="app-empty-title">Aucun jeu ne correspond à ces filtres.</p>
+      <button type="button" class="app-button is-ghost" data-clear-filters>Retirer les filtres</button></div>`;
+  }
+  return `<div class="app-empty"><p class="app-empty-title">Le sac est vide.</p>
+    <p>Colle le lien d’un jeu Steam ci-dessus pour lancer le premier.</p></div>`;
 }
 
 function bag() {
+  const games = state.games || GAMES;
   return `<div class="app">
     <div class="app-floor" aria-hidden="true"></div>
     ${header()}
     <main class="app-main">
-      ${addBlock()}
+      ${banner(state.banner)}
+      ${addBlock(state.add)}
       ${bar()}
-      <ul class="app-games">${GAMES.map(card).join("")}</ul>
-      <p class="app-more">… et ${BAG_COUNT - GAMES.length} autres jeux dans le vrai sac</p>
+      ${games.length ? `<ul class="app-games">${games.map(card).join("")}</ul>
+      <p class="app-more">… et ${BAG_COUNT - GAMES.length} autres jeux dans le vrai sac</p>` : emptyBox()}
     </main>
     ${footer()}
   </div>`;
+}
+
+function welcomeField(key, label, type, placeholder, hint, extra = "") {
+  const value = state.values?.[key];
+  const error = state.errors?.[key];
+  return `<label class="app-field${error ? " is-invalid" : ""}"><span>${label}</span>
+    <input type="${type}" placeholder="${placeholder}" value="${value || ""}" ${extra} ${error ? 'aria-invalid="true"' : ""}>
+    ${error ? `<small class="app-message is-error">${error}</small>` : hint ? `<small>${hint}</small>` : ""}</label>`;
 }
 
 function welcome() {
   return `<div class="app app-is-welcome">
     <div class="app-floor" aria-hidden="true"></div>
     <main class="app-welcome">
+      ${banner(state.banner)}
       <div class="app-welcome-head">
         <div class="app-welcome-logo">${logo(72)}</div>
         <h1 class="app-display">Idealan</h1>
         <p class="app-lead">Le sac à jeux de la LAN</p>
       </div>
       <form class="app-form" onsubmit="return false">
-        <label class="app-field"><span>Code d’accès</span><input type="password" placeholder="Reçu dans la conversation"></label>
-        <label class="app-field"><span>Pseudo du joueur</span><input type="text" placeholder="Nova"><small>3 à 16 lettres sans accents et chiffres</small></label>
-        <label class="app-field"><span>Code perso</span><input type="password" inputmode="numeric" placeholder="4 chiffres" maxlength="4"><small>Nouveau pseudo&nbsp;: choisis-le. Déjà venu&nbsp;: redonne-le.</small></label>
+        ${welcomeField("code", "Code d’accès", "password", "Reçu dans la conversation", "")}
+        ${welcomeField("nick", "Pseudo du joueur", "text", "Nova", "3 à 16 lettres sans accents et chiffres")}
+        ${welcomeField("pin", "Code perso", "password", "4 chiffres", "Nouveau venu&nbsp;: choisis-le. Déjà venu&nbsp;: redonne-le.", 'inputmode="numeric" maxlength="4"')}
         <button type="submit" class="app-button is-primary is-wide">Entrer</button>
       </form>
     </main>
@@ -146,22 +219,67 @@ function welcome() {
   </div>`;
 }
 
-function confirmRemove(game) {
+// Panels: a sheet from the bottom on a phone, a window in the middle on a PC.
+function dialog(content, tall) {
   return `<div class="app-overlay" data-close>
-    <div class="app-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+    <div class="app-dialog${tall ? " is-tall" : ""}" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
       <span class="app-handle" aria-hidden="true"></span>
-      <h2 id="dialog-title" class="app-dialog-title">Retirer ce jeu du sac&nbsp;?</h2>
-      <p class="app-dialog-name">${escape(game.name)}</p>
-      <p class="app-dialog-text">Il a ${game.up.length + game.down.length} votes.</p>
-      <div class="app-dialog-actions">
-        <button type="button" class="app-button is-ghost" data-close>Annuler</button>
-        <button type="button" class="app-button is-primary" data-close>Retirer</button>
-      </div>
+      ${content}
     </div>
   </div>`;
 }
 
-// The board of the logo: every size where it appears, down to the 16 px of a browser tab.
+// arm: the action button fills in blue before it can be clicked (asked by the owner for removing a game).
+function confirmDialog(title, name, text, action, arm) {
+  return dialog(`<h2 id="dialog-title" class="app-dialog-title">${title}</h2>
+    ${name ? `<p class="app-dialog-name">${escape(name)}</p>` : ""}
+    <p class="app-dialog-text">${text}</p>
+    <div class="app-dialog-actions">
+      <button type="button" class="app-button is-ghost" data-close>Annuler</button>
+      <button type="button" class="app-button is-primary${arm ? " is-arming" : ""}" data-close ${arm ? 'data-arm aria-disabled="true"' : ""}>${action}</button>
+    </div>`);
+}
+
+function settingsDialog() {
+  return dialog(`<div class="app-dialog-head"><h2 id="dialog-title" class="app-dialog-title">Réglages</h2>
+      <button type="button" class="app-button is-ghost is-small" data-close>Fermer</button></div>
+    <p class="app-dialog-note">${PLAYERS.length} joueurs. Un pseudo en double se supprime ici.</p>
+    <ul class="app-players">${PLAYERS.map(([nick, votes, games]) => `<li class="app-player">
+      <input class="app-player-name" value="${nick}" aria-label="Pseudo de ${nick}">
+      <button type="button" class="app-button is-ghost is-small app-player-rename">Renommer</button>
+      <span class="app-player-stats"><strong>${votes}</strong> votes · <strong>${games}</strong> jeux</span>
+      <button type="button" class="app-button is-ghost is-small app-player-reset">Réinitialiser le code perso</button>
+      ${nick === viewer ? `<span class="app-player-self">toi</span>` : `<button type="button" class="app-button is-ghost is-small app-player-delete" data-delete="${nick}" data-games="${games}" data-votes="${votes}">Supprimer</button>`}
+    </li>`).join("")}</ul>`, true);
+}
+
+const KEPT = new Set([0, 1, 2, 4, 7]);
+function emptyDialog() {
+  const removed = BAG_COUNT - KEPT.size;
+  return dialog(`<div class="app-dialog-head"><h2 id="dialog-title" class="app-dialog-title">Vider le sac</h2>
+      <button type="button" class="app-button is-ghost is-small" data-close>Fermer</button></div>
+    <p class="app-dialog-note">Coche les jeux à garder&nbsp;: leurs votes restent.</p>
+    <ul class="app-keep-list">${GAMES.map((game, i) => `<li><label class="app-keep">
+      <input type="checkbox" ${KEPT.has(i) ? "checked" : ""} data-keep="${i}">
+      <img src="${COVER(game.appid)}" alt="" loading="lazy" width="460" height="215">
+      <span class="app-keep-name">${escape(game.name)}</span>
+      <span class="app-keep-score">${signed(score(game))}</span>
+    </label></li>`).join("")}</ul>
+    <p class="app-more">… et ${BAG_COUNT - GAMES.length} autres jeux</p>
+    <div class="app-dialog-bar">
+      <p><strong class="app-kept">${KEPT.size}</strong> gardés · <span class="app-removed">${removed}</span> retirés</p>
+      <button type="button" class="app-button is-primary" data-open="confirm-empty"><span>Vider (<span class="app-removed">${removed}</span> jeux)</span></button>
+    </div>`, true);
+}
+
+const PANELS = {
+  remove: () => confirmDialog("Retirer ce jeu du sac&nbsp;?", GAMES[1].name, `Il a ${GAMES[1].up.length + GAMES[1].down.length} votes.`, "Retirer", true),
+  settings: settingsDialog,
+  empty: emptyDialog,
+  delete: (nick = "Nova2", games = 3, votes = 12) => confirmDialog("Supprimer ce joueur&nbsp;?", nick, `Ses ${games} jeux et ses ${votes} votes partent avec lui.`, "Supprimer"),
+  "confirm-empty": () => confirmDialog("Vider le sac&nbsp;?", "", `${document.querySelector(".app-removed")?.textContent || BAG_COUNT - KEPT.size} jeux seront retirés. Cette action est définitive.`, "Vider"),
+};
+
 function logoBoard() {
   const tile = (size, light) => `<span class="app-tile${light ? " is-light" : ""}" style="--tile:${size}px">${logo(Math.round(size * 0.8))}</span>`;
   return `<div class="app app-board">
@@ -185,7 +303,7 @@ function logoBoard() {
 
 document.body.innerHTML = view.screen === "welcome" ? welcome() : view.screen === "logo" ? logoBoard() : bag();
 
-// Interactions: votes, filters, who voted, the confirmation.
+// Interactions: votes, filters, who voted, the panels.
 const root = document.querySelector(".app");
 
 function setVote(votes, game, next) {
@@ -213,9 +331,42 @@ function closeVoters(except) {
   });
 }
 
-function openDialog(game) {
-  root.insertAdjacentHTML("beforeend", confirmRemove(game));
+const ARM_DELAY = 2000;
+function openPanel(name, ...args) {
+  root.insertAdjacentHTML("beforeend", PANELS[name](...args));
+  const overlay = root.querySelector(".app-overlay:last-child");
+  overlay.querySelector(".app-dialog button")?.focus({ preventScroll: true });
+  const armed = overlay.querySelector("[data-arm]");
+  if (armed) {
+    setTimeout(() => {
+      armed.classList.replace("is-arming", "is-armed");
+      armed.removeAttribute("aria-disabled");
+    }, ARM_DELAY);
+  }
 }
+
+function togglePlayers(chip) {
+  const open = root.querySelector(".app-popover");
+  if (open) {
+    open.remove();
+    chip.setAttribute("aria-expanded", "false");
+    return;
+  }
+  chip.parentElement.insertAdjacentHTML("afterend", playersPopover());
+  root.querySelector(".app-stepper-value").textContent = chip.querySelector(".app-players-n").textContent;
+  chip.setAttribute("aria-pressed", "true");
+  chip.setAttribute("aria-expanded", "true");
+}
+
+function countKept() {
+  const kept = root.querySelectorAll("[data-keep]:checked").length;
+  root.querySelector(".app-kept").textContent = kept;
+  root.querySelectorAll(".app-removed").forEach(el => (el.textContent = BAG_COUNT - kept));
+}
+
+root.addEventListener("change", event => {
+  if (event.target.matches("[data-keep]")) countKept();
+});
 
 root.addEventListener("click", event => {
   const target = event.target;
@@ -239,15 +390,47 @@ root.addEventListener("click", event => {
   }
   const chip = target.closest(".app-chip");
   if (chip) {
-    chip.setAttribute("aria-pressed", String(chip.getAttribute("aria-pressed") !== "true"));
+    if (chip.classList.contains("is-players")) togglePlayers(chip);
+    else chip.setAttribute("aria-pressed", String(chip.getAttribute("aria-pressed") !== "true"));
+    return;
+  }
+  const step = target.closest("[data-step]");
+  if (step) {
+    const output = root.querySelector(".app-stepper-value");
+    const next = Math.min(16, Math.max(2, Number(output.textContent) + Number(step.dataset.step)));
+    output.textContent = next;
+    root.querySelector(".app-players-n").textContent = next;
+    return;
+  }
+  if (target.closest("[data-clear-players]")) {
+    root.querySelector(".app-popover")?.remove();
+    const players = root.querySelector(".app-chip.is-players");
+    players.setAttribute("aria-pressed", "false");
+    players.setAttribute("aria-expanded", "false");
+    return;
+  }
+  if (target.closest("[data-clear-filters]")) {
+    root.querySelectorAll(".app-chip").forEach(c => c.setAttribute("aria-pressed", "false"));
     return;
   }
   if (target.closest(".app-remove") && game) {
-    openDialog(game);
+    openPanel("remove");
     return;
   }
-  if (target.hasAttribute("data-close")) {
-    target.closest(".app-overlay").remove();
+  const remove = target.closest("[data-delete]");
+  if (remove) {
+    openPanel("delete", remove.dataset.delete, remove.dataset.games, remove.dataset.votes);
+    return;
+  }
+  const opener = target.closest("[data-open]");
+  if (opener) {
+    openPanel(opener.dataset.open);
+    return;
+  }
+  if (target.closest('[aria-disabled="true"]')) return;
+  const closer = target.closest("[data-close]");
+  if (closer && (closer.matches("button") || target === closer)) {
+    closer.closest(".app-overlay").remove();
     return;
   }
   closeVoters();
@@ -255,7 +438,8 @@ root.addEventListener("click", event => {
 document.addEventListener("keydown", event => {
   if (event.key !== "Escape") return;
   closeVoters();
-  document.querySelector(".app-overlay")?.remove();
+  const overlays = document.querySelectorAll(".app-overlay");
+  overlays[overlays.length - 1]?.remove();
 });
 
 // On a computer, who voted also shows on hover.
@@ -274,7 +458,7 @@ if (matchMedia("(hover: hover)").matches) {
   });
 }
 
-// The cards tilt under the pointer.
+// The card under the pointer sinks a little, on the side of the pointer, as if pressed.
 if (!reducedMotion && matchMedia("(hover: hover)").matches) {
   root.addEventListener("pointermove", event => {
     const cardElement = event.target.closest(".app-card");
@@ -285,19 +469,16 @@ if (!reducedMotion && matchMedia("(hover: hover)").matches) {
         c.style.removeProperty("--tilt-y");
       }
     });
-    if (!cardElement) return;
+    if (!cardElement || event.target.closest(".app-voters")) return;
     const box = cardElement.getBoundingClientRect();
     const x = (event.clientX - box.left) / box.width - 0.5;
     const y = (event.clientY - box.top) / box.height - 0.5;
     cardElement.classList.add("is-tilted");
-    cardElement.style.setProperty("--tilt-x", `${(-y * 8).toFixed(2)}deg`);
-    cardElement.style.setProperty("--tilt-y", `${(x * 10).toFixed(2)}deg`);
+    cardElement.style.setProperty("--tilt-x", `${(-y * 5).toFixed(2)}deg`);
+    cardElement.style.setProperty("--tilt-y", `${(x * 6).toFixed(2)}deg`);
   });
 }
 
 // A panel asked by the address, for the viewer.
-if (view.panel === "voters") {
-  const first = document.querySelector(".app-card .app-score");
-  first?.click();
-}
-if (view.panel === "remove") openDialog(GAMES[1]);
+if (view.panel === "voters") root.querySelector(".app-card .app-score")?.click();
+else if (view.panel in PANELS) openPanel(view.panel);

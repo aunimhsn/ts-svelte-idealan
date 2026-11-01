@@ -4,16 +4,44 @@
 const LOGO_NAMES = { frame: "Cadre", solid: "Prise pleine", tile: "Bloc évidé", plug: "Fiche" };
 const VARIANTS = {
   logo: { label: "Logo RJ45", options: LOGO_NAMES, fallback: "frame" },
+  tracking: { label: "Lettres (px)", options: Object.fromEntries(["-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1"].map(v => [v, v])), fallback: "0" },
 };
 const params = new URLSearchParams(location.search);
 const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, v]) => [key, params.get(key) in v.options ? params.get(key) : v.fallback]));
 
 // The newest section first. Each slot: [label, device, address of app.html].
 const SECTIONS = [
+  ["States of the bag", "Each message sits where it comes from: under the adding block, or in a banner under the header.", [
+    ["Phone · empty bag", "phone", "screen=bag&state=empty"],
+    ["Phone · a link being read", "phone", "screen=bag&state=reading"],
+    ["Phone · a link refused", "phone", "screen=bag&state=refused"],
+    ["Phone · Steam doesn’t answer", "phone", "screen=bag&state=steam-down"],
+    ["Phone · the bag is full", "phone", "screen=bag&state=full"],
+    ["Phone · the server doesn’t answer", "phone", "screen=bag&state=server-down"],
+    ["Phone · a game without cover", "phone", "screen=bag&state=no-cover"],
+    ["Phone · « Jouable à » open", "phone", "screen=bag&state=players-open"],
+    ["Phone · filters with no game", "phone", "screen=bag&state=no-result"],
+    ["PC · « Jouable à » open", "pc", "screen=bag&state=players-open"],
+  ]],
+  ["Errors of the welcome", "One at a time: the access code first, then the nickname, then the personal code.", [
+    ["Phone · wrong access code", "phone", "screen=welcome&state=wrong-code"],
+    ["Phone · nickname refused", "phone", "screen=welcome&state=nick-refused"],
+    ["Phone · wrong personal code", "phone", "screen=welcome&state=wrong-pin"],
+    ["Phone · a code changed by the owner", "phone", "screen=welcome&state=code-changed"],
+  ]],
+  ["Panels of the admin", "« Réglages » and « Vider le sac » in the header of the admin; the boxes of the emptying count what is kept. Everything works: open, check, confirm, « Échap » closes.", [
+    ["Phone · the bag of the admin", "phone", "screen=bag&as=admin"],
+    ["Phone · settings", "phone", "screen=bag&as=admin&panel=settings"],
+    ["Phone · emptying the bag", "phone", "screen=bag&as=admin&panel=empty"],
+    ["Phone · deleting a player", "phone", "screen=bag&as=admin&panel=delete"],
+    ["Phone · emptying, confirmed", "phone", "screen=bag&as=admin&panel=confirm-empty"],
+    ["PC · settings", "pc", "screen=bag&as=admin&panel=settings"],
+    ["PC · emptying the bag", "pc", "screen=bag&as=admin&panel=empty"],
+  ]],
   ["Logo", "Four drawings of the RJ45 jack (tab Logo RJ45), each with its contacts in the blue signal: here at every size, down to the 16 px of a browser tab, and in the header and the welcome of the other sections.", [
     ["Board", "board", "screen=logo"],
   ]],
-  ["Who voted and the confirmation", "Tap a score (or hover it on a PC) to see who voted; « Retirer » opens the confirmation, as a sheet from the bottom on a phone and a window on a PC.", [
+  ["Who voted and the confirmation", "Tap a score (or hover it on a PC) to see who voted; « Retirer » opens the confirmation, as a sheet from the bottom on a phone and a window on a PC: its « Retirer » fills in blue for 2 seconds before it can be clicked.", [
     ["Phone · who voted (a friend)", "phone", "screen=bag&panel=voters"],
     ["Phone · removing one’s game", "phone", "screen=bag&panel=remove"],
     ["PC · removing a game (the admin)", "pc", "screen=bag&as=admin&panel=remove"],
@@ -29,7 +57,7 @@ const SECTIONS = [
 ];
 
 function frame([label, device, query]) {
-  const src = `app.html?${query}&logo=${chosen.logo}`;
+  const src = `app.html?${query}&logo=${chosen.logo}&tracking=${chosen.tracking}`;
   return `<div class="slot"><span>${label} · <a href="${src}" target="_blank">open alone</a></span>
     <div class="frame is-${device}"><iframe src="${src}" title="${label}" loading="lazy"></iframe></div></div>`;
 }
@@ -39,7 +67,7 @@ function render() {
     `<div class="group"><span>${v.label}</span>${Object.entries(v.options).map(([value, label]) =>
       `<button type="button" data-variant="${key}" data-value="${value}" aria-pressed="${chosen[key] === value}">${label}</button>`).join("")}</div>`).join("");
   document.getElementById("sheet").innerHTML = `
-    <header class="intro"><h1>Idealan · Néon, electric blue · logo ${LOGO_NAMES[chosen.logo]}</h1><p>A grid floor running to the horizon, scanlines, chamfered covers, a glowing title, cards that tilt under the pointer; Chakra Petch and Manrope. Sample data; the covers come from the Steam CDN.</p></header>
+    <header class="intro"><h1>Idealan · Néon, electric blue · logo ${LOGO_NAMES[chosen.logo]} · « Idealan » in Montserrat 800, letters ${chosen.tracking} px</h1><p>A grid floor running to the horizon, scanlines, chamfered covers, a glowing title, cards that tilt under the pointer; Chakra Petch and Manrope. Sample data; the covers come from the Steam CDN.</p></header>
     ${SECTIONS.map(([title, text, slots], i) => `<section id="section-${i + 1}"><h2>${title}</h2><p>${text}</p><div class="row">${slots.map(frame).join("")}</div></section>`).join("")}`;
 }
 
