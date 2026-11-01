@@ -30,7 +30,9 @@ To be turned into the sections below with the next answers; noted here so that t
 - A friend may remove a game they added; the owner, with the admin code, may remove any game.
 - The games are sorted, above all, « by number of players » (to confirm: the number of friends interested, or the number of players the game supports), and may be filtered by kind of game.
 - One bag only, kept from one LAN to the next. The owner empties it by hand, with the admin code, whenever they like (Claude Code may suggest it after a LAN): they first select the games to keep, then remove all the others.
-- A friend may withdraw their vote.
+- One vote per friend and per game (up or down), which they may withdraw. Whether the friend who added a game votes for it is still open.
+- The identity is the nickname. The onboarding has two fields: the access code and « Pseudo du joueur ».
+- A game already in the bag is refused with an error message (this replaces the vote of the starting notes); a full bag (50 games) too, with a message that says to see the admin.
 - The admin code moderates the games only: the owner votes once per game, like every friend, and can't change the votes of others.
 
 ## Purpose
