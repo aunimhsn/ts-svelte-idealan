@@ -77,9 +77,9 @@
   --focus: var(--text);
 
   --error-text: #ff8f85; /* 9.2:1; also the border of a field at fault */
-  --error: #8c1626; /* the red of the strip of the errors, darker than #d62839 */
+  --error: #8c1626; /* the bordeaux of the strip of the errors, chosen by the owner on 2026-11-01 */
   --error-alpha: 88%;
-  --error-bg: color-mix(in srgb, var(--error) var(--error-alpha), transparent);
+  --error-bg: color-mix(in srgb, var(--error) var(--error-alpha), transparent); /* white on it 10.6:1, 7.2:1 over white */
   --on-error: #ffffff;
   --on-error-line: rgb(255 255 255 / 18%);
   --on-error-hover: rgb(255 255 255 / 15%);
@@ -167,7 +167,7 @@
   --layer-scanlines: 30;
 }
 
-@media (min-width: 900px) {
+@media (width >= 900px) {
   :root {
     --size-card-title: 17px;
     --watermark: 280px;
@@ -175,18 +175,3 @@
   }
 }
 
-/* Open decision of step 4, removed once decided: a darker red for the strip of the errors. */
-:root[data-error="now"] {
-  --error: #d62839;
-  --error-alpha: 78%;
-}
-
-:root[data-error="carmine"] {
-  --error: #b01e30;
-  --error-alpha: 85%;
-}
-
-:root[data-error="garnet"] {
-  --error: #6e1220;
-  --error-alpha: 90%;
-}

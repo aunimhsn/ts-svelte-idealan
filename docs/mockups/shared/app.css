@@ -348,6 +348,11 @@ input {
   grid-column: 1 / -1;
 }
 
+/* The link 2 px smaller, so that a long one shows more (an iPhone zooms when it is tapped). */
+.app-field-link input {
+  font-size: var(--size-small);
+}
+
 .app-field-players {
   grid-template-columns: auto var(--width-players);
   align-items: center;
@@ -1247,10 +1252,6 @@ input {
   .app-field-link,
   .app-field-players {
     grid-column: auto;
-  }
-
-  .app-field-link input {
-    font-size: var(--size-small);
   }
 
   .app-bar {

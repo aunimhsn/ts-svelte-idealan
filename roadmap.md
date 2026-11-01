@@ -28,7 +28,7 @@ The usual steps of the first cycle of a small application; adapt them at the set
 - [x] **1. Specifications and structure** ([#6](https://github.com/aunimhsn/ts-svelte-idealan/pull/6)).
 - [x] **2. Wireframes** ([#7](https://github.com/aunimhsn/ts-svelte-idealan/pull/7)).
 - [x] **3. Mock-up** ([#8](https://github.com/aunimhsn/ts-svelte-idealan/pull/8)).
-- [ ] **4. Design system**: the tokens in `docs/branding.md`, the mock-up rewritten to use only them, an entry in `design-journal.md`.
+- [x] **4. Design system**: the tokens of `docs/mockups/shared/tokens.css` written with their reasons in `docs/branding.md` (contrasts checked), the mock-up rewritten to use only them, a darker red for the errors and a smaller Steam link, an entry in `design-journal.md`.
 - [ ] **5. Read a Steam game** (build): the `appid` read from a link, the function that fetches the game from the Steam Store and caches it, with their tests. First, the owner turns the builds of Netlify back on (stopped during the design, to save credits), and `build.ignore` in `netlify.toml` deploys only when what ends up in the site changes (an allowlist: `src/` without its tests, `netlify/functions/`, `index.html`, the dependencies, the config of Vite, Svelte, TypeScript and Netlify, `.nvmrc`); it builds when `$CACHED_COMMIT_REF` is empty.
 - [ ] **6. The bag** (build): the welcome (the two codes, the nickname and its personal code), adding a game with its maximum number of players, the votes and who voted, removing one's game, the sort and the filters (with « Jouable à N »), the reload every 30 seconds; probably split into sub-steps when sized.
 - [ ] **7. Moderation** (build): the admin's settings (rename, reset a personal code, delete a player) and emptying the bag.
