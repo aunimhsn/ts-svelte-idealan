@@ -12,23 +12,18 @@ One entry per item, in the section of its kind: what it is in one sentence, what
 
 <!-- Small touches, one small pull request each. -->
 
-- Badges on each game for what matters at a LAN: multiplayer, co-op, local network, from the categories of the Steam Store. Depends on: step 5. Noted on 2026-11-01.
-
 - Claude Code runs inside the Flatpak of VS Code, where neither `firefox` nor `flatpak` is on the path: `screenshot.sh` of the `html-mockups` skill should fall back to `flatpak-spawn --host flatpak run org.mozilla.firefox`, here and in the template. Depends on: step 3. Noted on 2026-11-01.
 
 ## Edge cases
 
 <!-- Cases at the margin that need thought before a pull request. -->
 
-- Two friends vote for the same game at the same second: with one key per game in Netlify Blobs, one vote may overwrite the other. Decide in the specifications whether it is acceptable between friends. Noted on 2026-11-01.
-- A link of a package (`/sub/`) or a bundle (`/bundle/`) instead of a game: refuse it, or ask for the link of the game. Noted on 2026-11-01.
 
 ## Features
 
 <!-- New screens, actions or behaviors for a later cycle. -->
 
 - A « random draw » button on the day of the LAN, weighted or not by the votes. Noted on 2026-11-01.
-- Sort and filter the bag: by number of friends interested, multiplayer or co-op only. Noted on 2026-11-01.
 - Vertical covers (`library_600x900.jpg` of the Steam CDN), with the horizontal one (`header_image`) as fallback when a game has none. Needs an exploration: does the vertical cover exist for most of the games of the bag? Noted on 2026-11-01.
 - Games outside Steam (Epic, Battle.net, free games): added by hand, with a name and an image. Noted on 2026-11-01.
 - Who already owns each game, with `IPlayerService/GetOwnedGames`: needs a Steam Web API key and public profiles. Waits on: the friends' Steam IDs and their consent. Noted on 2026-11-01.

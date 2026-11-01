@@ -9,8 +9,8 @@ The technical choices of the [roadmap](../roadmap.md), with their reasons and th
 | Hosting | Netlify, free plan, at `ts-svelte-idealan-sylent.netlify.app` | The interface and the server part in one place, deployed from GitHub on every merge, with a deploy preview per pull request. The address carries the owner's name, who signs every product they make (2026-11-01: the former rule that kept the project apart from the owner's business is removed). Limits in [external-services.md](external-services.md). |
 | Interface | [Svelte](https://svelte.dev/) 5 with the runes, built with [Vite](https://vite.dev/), in TypeScript | A component is one file with its HTML, script and style; the reactivity is part of the language (`$state`, `$derived`), without hooks. The owner prefers it to React. |
 | Server | Netlify Functions, in TypeScript | Plain files of `netlify/functions/` that use the standard `Request`, `Response` and `fetch`: they call the Steam Store (which the browser can't call, no CORS), check the access code and write the bag. |
-| Data | Netlify Blobs | A key-value store of Netlify, without an account or a service of its own; one key per game, so that two friends adding two games at once don't overwrite each other. |
-| Access | A shared access code in an environment variable, checked by the functions | No accounts for a group of friends; the code protects the writes, and the nickname is kept in the browser. |
+| Data | Netlify Blobs: the whole bag in one key (`bag`), the players in another (`players`), one key per Steam page (`steam/<appid>`) | A key-value store of Netlify, without an account or a service of its own. One key for the bag (2026-11-01, lead B of the structure, rather than one key per game): one read shows the bag, and the limit of 50 games and the emptying are exact in one write; the conflicts of 9 friends are settled by conditional writes (`onlyIfMatch`), read again and retried. Detail in [Data](#data). |
+| Access | Two shared codes in environment variables (member, admin), checked by the functions; a personal code of 4 digits per nickname, hashed in `players` | No accounts for a group of friends; the member code protects the reading and the writes, the admin code the moderation, and the personal code keeps a friend from taking another's nickname (2026-11-01). |
 | Runtime and packages | Node.js 24 (LTS), npm (`package-lock.json`) | Pinned in `.nvmrc` (read by CI and by Netlify) and in `engines` of `package.json`. Node.js 24 is the one installed on the owner's machine and is maintained until April 2028; Node.js 26 brings nothing this project needs (2026-11-01). |
 | Language | TypeScript 6 | TypeScript 7 (the rewrite in Go) is out, but `svelte-check` and `typescript-eslint` don't support it yet (2026-11-01): move to it once they do. |
 | Tests | Vitest | Same configuration as Vite; tests of the reading of the Steam links and of the functions. |
@@ -26,8 +26,9 @@ Rejected:
 - **React**: hooks and their rules, and an ecosystem to assemble; the owner doesn't like it.
 - **SvelteKit**: its own server routes would replace the Netlify Functions, with more concepts to learn for a few screens.
 - **Vercel, Cloudflare Pages**: as capable; Netlify is the owner's choice.
-- **A VPS, Docker**: a server to maintain, useless for a few friends.
+- **A VPS, Docker**: a server to maintain, useless for a few friends; an idea of the backlog for the next projects.
 - **Supabase, Firebase**: an account and a service more, for a bag of a few dozen games; kept for real time or accounts (backlog).
+- **Real time** (2026-11-01): Netlify Functions answer and stop, and Blobs doesn't notify a change; the bag reloads every 30 seconds while the tab is shown instead (about 1 credit for a LAN).
 - **GitHub Pages**: no server-side code, so nowhere to call Steam or check the code.
 
 ## Functions
@@ -37,10 +38,18 @@ Rejected:
 - An error answers with an error code (`{ "error": "method-not-allowed" }`) and its HTTP status; the interface turns the code into a French message of `src/i18n/fr.json`.
 - The width check serves `dist/` without the functions: a call to `/api/` answers 404 there, so each screen is checked in its error state until the bag gets test data.
 
+## Data
+
+- `bag`, `players` and `steam/<appid>` live in a site-wide store (`getStore`). A deploy preview reads and writes the same store as the production site: the functions use another store name outside production (decided at step 5), so that a preview never touches the friends' bag.
+- Every write of `bag` or `players` reads the key with its ETag, changes it, and writes it with `onlyIfMatch`; when `modified` is `false`, another friend wrote meanwhile: read again and retry, a few times at most.
+- A new nickname goes into `players` under the same conditional write, so that two friends taking the same nickname at the same second can't both get it.
+- The votes and the adder of a game point to the fixed id of a player (`j1`), so that renaming writes only `players`.
+- The reads use the strong consistency of Blobs, so that a friend sees their own vote at once (the default, eventual, takes up to 60 seconds).
+
 ## Steam
 
 - The `appid` is read in the link (`/app/<digits>`), so that a friend only pastes the link of the game's page; the full list of Steam apps (`IStoreService/GetAppList`, which needs a key) is not needed.
-- The game comes from `https://store.steampowered.com/api/appdetails?appids=<appid>&cc=fr&l=french`, undocumented and rate limited, without a key: its answer is cached in Netlify Blobs.
+- The game comes from `https://store.steampowered.com/api/appdetails?appids=<appid>&cc=fr&l=french&filters=basic,categories,genres` (one `appid` per call, about 7 KB with the filters), undocumented and rate limited, without a key: its answer is cached in Netlify Blobs (`steam/<appid>`), and only `type: "game"` goes in the bag (a soundtrack or a DLC answers too).
 - The cover is `header_image` of the answer; the vertical cover of the Steam CDN is an idea of the backlog.
 
 ## Commands
