@@ -1,0 +1,25 @@
+{
+  "$comment": "The code that runs in Node.js: the Netlify Functions and the configuration files. The interface is in tsconfig.json.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "netlify",
+    "vite.config.ts",
+    "svelte.config.js",
+    "eslint.config.js"
+  ]
+}

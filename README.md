@@ -8,7 +8,7 @@ Built with Svelte 5 and Vite in TypeScript, Netlify Functions and Netlify Blobs,
 
 ## Status
 
-The documents of the project are ready; the code starts with step 0 of [roadmap.md](roadmap.md), the setup, done with Claude Code.
+The skeleton is in place (step 0 of [roadmap.md](roadmap.md)): one screen that shows whether the server part answers. The next steps are in the roadmap.
 
 ## What it contains
 
@@ -40,14 +40,20 @@ The documents of the project are ready; the code starts with step 0 of [roadmap.
 
 ## Requirements
 
-- Node.js LTS and npm (version pinned at step 0)
-- The Netlify CLI (`npm install -g netlify-cli`), for `netlify dev`
+- Node.js 24 and npm (pinned in `.nvmrc`); the Netlify CLI comes with `npm install`
 - Python 3, for the skills (wireframes and mock-up server)
 - Firefox, for the headless screenshots of the mock-up
 
 ## Development
 
-The commands are set up at step 0 and listed in [docs/technical-choices.md](docs/technical-choices.md#commands).
+```sh
+npm install
+npx playwright install --only-shell chromium   # once, for the width check
+npm run dev                                    # http://localhost:8888
+npm run check                                  # before every commit
+```
+
+Every command is listed in [docs/technical-choices.md](docs/technical-choices.md#commands).
 
 ## Deployment
 

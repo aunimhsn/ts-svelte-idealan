@@ -1,0 +1,49 @@
+{
+  "name": "idealan",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "svelte-check --fail-on-warnings && tsc -p tsconfig.node.json && eslint . && stylelint \"**/*.{css,svelte}\"",
+    "test": "vitest run",
+    "check:overflow": "node scripts/check-overflow.mjs",
+    "check": "npm run format:check && npm run lint && npm run test && npm run build && npm run check:overflow"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@netlify/functions": "^6.0.3",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.19.2",
+    "eslint": "^10.14.0",
+    "eslint-plugin-svelte": "^3.23.1",
+    "globals": "^17.14.0",
+    "netlify-cli": "^27.16.1",
+    "playwright": "^1.64.1",
+    "postcss-html": "^2.0.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-svelte": "^4.1.1",
+    "stylelint": "^17.16.0",
+    "stylelint-config-html": "^2.0.0",
+    "stylelint-config-standard": "^40.0.0",
+    "svelte": "^5.57.3",
+    "svelte-check": "^4.7.7",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "allowScripts": {
+    "esbuild": false,
+    "netlify-cli": false,
+    "unix-dgram": false
+  }
+}
