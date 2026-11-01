@@ -1,0 +1,855 @@
+/* The components of the application: tokens only (tokens.css). Phone first; from 900 px, the PC
+   layout of the wireframe (one row of adding, a grid of five covers). */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font: var(--text-weight) var(--size-body) / 1.5 var(--font-text);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.app {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.app-icon {
+  flex: none;
+}
+
+/* Header */
+
+.app-header {
+  position: relative;
+  z-index: 2;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.app-header-in {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+.app-brand {
+  font: var(--title-weight) var(--size-brand) / 1 var(--font-title);
+  letter-spacing: var(--tracking-title);
+}
+
+.app-header-actions {
+  display: contents;
+}
+
+.app-nick {
+  margin-left: auto;
+  font: 700 var(--size-small) / 1 var(--font-title);
+}
+
+.app-role {
+  margin-left: var(--space-1);
+  color: var(--dim);
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* On a phone, the admin buttons go to a second row, as in the wireframe. */
+.app-header-actions > .app-button:not(.is-small) {
+  order: 3;
+}
+
+.app-header-in::after {
+  content: "";
+  order: 2;
+  flex-basis: 100%;
+  height: 0;
+}
+
+/* Buttons and fields */
+
+.app-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
+  font: 700 var(--size-small) / 1 var(--font-title);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.app-button:hover {
+  background: var(--surface-hover);
+}
+
+.app-button.is-primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.app-button.is-primary:hover {
+  background: var(--accent);
+  filter: brightness(0.9);
+}
+
+.app-button.is-small {
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  font-size: var(--size-caption);
+}
+
+.app-button.is-wide {
+  width: 100%;
+}
+
+.app-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.app-field > span {
+  font: 600 var(--size-caption) / 1.3 var(--font-title);
+  color: var(--secondary);
+}
+
+.app-field input {
+  min-height: var(--tap);
+  width: 100%;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--field-bg);
+}
+
+.app-field input::placeholder {
+  color: var(--dim);
+}
+
+.app-field small {
+  color: var(--dim);
+  font-size: var(--size-caption);
+}
+
+/* Adding a game */
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+.app-add {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: end;
+  gap: var(--space-3);
+}
+
+.app-field-link {
+  grid-column: 1 / -1;
+}
+
+.app-field-players {
+  grid-template-columns: auto 72px auto;
+  align-items: center;
+  grid-column: 1 / 3;
+}
+
+.app-field-players input {
+  text-align: center;
+}
+
+/* The bar: count, refresh, filters */
+
+.app-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 var(--space-4);
+}
+
+.app-count {
+  margin: 0;
+  color: var(--secondary);
+  font-size: var(--size-small);
+}
+
+.app-count strong {
+  color: var(--text);
+  font: 800 var(--size-body) / 1 var(--font-score);
+}
+
+.app-chips {
+  display: flex;
+  gap: var(--space-2);
+  width: calc(100% + 2 * var(--space-4));
+  margin: 0 calc(-1 * var(--space-4));
+  padding: 0 var(--space-4) var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.app-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-chip);
+  background: transparent;
+  color: var(--secondary);
+  font: 600 var(--size-caption) / 1 var(--font-title);
+  cursor: pointer;
+}
+
+.app-chip.is-players {
+  margin-right: var(--space-3);
+  color: var(--text);
+}
+
+.app-chip[aria-pressed="true"] {
+  border-color: var(--signal);
+  background: var(--signal-tint);
+  color: var(--signal-text);
+}
+
+/* The games */
+
+.app-games {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+.app-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 8%;
+  border-radius: inherit;
+  background: var(--cover) center / cover;
+  filter: blur(36px) saturate(1.4);
+  opacity: calc(0.55 * var(--card-glow));
+}
+
+.app-cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--cover-radius) var(--cover-radius) 0 0;
+  aspect-ratio: 460 / 215;
+  background: var(--surface-solid);
+}
+
+.app-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-rank {
+  display: none;
+}
+
+.app-card-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-3);
+  flex: 1;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+}
+
+.app-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.app-card-title {
+  margin: 0 0 var(--space-1);
+  font: 700 var(--size-card-title) / 1.2 var(--font-title);
+  letter-spacing: -0.02em;
+}
+
+.app-tags,
+.app-by,
+.app-players-line {
+  margin: 0;
+  font-size: var(--size-small);
+  line-height: 1.35;
+}
+
+.app-tags {
+  color: var(--dim);
+}
+
+.app-players-line {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text);
+}
+
+.app-by {
+  color: var(--secondary);
+}
+
+.app-remove {
+  margin-top: auto;
+  transform: translateY(var(--space-2));
+}
+
+/* The votes: upvote, score, downvote; the friend's vote in the blue signal. */
+
+.app-votes {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.app-vote {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.app-vote:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.app-vote[aria-pressed="true"] {
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--on-signal);
+}
+
+.app-vote:disabled {
+  cursor: default;
+}
+
+.app-vote.is-down:disabled {
+  border-style: dashed;
+  opacity: 0.4;
+}
+
+.app-score {
+  min-width: var(--tap);
+  padding: var(--space-1) 0;
+  border: 0;
+  background: none;
+  font: 800 var(--size-score) / 1 var(--font-score);
+  cursor: pointer;
+}
+
+.app-votes[data-vote="up"] .app-score,
+.app-votes[data-vote="own"] .app-score {
+  color: var(--signal-text);
+}
+
+.app-score.is-bumped {
+  animation: app-bump 0.35s ease-out;
+}
+
+@keyframes app-bump {
+  40% {
+    transform: scale(1.35);
+  }
+}
+
+/* Who voted: a bubble under the votes. */
+
+.app-voters {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  width: min(300px, 80vw);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-small);
+  background: var(--surface-solid);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 55%);
+  font-size: var(--size-small);
+}
+
+.app-voters::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: calc(var(--tap) / 2 - 6px);
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--line-strong);
+  border-left: 1px solid var(--line-strong);
+  background: var(--surface-solid);
+  transform: rotate(45deg);
+}
+
+.app-voters p {
+  margin: 0;
+}
+
+.app-voters p + p {
+  margin-top: var(--space-1);
+}
+
+.app-more {
+  margin: var(--space-6) 0 0;
+  color: var(--dim);
+  font-size: var(--size-small);
+  text-align: center;
+}
+
+/* Footer and signature */
+
+.app-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-4) var(--space-8);
+  color: var(--dim);
+  font-size: var(--size-caption);
+  text-align: center;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.app-signature {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--secondary);
+  font: 700 var(--size-caption) / 1 var(--font-title);
+  text-decoration: none;
+}
+
+.app-signature:hover {
+  color: var(--text);
+}
+
+.app-mark {
+  width: auto;
+  height: 18px;
+}
+
+/* Welcome */
+
+.app-welcome {
+  flex: 1;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-4) var(--space-6);
+}
+
+.app-welcome-head {
+  position: relative;
+  margin-bottom: var(--space-8);
+  text-align: center;
+}
+
+.app-ghost {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  color: var(--ghost-word);
+  font: 800 clamp(120px, 40vw, 220px) / 0.8 var(--font-title);
+  letter-spacing: -0.06em;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.app-display {
+  margin: 0;
+  font: var(--title-weight) var(--size-display) / 1 var(--font-title);
+  letter-spacing: var(--tracking-title);
+}
+
+.app-lead {
+  margin: var(--space-3) 0 0;
+  color: var(--secondary);
+}
+
+.app-form {
+  display: grid;
+  gap: var(--space-6);
+}
+
+/* Panels: a sheet from the bottom on a phone, a window in the middle on a PC. */
+
+.app-overlay {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: rgb(0 0 0 / 62%);
+}
+
+.app-dialog {
+  width: 100%;
+  padding: var(--space-3) var(--space-4) var(--space-6);
+  border-top: 1px solid var(--line-strong);
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--surface-solid);
+}
+
+.app-handle {
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 0 auto var(--space-4);
+  border-radius: 2px;
+  background: var(--line-strong);
+}
+
+.app-dialog-title {
+  margin: 0 0 var(--space-3);
+  font: var(--title-weight) var(--size-title) / 1.2 var(--font-title);
+  letter-spacing: -0.02em;
+}
+
+.app-dialog-name {
+  overflow: hidden;
+  margin: 0;
+  font: 700 var(--size-body) / 1.4 var(--font-title);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-dialog-text {
+  margin: var(--space-1) 0 var(--space-6);
+  color: var(--secondary);
+}
+
+.app-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* PC */
+
+@media (min-width: 900px) {
+  .app-header-in {
+    padding: var(--space-3) var(--space-8);
+  }
+
+  .app-header-in::after {
+    display: none;
+  }
+
+  .app-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-left: auto;
+  }
+
+  .app-header-actions > .app-button:not(.is-small) {
+    order: 0;
+    min-height: 36px;
+    padding: 0 var(--space-4);
+    font-size: var(--size-caption);
+  }
+
+  .app-nick {
+    margin: 0 var(--space-2) 0 var(--space-4);
+  }
+
+  .app-main {
+    padding: var(--space-6) var(--space-8);
+  }
+
+  .app-add {
+    grid-template-columns: minmax(0, 560px) auto auto;
+    justify-content: start;
+    gap: var(--space-4);
+  }
+
+  .app-field-link {
+    grid-column: auto;
+  }
+
+  .app-field-players {
+    grid-column: auto;
+  }
+
+  .app-bar {
+    margin-top: var(--space-6);
+  }
+
+  .app-chips {
+    flex-wrap: wrap;
+    order: 3;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .app-games {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
+  .app-card-title {
+    font-size: 17px;
+  }
+
+  .app-vote {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-tags,
+  .app-by,
+  .app-players-line {
+    font-size: var(--size-caption);
+  }
+
+  .app-overlay {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-dialog {
+    width: 520px;
+    padding: var(--space-8);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+  }
+
+  .app-handle {
+    display: none;
+  }
+
+  .app-dialog-actions {
+    grid-template-columns: auto auto;
+    justify-content: end;
+  }
+
+  .app-welcome {
+    padding-top: 12vh;
+  }
+}
+
+/* C · Tableau des scores: the rank on the cover. */
+
+:root[data-theme="scores"] .app-rank {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  padding: 0 var(--space-3) var(--space-1) var(--space-3);
+  background: linear-gradient(transparent, rgb(0 0 0 / 70%));
+  color: #ffffff;
+  font: 800 56px / 0.9 var(--font-score);
+  text-shadow: 0 2px 10px rgb(0 0 0 / 60%);
+}
+
+:root[data-theme="scores"] .app-card:nth-child(-n + 3) .app-rank {
+  color: var(--signal-text);
+}
+
+:root[data-theme="scores"] .app-card-title {
+  text-transform: uppercase;
+  font-family: var(--font-score);
+  font-size: 22px;
+  letter-spacing: 0.01em;
+}
+
+/* D · Néon: grid floor, scanlines, chamfered covers, glowing title, tilted cards. */
+
+:root[data-theme="neon"] .app-floor {
+  position: fixed;
+  z-index: -2;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  height: 46vh;
+  overflow: hidden;
+  perspective: 320px;
+  perspective-origin: 50% 0;
+  pointer-events: none;
+}
+
+:root[data-theme="neon"] .app-floor::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -150%;
+  left: -150%;
+  height: 300%;
+  background:
+    linear-gradient(color-mix(in srgb, var(--signal) 75%, transparent) 2px, transparent 2px) 0 0 / 100% 56px,
+    linear-gradient(90deg, color-mix(in srgb, var(--signal) 75%, transparent) 2px, transparent 2px) 50% 0 / 56px 100%;
+  mask-image: linear-gradient(transparent, #000 18%);
+  transform: rotateX(72deg);
+  transform-origin: 50% 0;
+  animation: app-floor 1.6s linear infinite;
+}
+
+:root[data-theme="neon"] .app::after {
+  content: "";
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  background: repeating-linear-gradient(transparent 0 2px, rgb(0 0 0 / 18%) 2px 3px);
+  pointer-events: none;
+}
+
+@keyframes app-floor {
+  to {
+    background-position:
+      0 56px,
+      50% 0;
+  }
+}
+
+.app-floor {
+  display: none;
+}
+
+:root[data-theme="neon"] .app-header {
+  background: rgb(4 5 10 / 80%);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 24px color-mix(in srgb, var(--signal) 30%, transparent);
+}
+
+:root[data-theme="neon"] .app-brand,
+:root[data-theme="neon"] .app-display {
+  text-transform: uppercase;
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--signal) 80%, transparent),
+    0 0 36px color-mix(in srgb, var(--signal) 50%, transparent);
+}
+
+:root[data-theme="neon"] .app-cover {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+
+:root[data-theme="neon"] .app-card {
+  transform: perspective(900px) rotateX(var(--tilt-x, 0)) rotateY(var(--tilt-y, 0));
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s;
+}
+
+:root[data-theme="neon"] .app-card:hover {
+  border-color: var(--signal);
+  box-shadow:
+    0 0 0 1px var(--signal),
+    0 0 32px color-mix(in srgb, var(--signal) 45%, transparent);
+}
+
+:root[data-theme="neon"] .app-vote[aria-pressed="true"] {
+  box-shadow: 0 0 16px color-mix(in srgb, var(--signal) 70%, transparent);
+}
+
+:root[data-theme="neon"] .app-score {
+  color: var(--text);
+}
+
+/* B · Écran de LAN: a header of frosted glass. */
+
+:root[data-theme="screen"] .app-header {
+  background: rgb(7 7 8 / 70%);
+  backdrop-filter: blur(16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  :root[data-theme="neon"] .app-card {
+    transform: none;
+  }
+}
+
+/* The card whose bubble is open goes over the next ones. */
+.app-card:has(.app-voters:not([hidden])) {
+  z-index: 10;
+}

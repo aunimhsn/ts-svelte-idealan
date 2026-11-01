@@ -2,6 +2,14 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 2. Wireframes
+
+Merged on 2026-11-01 in [#7](https://github.com/aunimhsn/ts-svelte-idealan/pull/7). Tools: wireframes.
+
+- `docs/wireframes/screens.excalidraw`: the welcome and the bag on a phone (390 px) and a Full HD PC (1920 px), then the panels and the states, agreed with the owner in four iterations; the layout written in `specs.md`.
+- The maximum number of players, typed and optional when adding (Steam doesn't give it; PCGamingWiki, tested, misses the recent games), and the filter « Jouable à N ».
+- Several bags, an invitation link and changing the number of players afterwards noted in `backlog.md`.
+
 ## 1. Specifications and structure
 
 Merged on 2026-11-01 in [#6](https://github.com/aunimhsn/ts-svelte-idealan/pull/6). Tools: specifications, structure.

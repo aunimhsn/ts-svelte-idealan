@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Idealan · mock-up</title>
+<!--
+  The mock-up of Idealan (step 3 of roadmap.md): each section shows the application (app.html) in
+  a phone frame (390 × 844) and a PC frame (1920 × 1080, shown at half size). The tabs at the top
+  switch the style and the blue; the address keeps the choices, to share them (?theme=…&blue=…).
+  Serve the repository root without cache, on the port of this project:
+    python3 docs/mockups/serve.py 8742
+  then open http://127.0.0.1:8742/docs/mockups/index.html
+-->
+<link rel="stylesheet" href="shared/viewer.css">
+</head>
+<body>
+<nav class="tabs" id="tabs" aria-label="Variants"></nav>
+<div id="sheet"></div>
+<script src="shared/viewer.js"></script>
+</body>
+</html>

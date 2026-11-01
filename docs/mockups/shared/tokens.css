@@ -1,0 +1,179 @@
+/* Tokens of the mock-up: each style (data-theme) and each blue (data-blue) only sets variables;
+   app.css uses nothing else. Spacing in steps of 4 px, one size per typographic role. */
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --size-display: clamp(40px, 9vw, 64px);
+  --size-brand: 22px;
+  --size-title: 20px;
+  --size-card-title: 18px;
+  --size-body: 16px;
+  --size-small: 14px;
+  --size-caption: 13px;
+  --size-label: 12px;
+  --size-score: 20px;
+
+  --content: 1600px;
+  --tap: 44px;
+
+  --font-title: "Manrope", system-ui, sans-serif;
+  --font-text: "Anaheim", "Manrope", system-ui, sans-serif;
+  --font-score: var(--font-title);
+  --title-weight: 800;
+  --text-weight: 500;
+  --tracking-title: -0.045em;
+  --tracking-label: 0.14em;
+
+  --error-text: #ff8f85;
+}
+
+/* A · Nuit: sylent.art as it is: neutral blacks, white as the main accent, sharp corners, glass
+   cards, a large faded word behind the title. */
+:root[data-theme="night"] {
+  --bg: #0a0a0a;
+  --surface: rgb(255 255 255 / 3.5%);
+  --surface-hover: rgb(255 255 255 / 6%);
+  --surface-solid: #121212;
+  --field-bg: #050505;
+  --line: rgb(255 255 255 / 9%);
+  --line-strong: #404040;
+  --text: #ffffff;
+  --secondary: #a3a3a3;
+  --dim: #858585;
+  --accent: #ffffff;
+  --on-accent: #0a0a0a;
+  --ghost-word: #181818;
+  --radius: 0;
+  --radius-small: 0;
+  --radius-chip: 0;
+  --cover-radius: 0;
+  --card-glow: 0;
+  --glass-blur: 14px;
+}
+
+/* B · Écran de LAN: the covers light the page, as screens in a dark room: each card carries a
+   blurred halo of its own cover, soft corners, one face (Manrope) everywhere. */
+:root[data-theme="screen"] {
+  --font-text: "Manrope", system-ui, sans-serif;
+  --text-weight: 500;
+  --bg: #070708;
+  --surface: rgb(255 255 255 / 4.5%);
+  --surface-hover: rgb(255 255 255 / 8%);
+  --surface-solid: #141416;
+  --field-bg: rgb(255 255 255 / 5%);
+  --line: rgb(255 255 255 / 10%);
+  --line-strong: rgb(255 255 255 / 22%);
+  --text: #ffffff;
+  --secondary: #b4b4b8;
+  --dim: #8d8d93;
+  --accent: #ffffff;
+  --on-accent: #070708;
+  --ghost-word: transparent;
+  --radius: 16px;
+  --radius-small: 10px;
+  --radius-chip: 999px;
+  --cover-radius: 12px;
+  --card-glow: 1;
+  --glass-blur: 20px;
+}
+
+/* C · Tableau des scores: the ranking first: a large rank on each cover, the scores in a condensed
+   face (Barlow Condensed), solid gray blocks, a vote that jumps when pressed. */
+:root[data-theme="scores"] {
+  --font-score: "Barlow Condensed", var(--font-title);
+  --size-score: 34px;
+  --bg: #0b0b0b;
+  --surface: #151515;
+  --surface-hover: #1c1c1c;
+  --surface-solid: #151515;
+  --field-bg: #050505;
+  --line: #262626;
+  --line-strong: #404040;
+  --text: #ffffff;
+  --secondary: #a3a3a3;
+  --dim: #858585;
+  --accent: #ffffff;
+  --on-accent: #0b0b0b;
+  --ghost-word: #181818;
+  --radius: 4px;
+  --radius-small: 3px;
+  --radius-chip: 3px;
+  --cover-radius: 3px;
+  --card-glow: 0;
+  --glass-blur: 0;
+}
+
+/* D · Néon: the temperature goes up: a grid floor that runs to the horizon, scanlines, chamfered
+   corners, cards that tilt under the pointer; the blue stops being rare and becomes the light of
+   the room. Chakra Petch for the titles and the scores. */
+:root[data-theme="neon"] {
+  --font-title: "Chakra Petch", "Manrope", system-ui, sans-serif;
+  --font-text: "Manrope", system-ui, sans-serif;
+  --font-score: "Chakra Petch", "Manrope", system-ui, sans-serif;
+  --title-weight: 700;
+  --tracking-title: 0.02em;
+  --bg: #04050a;
+  --surface: rgb(10 14 28 / 72%);
+  --surface-hover: rgb(16 22 44 / 82%);
+  --surface-solid: #0a0e1c;
+  --field-bg: rgb(0 0 0 / 55%);
+  --line: color-mix(in srgb, var(--signal) 28%, transparent);
+  --line-strong: color-mix(in srgb, var(--signal) 55%, transparent);
+  --text: #f2f5ff;
+  --secondary: #a9b1c7;
+  --dim: #8a93ab;
+  --accent: var(--signal);
+  --on-accent: var(--on-signal);
+  --ghost-word: transparent;
+  --radius: 0;
+  --radius-small: 0;
+  --radius-chip: 0;
+  --cover-radius: 0;
+  --card-glow: 0;
+  --glass-blur: 8px;
+}
+
+/* The six blues: the signal, the color of a text set on it, and a lighter blue for small text on
+   the black background (contrast measured on #0a0a0a). */
+:root[data-blue="cobalt"] {
+  --signal: #2a52e0; /* white on it 6.2:1 */
+  --on-signal: #ffffff;
+  --signal-text: #7f9dff; /* 7.7:1 */
+}
+:root[data-blue="electric"] {
+  --signal: #2e6bff; /* white on it 4.5:1 */
+  --on-signal: #ffffff;
+  --signal-text: #86a8ff; /* 8.5:1 */
+}
+:root[data-blue="ultramarine"] {
+  --signal: #4338ff; /* white on it 6.5:1 */
+  --on-signal: #ffffff;
+  --signal-text: #a29dff; /* 8.3:1 */
+}
+:root[data-blue="azure"] {
+  --signal: #0a7cff; /* black on it 5.0:1 */
+  --on-signal: #0a0a0a;
+  --signal-text: #6fb4ff; /* 9.1:1 */
+}
+:root[data-blue="sky"] {
+  --signal: #1a9fff; /* the blue of Steam; black on it 7.0:1 */
+  --on-signal: #0a0a0a;
+  --signal-text: #7cc7ff; /* 10.8:1 */
+}
+:root[data-blue="glacier"] {
+  --signal: #56c6ff; /* black on it 10.3:1 */
+  --on-signal: #0a0a0a;
+  --signal-text: #9fdcff; /* 13.4:1 */
+}
+:root {
+  --signal-tint: color-mix(in srgb, var(--signal) 14%, transparent);
+}
