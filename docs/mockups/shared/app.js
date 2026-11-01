@@ -125,8 +125,8 @@ function bar() {
     </div>`;
   return `<div class="app-bar">
     <p class="app-count">${text}</p>
-    <button type="button" class="app-button is-ghost is-small app-refresh">${ICON.refresh(16)}<span>Rafraîchir</span></button>
     ${chips}
+    <button type="button" class="app-button is-ghost is-small app-refresh">${ICON.refresh(16)}<span>Rafraîchir</span></button>
     ${state.playersOpen ? playersPopover() : ""}
   </div>`;
 }

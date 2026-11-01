@@ -122,16 +122,11 @@
     grid-column: 1 / -1;
   }
 
+  /* On a PC as on a phone, « Joueurs max » and « Ajouter » under the link (asked by the owner on
+     2026-11-01), the block as wide as the link field. */
   @media (width >= 900px) {
     .add {
-      grid-template-columns: minmax(0, var(--width-link)) auto auto;
-      justify-content: start;
-      gap: var(--space-4);
-    }
-
-    .link,
-    .players {
-      grid-column: auto;
+      max-width: var(--width-link);
     }
   }
 </style>

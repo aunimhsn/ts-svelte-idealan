@@ -1,5 +1,6 @@
-<!-- The bag (specs.md, The bag): the header, the adding, the count with « Rafraîchir », and the
-     games sorted by score, with their votes, who voted, and « Retirer » with its confirmation.
+<!-- The bag (specs.md, The bag): the header, the adding, the count with « Rafraîchir », the
+     filters, and the games sorted by score, with their votes, who voted, and « Retirer » with its
+     confirmation. The filters are all off when the bag shows, and after a reload of the page.
      It reloads every 30 seconds while the tab is shown, and at once when the tab comes back after
      a longer time; the reload stops with the screen, when the friend leaves. -->
 <script lang="ts">
@@ -8,8 +9,17 @@
   import { MAX_GAMES } from "../lib/bag";
   import type { BagGame } from "../lib/bag";
   import { format } from "../lib/messages";
+  import {
+    isFiltering,
+    passes,
+    playersOf,
+    shownOf,
+    tagChoices,
+    type Filters,
+  } from "../lib/filters";
   import AddGame from "./add-game.svelte";
   import AppHeader from "./app-header.svelte";
+  import BagFilters from "./bag-filters.svelte";
   import ConfirmPanel from "./confirm-panel.svelte";
   import GameCard from "./game-card.svelte";
   import Icon from "./icon.svelte";
@@ -19,6 +29,32 @@
   const nicknames = $derived(
     new Map(app.view?.players.map((player) => [player.id, player.nickname])),
   );
+
+  // The filters: the tags pressed, « Jouable à N » on or off, and N once the friend changed it.
+  let tags = $state<string[]>([]);
+  let playersOn = $state(false);
+  let chosenPlayers = $state<number | null>(null);
+
+  const choices = $derived(tagChoices(app.games));
+  const bagPlayers = $derived(app.view?.players.length ?? 0);
+  const players = $derived(playersOf(chosenPlayers, bagPlayers));
+  // A tag whose last game left the bag no longer filters: its chip is gone.
+  const filters = $derived<Filters>({
+    tags: tags.filter((tag) => choices.includes(tag)),
+    players: playersOn ? players : null,
+  });
+  // And it is unpressed, so that it doesn't come back pressed with the next game that has it.
+  $effect(() => {
+    const kept = tags.filter((tag) => choices.includes(tag));
+    if (kept.length < tags.length) tags = kept;
+  });
+  const shown = $derived(app.games.filter((game) => passes(game, filters)));
+
+  const clearFilters = () => {
+    tags = [];
+    playersOn = false;
+    count?.focus();
+  };
 
   // The game whose bubble « who voted » is open, one at a time.
   let openVoters = $state<number | null>(null);
@@ -81,13 +117,30 @@
   <AddGame {app} />
   <div class="bar">
     {#if app.view !== null}
-      <p class="count" tabindex="-1" bind:this={count}>
-        <strong>{app.view.games.length}</strong>
-        {format(fr.bag.count, { max: MAX_GAMES })}
-        <span>{fr.bag.sorted}</span>
+      {@const total = app.games.length}
+      <p class="count" tabindex="-1" aria-live="polite" bind:this={count}>
+        {#if isFiltering(filters)}
+          <strong>{shown.length}</strong>
+          {shownOf(shown.length, total)}
+          <span>{fr.bag.filtering}</span>
+        {:else}
+          <strong>{total}</strong>
+          {format(fr.bag.count, { max: MAX_GAMES })}
+          <span>{fr.bag.sorted}</span>
+        {/if}
       </p>
     {:else if app.loading}
       <p class="count" role="status">{fr.bag.loading}</p>
+    {/if}
+    {#if app.games.length > 0}
+      <BagFilters
+        {choices}
+        {bagPlayers}
+        {players}
+        bind:tags
+        bind:playersOn
+        onplayers={(chosen) => (chosenPlayers = chosen)}
+      />
     {/if}
     <button
       type="button"
@@ -101,12 +154,12 @@
     </button>
   </div>
   {#if app.view !== null}
-    {#if app.games.length > 0}
+    {#if shown.length > 0}
       {@const me = app.view.me.id}
       {@const admin = app.view.role === "admin"}
       <h2 class="visually-hidden">{fr.bag.games}</h2>
       <ul class="games">
-        {#each app.games as game (game.appid)}
+        {#each shown as game (game.appid)}
           <GameCard
             {game}
             {me}
@@ -124,6 +177,13 @@
           />
         {/each}
       </ul>
+    {:else if app.games.length > 0}
+      <div class="empty">
+        <p class="empty-title">{fr.bag.noMatchTitle}</p>
+        <button type="button" class="button" onclick={clearFilters}>
+          {fr.bag.clearFilters}
+        </button>
+      </div>
     {:else}
       <div class="empty">
         <p class="empty-title">{fr.bag.emptyTitle}</p>
@@ -163,11 +223,16 @@
     margin: var(--space-5) 0 var(--space-4);
   }
 
+  /* « Rafraîchir » after the filters in the page, on their row on a PC, and on the row of the
+     count on a phone, where the row of the filters scrolls sideways (chosen by the owner on
+     2026-11-01). */
   .refresh {
+    order: -1;
     margin-left: auto;
   }
 
   .count {
+    order: -2;
     margin: 0;
     color: var(--secondary);
     font-size: var(--size-small);
@@ -212,7 +277,29 @@
     }
 
     .bar {
+      align-items: start;
       margin-top: var(--space-6);
+    }
+
+    .count,
+    .refresh {
+      order: 0;
+    }
+
+    .count {
+      flex-basis: 100%;
+    }
+
+    /* Filled with the blue on a PC only, far from « Ajouter »: on a phone, two blue buttons one
+       above the other would leave no main action. */
+    .refresh {
+      border-color: var(--signal);
+      background: var(--signal);
+      color: var(--on-signal);
+    }
+
+    .refresh:hover {
+      filter: brightness(0.9);
     }
 
     .games {

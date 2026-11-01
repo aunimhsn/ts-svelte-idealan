@@ -8,6 +8,7 @@
     close: { width: 2.4, paths: ["M6 6l12 12M18 6L6 18"] },
     up: { width: 2.4, paths: ["M6 15l6-6 6 6"] },
     down: { width: 2.4, paths: ["M6 9l6 6 6-6"] },
+    chevron: { width: 2, paths: ["M7 10l5 5 5-5"] },
     people: {
       width: 1.8,
       paths: [

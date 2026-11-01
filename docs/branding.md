@@ -120,7 +120,7 @@ One size per role:
 
 <!-- Content width, gutters, corner radius, the breakpoints (written as numbers in the media queries). -->
 
-- One page, phone first; from 900 px, the PC layout: the adding on one row, a grid of five covers, panels as windows in the middle instead of sheets from the bottom.
+- One page, phone first; from 900 px, the PC layout: the adding as on a phone, « Joueurs max » and « Ajouter » under the link, in a block as wide as the link field (`--width-link`, chosen by the owner on 2026-11-01), a grid of five covers, panels as windows in the middle instead of sheets from the bottom.
 - `--content` 1600 px: the width of the header and of the bag; the welcome is a column of `--width-welcome` 420 px.
 - Panels: `--width-dialog` 520 px, the tall ones (settings, emptying) `--width-dialog-tall` 1080 px (at most 90 % of the screen); the bubbles (who voted, « Jouable à ») `--width-bubble` 260 px.
 - Touch targets: `--tap` 44 px (fields, buttons, votes on a phone, the cross of the strip), `--tap-small` 36 px (chips, small buttons, votes on a PC).
@@ -134,9 +134,9 @@ One size per role:
 
 The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css)) is copied into the components of the application.
 
-- **Buttons**: a border `--line-strong`, transparent; under the pointer `--surface-hover`. The main one (« Entrer », « Ajouter ») fills with `--signal`, darker by 10 % under the pointer. Disabled: 75 % opacity, the cursor « progress ». The action of a confirmation (« Retirer », « Vider ») fills with the blue from the left for `--duration-arm` (2 s) before it can be clicked.
+- **Buttons**: a border `--line-strong`, transparent; under the pointer `--surface-hover`. The main one (« Entrer », « Ajouter ») fills with `--signal`, darker by 10 % under the pointer. « Rafraîchir » fills with `--signal` on a PC only, at the end of the row of the filters; on a phone it keeps its border, so that it doesn't compete with « Ajouter » just above it (chosen by the owner on 2026-11-01). Disabled: 75 % opacity, the cursor « progress ». The action of a confirmation (« Retirer », « Vider ») fills with the blue from the left for `--duration-arm` (2 s) before it can be clicked.
 - **Fields**: `--field-bg`, a border `--line-strong`, its label above in Chakra Petch 600, a hint or an error below; at fault, a border `--error-text`.
-- **Chips** (filters): pressed, the border in `--signal`, a background `--signal-tint`, the text in `--signal-text`.
+- **Chips** (filters): pressed, the border in `--signal`, a background `--signal-tint`, the text in `--signal-text`. The window of « Jouable à N » opens `--space-1` (4 px) under its chip, on a phone and on a PC: a small gap the owner liked (2026-11-01).
 - **Cards**: glass (`--surface` blurred by `--glass-blur` 8 px), the cover chamfered on top; under the pointer, a blue border and `--glow-card`, a slight tilt and press.
 - **Votes**: square buttons of `--tap`; the friend's vote fills with `--signal` and glows (`--glow-vote`); the score in `--signal-text` when the friend voted for it; their own game can't be voted against (a dashed border, 40 % opacity).
 - **Bubbles and panels**: `--surface-solid`, a border `--line-strong`, `--shadow-pop`; behind a panel, `--overlay`.
@@ -148,7 +148,7 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 <!-- What moves, how long, and what happens when the friend asked to reduce motion. -->
 
 - **The light of the room**: the floor, a grid of `--floor-line` (the blue at 32 %) with cells of `--floor-cell` 56 px seen in perspective (`--floor-depth`), on the lower 46 % of the screen; scanlines over the page (`--scanline`, a dark line every `--scanline-pitch` 3 px); « Idealan » and the logo glow (`--glow-text`, `--glow-logo`), the header too (`--glow-header`).
-- **What moves**: the floor runs one cell every `--duration-floor` (2.6 s); a card tilts under the pointer in `--duration` (200 ms); the colors of a button change in `--duration-fast` (150 ms); the score jumps in `--duration-bump` (350 ms) when voting; the strip of the errors slides in, in 200 ms; the spinner turns in `--duration-spin` (800 ms); the action of a confirmation fills in `--duration-arm` (2 s).
+- **What moves**: the floor runs one cell every `--duration-floor` (2.6 s); a card tilts under the pointer in `--duration` (200 ms); the colors of a button change in `--duration-fast` (150 ms); the score jumps in `--duration-bump` (350 ms) when voting; the strip of the errors slides in, in 200 ms; the window of « Jouable à N » fades in as it comes down 8 px from its chip, in `--duration` (200 ms, asked by the owner on 2026-11-01); the spinner turns in `--duration-spin` (800 ms); the action of a confirmation fills in `--duration-arm` (2 s).
 - **When the friend asked to reduce motion** (`prefers-reduced-motion`): every animation and transition stops, the cards don't tilt; the action of a confirmation keeps its delay of 2 s, a guard against a double tap, without the fill.
 
 ## Tone of the texts
@@ -191,3 +191,4 @@ On 2026-11-01, in the design system:
 
 - **Reds of the strip of the errors**: the first red `#d62839` at 78 % (too bright, « il pique les yeux »), carmine `#b01e30`, garnet `#6e1220`: the owner chose the bordeaux `#8c1626`.
 - **Borders at 80 %** of the blue, for the fields alone or for everything, to reach the 3:1 of WCAG 1.4.11: the owner kept 55 % (see [Accessibility](#accessibility)).
+- **The adding on one row on a PC** (the link, « Joueurs max » and « Ajouter » side by side): replaced on 2026-11-01 by the layout of the phone, at the owner's request.
