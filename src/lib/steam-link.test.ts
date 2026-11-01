@@ -42,6 +42,9 @@ describe("readSteamLink", () => {
     "https://store.steampowered.com/search/?term=app/730",
     "https://steamcommunity.com/sub/54029",
     "https://steamcommunity.com/id/sylent",
+    "https://constructor/app/730",
+    "https://__proto__/app/730",
+    "https://hasownproperty/app/730",
   ])("refuses %s", (link) => {
     expect(readSteamLink(link)).toEqual({
       ok: false,

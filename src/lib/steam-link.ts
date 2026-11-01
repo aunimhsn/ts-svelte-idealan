@@ -20,10 +20,11 @@ export const parseAppid = (text: string): number | null => {
 };
 
 // The first segments of the path that lead to a game, then to a package, on each Steam site.
-const GAME_PATHS: Record<string, string[][]> = {
-  "store.steampowered.com": [["app"], ["agecheck", "app"]],
-  "steamcommunity.com": [["app"]],
-};
+// A Map, not an object: a host named `constructor` or `__proto__` would find the prototype.
+const GAME_PATHS = new Map<string, string[][]>([
+  ["store.steampowered.com", [["app"], ["agecheck", "app"]]],
+  ["steamcommunity.com", [["app"]]],
+]);
 const PACKAGE_PATHS = [["sub"], ["bundle"]];
 
 const startsWith = (segments: string[], prefix: string[]) =>
@@ -36,7 +37,7 @@ export const readSteamLink = (text: string): SteamLinkResult => {
   } catch {
     return { ok: false, error: "not-a-steam-link" };
   }
-  const gamePaths = GAME_PATHS[url.hostname];
+  const gamePaths = GAME_PATHS.get(url.hostname);
   if (!["https:", "http:"].includes(url.protocol) || !gamePaths) {
     return { ok: false, error: "not-a-steam-link" };
   }

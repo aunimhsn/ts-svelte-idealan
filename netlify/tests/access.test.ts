@@ -47,6 +47,19 @@ describe("checkAccess", () => {
     ).toEqual({ ok: true, role: "member" });
   });
 
+  it("gives only the member role when both codes are the same", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const same = {
+      MEMBER_CODE: "same-test-code",
+      ADMIN_CODE: "same-test-code",
+    };
+    expect(checkAccess(requestWith("same-test-code"), same)).toEqual({
+      ok: true,
+      role: "member",
+    });
+    expect(error).toHaveBeenCalledOnce();
+  });
+
   it.each([{}, { MEMBER_CODE: "" }, { ADMIN_CODE: "admin-test-code" }])(
     "says the server is not configured without a member code (%j)",
     (environment) => {

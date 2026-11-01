@@ -29,8 +29,14 @@ export const checkAccess = (request: Request, env: Environment): Access => {
     console.error("MEMBER_CODE is not set for this deploy.");
     return { ok: false, status: 500, error: "server-not-configured" };
   }
+  // The same value for both codes would make every friend an admin: only the member code counts.
+  const adminCode =
+    env.ADMIN_CODE === env.MEMBER_CODE ? undefined : env.ADMIN_CODE;
+  if (adminCode === undefined && env.ADMIN_CODE) {
+    console.error("ADMIN_CODE equals MEMBER_CODE: nobody is admin.");
+  }
   const code = request.headers.get(ACCESS_CODE_HEADER) ?? "";
-  if (code !== "" && matches(code, env.ADMIN_CODE)) {
+  if (code !== "" && matches(code, adminCode)) {
     return { ok: true, role: "admin" };
   }
   if (code !== "" && matches(code, env.MEMBER_CODE)) {

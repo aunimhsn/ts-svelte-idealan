@@ -26,7 +26,11 @@ Checked on 2026-11-01 in the [pricing](https://www.netlify.com/pricing/), [How c
 
 ### Builds stopped during the design, then skipped when nothing changes
 
-The owner stops the builds of the site in Netlify (**Project configuration > Build & deploy > Continuous deployment > Build settings > Stop builds**) from 2026-11-01 until step 5, the first one that needs the server: the merges of the specifications, wireframes and mock-up cost no credit, and the site stays online as it is (the skeleton). There are no deploy previews meanwhile. The owner turned them back on at step 5 (2026-11-01), with `build.ignore` in `netlify.toml`: a push that changes nothing in the site (documentation, tests, CI) skips its build and its credits; the first build of a branch always runs.
+The owner stops the builds of the site in Netlify (**Project configuration > Build & deploy > Continuous deployment > Build settings > Stop builds**) from 2026-11-01 until step 5, the first one that needs the server: the merges of the specifications, wireframes and mock-up cost no credit, and the site stays online as it is (the skeleton). There are no deploy previews meanwhile. The owner turned them back on at step 5 (2026-11-01), with `build.ignore` in `netlify.toml`: a push that changes nothing in the site (documentation, tests, CI) skips its build and its credits; a build without cache, or without a previous commit, always runs (Netlify then gives `$CACHED_COMMIT_REF` the value of `$COMMIT_REF`, checked in its documentation on 2026-11-01).
+
+### Functions
+
+- A synchronous function runs 60 seconds at most, not configurable (checked on 2026-11-01); a background function, 15 minutes. `add-game` will chain Blobs, Steam (8 seconds at most) and a few retries of the conditional write: far below.
 
 ### Netlify Blobs
 

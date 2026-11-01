@@ -43,7 +43,7 @@ Rejected:
 
 ## Data
 
-- `bag`, `players` and `steam/<appid>` live in a site-wide store (`getStore`). A deploy preview reads and writes the same store as the production site: outside production (a deploy preview, a branch deploy, `netlify dev`), the functions use a store of the deploy (`getDeployStore`), emptied with each push, so that a preview never touches the friends' bag (`netlify/lib/store.ts`; chosen by the owner on 2026-11-01 over a store shared by every preview, accepting to start each try from an empty bag).
+- `bag`, `players` and `steam/<appid>` live in a site-wide store (`getStore`) in production. A site-wide store is shared by every deploy, previews included: outside production (a deploy preview, a branch deploy, `netlify dev`), the functions use a store of the deploy (`getDeployStore`), emptied with each push, so that a preview never touches the friends' bag (`netlify/lib/store.ts`; chosen by the owner on 2026-11-01 over a store shared by every preview, accepting to start each try from an empty bag).
 - Every write of `bag` or `players` reads the key with its ETag, changes it, and writes it with `onlyIfMatch`; when `modified` is `false`, another friend wrote meanwhile: read again and retry, a few times at most.
 - A new nickname goes into `players` under the same conditional write, so that two friends taking the same nickname at the same second can't both get it.
 - The votes and the adder of a game point to the fixed id of a player (`j1`), so that renaming writes only `players`.
