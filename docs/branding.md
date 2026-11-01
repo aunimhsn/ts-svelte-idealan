@@ -141,6 +141,7 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 - **Votes**: square buttons of `--tap`; the friend's vote fills with `--signal` and glows (`--glow-vote`); the score in `--signal-text` when the friend voted for it; their own game can't be voted against (a dashed border, 40 % opacity).
 - **Bubbles and panels**: `--surface-solid`, a border `--line-strong`, `--shadow-pop`; behind a panel, `--overlay`.
 - **The strip of the errors**: under the header, over the page, `--error-bg` blurred, white text, a cross of `--tap`.
+- **The settings of the admin** (chosen by the owner on 2026-11-02): a rename refused shows in a bubble of `--error-bg` under its line, its point (`--arrow`) toward the field, white text, the field bordered in `--error-text`, so that the error sits next to its player in a long list, inside the panel that makes the strip of the bag unreachable. The state of a nickname is a label in capitals next to its counts, framed by its own color: « verrouillé » in `--error-text` (5 wrong personal codes), « code à choisir » in `--secondary` (a code reset, not chosen yet).
 - **The banner** (the welcome, a code changed): a border with a blue edge of 3 px, `--signal-tint`.
 
 ## Motion
@@ -192,3 +193,8 @@ On 2026-11-01, in the design system:
 - **Reds of the strip of the errors**: the first red `#d62839` at 78 % (too bright, « il pique les yeux »), carmine `#b01e30`, garnet `#6e1220`: the owner chose the bordeaux `#8c1626`.
 - **Borders at 80 %** of the blue, for the fields alone or for everything, to reach the 3:1 of WCAG 1.4.11: the owner kept 55 % (see [Accessibility](#accessibility)).
 - **The adding on one row on a PC** (the link, « Joueurs max » and « Ajouter » side by side): replaced on 2026-11-01 by the layout of the phone, at the owner's request.
+
+On 2026-11-02, in the settings of the admin (step 7a):
+
+- **A rename refused**: a red text under the line as on the welcome (A), the whole line tinted red with a bar on its left (C), a strip at the top of the panel as in the bag (D, far from its line in a list of 9 on a phone). The owner chose the bubble (B).
+- **A locked nickname**: a lock in the field of the nickname with a red word, « Réinitialiser le code perso » filled blue on the locked line. The owner chose the label.

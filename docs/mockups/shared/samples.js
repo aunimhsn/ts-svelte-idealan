@@ -3,8 +3,9 @@
 const COVER = appid => `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}/header.jpg`;
 
 const PLAYERS = [
-  // nickname, votes, games
-  ["Krak", 31, 7], ["Lou", 18, 4], ["Mira", 22, 6], ["Nova", 27, 8], ["Nova2", 12, 3],
+  // nickname, votes, games, status: "locked" after 5 wrong personal codes, "reset" while the
+  // friend hasn't chosen their new code yet.
+  ["Krak", 31, 7, "reset"], ["Lou", 18, 4, "locked"], ["Mira", 22, 6], ["Nova", 27, 8], ["Nova2", 12, 3],
   ["Orka", 9, 2], ["Pixel", 25, 6], ["Sylent", 30, 7], ["Zed", 14, 4],
 ];
 

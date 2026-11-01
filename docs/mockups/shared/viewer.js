@@ -9,6 +9,10 @@ const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, v]) => [ke
 
 // The newest section first. Each slot: [label, device, address of app.html].
 const SECTIONS = [
+  ["Settings: a rename refused, a locked nickname", "Step 7a. Mira renamed « Lou », already taken: a red bubble under the line. Lou is locked after 5 wrong personal codes; Krak’s code was reset and Krak hasn’t chosen a new one yet.", [
+    ["Phone · settings, a rename refused", "phone", "screen=bag&as=admin&panel=settings&state=rename-taken"],
+    ["PC · settings, a rename refused", "pc", "screen=bag&as=admin&panel=settings&state=rename-taken"],
+  ]],
   ["States of the bag", "Each message sits where it comes from: under the adding block, or in a banner under the header.", [
     ["Phone · empty bag", "phone", "screen=bag&state=empty"],
     ["Phone · a link being read", "phone", "screen=bag&state=reading"],
@@ -55,7 +59,7 @@ const SECTIONS = [
 ];
 
 function frame([label, device, query]) {
-  const src = `app.html?${query}`;
+  const src = `app.html?${query}&${new URLSearchParams(chosen)}`;
   return `<div class="slot"><span>${label} · <a href="${src}" target="_blank">open alone</a></span>
     <div class="frame is-${device}"><iframe src="${src}" title="${label}" loading="lazy"></iframe></div></div>`;
 }
