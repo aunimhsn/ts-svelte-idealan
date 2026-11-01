@@ -36,6 +36,11 @@ To be turned into the sections below with the next answers; noted here so that t
 - Nicknames: 3 to 16 letters (without accents) and digits, no space or special character, the first letter capitalized automatically; compared without case (« SYLENT » is « Sylent »), shown as typed.
 - Friends may try to take another's nickname on purpose: the first time a friend creates their nickname, they choose a personal code of 4 digits, kept hashed on the server; taking the nickname back on another device asks for it. The admin may reset the personal code of a friend who forgot it.
 - Emptying the bag keeps the votes of the games kept, and asks for a confirmation first.
+- Structure (drawing `docs/wireframes/structure.excalidraw`, 2026-11-01): the screens follow lead A, one page (a single-page application) with panels over it; the data follow lead B, the whole bag in one key of Netlify Blobs.
+- A game is added directly from its link, without a preview of the Steam page (the friend has already seen it).
+- The footer says « Données et images : Steam. Idealan n’est pas affilié à Valve. »
+- Only the admin changes a friend's nickname (their games and votes follow), in a settings panel: one pre-filled field per friend, and a button to reset their personal code.
+- « Se déconnecter » lets a friend leave their nickname (a PC lent at the LAN); coming back under a new nickname makes a new player.
 - A game already in the bag is refused with an error message (this replaces the vote of the starting notes); a full bag (50 games) too, with a message that says to see the admin.
 - The admin code moderates the games only: the owner votes once per game, like every friend, and can't change the votes of others.
 
