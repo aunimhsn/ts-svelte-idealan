@@ -33,6 +33,9 @@
   --text-weight: 500;
   --tracking-title: 0.02em;
   --tracking-label: 0.14em;
+  /* « Idealan » in Montserrat 800: −2 px at 96 px, chosen by the owner on 2026-11-01. */
+  --font-brand: "Montserrat", "Chakra Petch", system-ui, sans-serif;
+  --tracking-brand: -0.02em;
 
   /* The electric blue: the signal, the text set on it, and a lighter blue for small text on the
      black background (contrasts measured on #0a0a0a). */

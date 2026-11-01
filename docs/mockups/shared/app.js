@@ -6,10 +6,7 @@ const view = {
   as: params.get("as") || "friend",
   panel: params.get("panel") || "",
   logo: params.get("logo") || "tile",
-  tracking: Number(params.get("tracking") || 0),
 };
-// The spacing of the letters of « Idealan », in px, compared with a tab of the viewer.
-document.documentElement.style.setProperty("--brand-tracking", `${view.tracking}px`);
 const viewer = view.as === "admin" ? "Sylent" : "Nova";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -236,7 +233,8 @@ function dialog(content, tall) {
   </div>`;
 }
 
-// arm: the action button fills in blue before it can be clicked (asked by the owner for removing a game).
+// arm: the action button fills in blue before it can be clicked (asked by the owner for removing a game,
+// kept for deleting a player and emptying the bag).
 function confirmDialog(title, name, text, action, arm) {
   return dialog(`<h2 id="dialog-title" class="app-dialog-title">${title}</h2>
     ${name ? `<p class="app-dialog-name">${escape(name)}</p>` : ""}
@@ -283,8 +281,8 @@ const PANELS = {
   remove: () => confirmDialog("Retirer ce jeu du sac&nbsp;?", GAMES[1].name, `Il a ${GAMES[1].up.length + GAMES[1].down.length} votes.`, "Retirer", true),
   settings: settingsDialog,
   empty: emptyDialog,
-  delete: (nick = "Nova2", games = 3, votes = 12) => confirmDialog("Supprimer ce joueur&nbsp;?", nick, `Ses ${games} jeux et ses ${votes} votes partent avec lui.`, "Supprimer"),
-  "confirm-empty": () => confirmDialog("Vider le sac&nbsp;?", "", `${document.querySelector(".app-removed")?.textContent || BAG_COUNT - KEPT.size} jeux seront retirés. Cette action est définitive.`, "Vider"),
+  delete: (nick = "Nova2", games = 3, votes = 12) => confirmDialog("Supprimer ce joueur&nbsp;?", nick, `Ses ${games} jeux et ses ${votes} votes partent avec lui.`, "Supprimer", true),
+  "confirm-empty": () => confirmDialog("Vider le sac&nbsp;?", "", `${document.querySelector(".app-removed")?.textContent || BAG_COUNT - KEPT.size} jeux seront retirés. Cette action est définitive.`, "Vider", true),
 };
 
 function logoBoard() {

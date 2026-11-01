@@ -47,7 +47,7 @@ One page (a single-page application): a friend not known to the browser sees the
 
 ### Confirmation (panel)
 
-Before what can't be undone, with the numbers at stake, and « Annuler » or the action. For removing a game, the action button fills in blue for 2 seconds before it can be clicked, so that a quick double tap never removes a game (asked by the owner on 2026-11-01). A question, then the name on one line (cut with « … » when too long), then the numbers on the next line:
+Before what can't be undone, with the numbers at stake, and « Annuler » or the action. The action button fills in blue for 2 seconds before it can be clicked, so that a quick double tap never removes a game, a player or the bag (asked by the owner on 2026-11-01 for removing a game, kept for the two others). A question, then the name on one line (cut with « … » when too long), then the numbers on the next line:
 
 - Removing a game: « Retirer ce jeu du sac ? », « Age of Empires II: Definitive Editi… », « Il a 6 votes. »
 - Deleting a player: « Supprimer ce joueur ? », « Nova2 », « Ses 3 jeux et ses 12 votes partent avec lui. »

@@ -335,7 +335,7 @@ input {
 
 .app-count strong {
   color: var(--text);
-  font: 800 var(--size-body) / 1 var(--font-score);
+  font-weight: 800;
 }
 
 .app-chips {
@@ -1289,13 +1289,13 @@ input {
 }
 
 
-/* « Idealan » in Montserrat 800, its letter spacing compared with a tab (--brand-tracking). */
+/* « Idealan » in Montserrat 800. */
 .app-brand,
 .app-display,
 .app-board-word {
-  font-family: "Montserrat", var(--font-title);
+  font-family: var(--font-brand);
   font-weight: 800;
-  letter-spacing: var(--brand-tracking, 0px);
+  letter-spacing: var(--tracking-brand);
 }
 
 @media (max-width: 899px) {

@@ -1,9 +1,8 @@
 // The tabs (one group per open decision), the sections, and the frames of the application.
 // Decided on 2026-11-01: style D · Néon, the electric blue, the logo « Bloc évidé » (an RJ45 jack
-// cut out of a square) (docs/branding.md). The open decision: the letter spacing of the name.
+// cut out of a square), the name in Montserrat 800 at −0.02 em (docs/branding.md).
 const LOGO_NAMES = { tile: "Bloc évidé" };
 const VARIANTS = {
-  tracking: { label: "Lettres (px)", options: Object.fromEntries(["-5", "-4.5", "-4", "-3.5", "-3", "-2.5", "-2", "-1.5", "-1", "-0.5", "0"].map(v => [v, v])), fallback: "0" },
 };
 const params = new URLSearchParams(location.search);
 const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, v]) => [key, params.get(key) in v.options ? params.get(key) : v.fallback]));
@@ -37,7 +36,7 @@ const SECTIONS = [
     ["PC · settings", "pc", "screen=bag&as=admin&panel=settings"],
     ["PC · emptying the bag", "pc", "screen=bag&as=admin&panel=empty"],
   ]],
-  ["Logo", "The chosen logo, « Bloc évidé », at every size, down to the 16 px of a browser tab; the tab « Lettres » compares the letter spacing of the name.", [
+  ["Logo", "The chosen logo, « Bloc évidé », at every size, down to the 16 px of a browser tab; the name in Montserrat 800, letters tightened by 0.02 em.", [
     ["Board", "board", "screen=logo"],
   ]],
   ["Who voted and the confirmation", "Tap a score (or hover it on a PC) to see who voted; « Retirer » opens the confirmation, as a sheet from the bottom on a phone and a window on a PC: its « Retirer » fills in blue for 2 seconds before it can be clicked.", [
@@ -56,7 +55,7 @@ const SECTIONS = [
 ];
 
 function frame([label, device, query]) {
-  const src = `app.html?${query}&tracking=${chosen.tracking}`;
+  const src = `app.html?${query}`;
   return `<div class="slot"><span>${label} · <a href="${src}" target="_blank">open alone</a></span>
     <div class="frame is-${device}"><iframe src="${src}" title="${label}" loading="lazy"></iframe></div></div>`;
 }
@@ -66,7 +65,7 @@ function render() {
     `<div class="group"><span>${v.label}</span>${Object.entries(v.options).map(([value, label]) =>
       `<button type="button" data-variant="${key}" data-value="${value}" aria-pressed="${chosen[key] === value}">${label}</button>`).join("")}</div>`).join("");
   document.getElementById("sheet").innerHTML = `
-    <header class="intro"><h1>Idealan · Néon, electric blue · logo Bloc évidé · « Idealan » in Montserrat 800, letters ${chosen.tracking} px</h1><p>A grid floor running to the horizon, scanlines, chamfered covers, a glowing title, cards that tilt under the pointer; Chakra Petch and Manrope. Sample data; the covers come from the Steam CDN.</p></header>
+    <header class="intro"><h1>Idealan · Néon, electric blue · logo Bloc évidé · « Idealan » in Montserrat 800</h1><p>A grid floor running to the horizon, scanlines, chamfered covers, a glowing title, cards that tilt under the pointer; Chakra Petch and Manrope. Sample data; the covers come from the Steam CDN.</p></header>
     ${SECTIONS.map(([title, text, slots], i) => `<section id="section-${i + 1}"><h2>${title}</h2><p>${text}</p><div class="row">${slots.map(frame).join("")}</div></section>`).join("")}`;
 }
 
