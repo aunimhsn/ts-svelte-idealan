@@ -24,9 +24,7 @@ The usual steps of the first cycle of a small application; adapt them at the set
 
 ### Cycle 1: the bag ready for the LAN
 
-- [x] **0. Project setup** (start a project, build), in two pull requests:
-  - [x] **0a. The documents** ([#1](https://github.com/aunimhsn/ts-svelte-idealan/pull/1)).
-  - [x] **0b. The skeleton**: Vite, Svelte 5 with the runes and TypeScript, one Netlify Function that answers, the Netlify CLI as a dependency of the project, `npm run check` (Prettier, ESLint, `svelte-check`, Stylelint, Vitest, build, width on a phone), CI (then required by the ruleset), Dependabot, `.env.example`, Node.js pinned, the port of the mock-up server; the owner creates a Netlify account, links the site to the repository and names it.
+- [x] **0. Project setup** ([#1](https://github.com/aunimhsn/ts-svelte-idealan/pull/1), [#2](https://github.com/aunimhsn/ts-svelte-idealan/pull/2)).
 - [ ] **1. Specifications and structure**: the starting notes of `specs.md` turned into its sections; Netlify and the Steam Store checked in `docs/external-services.md`; the screens and the stored data in Excalidraw.
 - [ ] **2. Wireframes**: one Excalidraw wireframe per screen, phone first, then the big screen of the LAN.
 - [ ] **3. Mock-up**: 3 or 4 styles with real covers of Steam games, then every screen and state in `docs/mockups/`, checked on the owner's phone; decisions in `docs/branding.md`.

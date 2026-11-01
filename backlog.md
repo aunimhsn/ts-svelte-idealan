@@ -41,6 +41,8 @@ One entry per item, in the section of its kind: what it is in one sentence, what
 - The template `ts-svelte-dynamic-website-template`, made from this project at the retrospective of the first cycle: what held for idealan and applies to every dynamic site in Svelte on Netlify (the conventions, the process, the checks, the skeleton), without what is specific to the LAN. Named after its language and framework (see the naming of the repositories in `CLAUDE.md`). Noted on 2026-11-01.
 - Real time updates (a game appears for everyone as soon as a friend adds it), or user accounts: both would need another service than Netlify Blobs (Supabase, for example). Noted on 2026-11-01.
 
+- Move to TypeScript 7 (the rewrite in Go) once `svelte-check` and `typescript-eslint` accept it (their peer dependencies stop at `^6.0.0` and `<6.1.0` on 2026-11-01): one `build` pull request that raises `typescript`, `svelte-check` and `typescript-eslint` together, runs `npm run check` again and updates `docs/technical-choices.md`; about one session once the tools are ready. Dependabot no longer proposes it once the major version is ignored (#3): check at the end of each cycle. Noted on 2026-11-01.
+
 - The links to `astro-static-website-template`, renamed `ts-astro-static-website-template` on 2026-11-01, in the documents of `rust-cli-template`, `sylent.art` and the other projects: GitHub redirects them, but the redirect breaks if a repository takes the old name again. Noted on 2026-11-01.
 
 ## Waiting on others

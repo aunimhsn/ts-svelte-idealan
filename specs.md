@@ -17,6 +17,19 @@ The idea as the owner described it on 2026-11-01, before the specifications step
 - A game already in the bag is not added twice: the friend's nickname joins the list of those who want to play it, which acts as a vote.
 - Success: on the evening of the LAN, the page is opened and the choice takes two minutes.
 
+### The owner's answers (2026-11-01)
+
+To be turned into the sections below with the next answers; noted here so that they are not lost between sessions.
+
+- About 9 people: the owner and 8 friends at most. The bag holds 50 games at most, all friends together; a friend adds as many games as they like within that limit.
+- Each game has an upvote and a downvote.
+- Friends add and vote from their phone, before the LAN: the adding must work well at phone width.
+- On the day of the LAN, no shared screen: each friend opens the page in the browser of their own PC (Full HD at least).
+- Two codes: a member code for the friends, and an admin code for the owner, to moderate abuses.
+- Reading the bag also needs a code: only the members and the owner see it.
+- A friend may remove a game they added.
+- After the LAN (no answer, Claude Code's recommendation): one bag only, emptied by the owner after the event.
+
 ## Purpose
 
 <!-- What the application is for, who uses it (how many friends, on which devices), and the expected volume of data. -->
