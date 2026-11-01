@@ -1,0 +1,28 @@
+# The checks run before every commit (docs/technical-choices.md, Commands), on every pull
+# request: format, lint, tests, production build and the width of the screens on a phone, which
+# needs the Chromium of Playwright. Netlify deploys; this workflow only checks.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps --only-shell chromium
+      - run: npm run check

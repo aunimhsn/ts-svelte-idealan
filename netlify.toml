@@ -1,0 +1,11 @@
+# The build of the interface and the functions, on every push to main and for every pull request
+# (a deploy preview). The Node.js version comes from .nvmrc.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[dev]
+  # `netlify dev` starts Vite and serves the interface and the functions on one address.
+  framework = "#custom"
+  command = "vite"
+  targetPort = 5173

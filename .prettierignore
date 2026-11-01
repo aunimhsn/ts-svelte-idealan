@@ -1,0 +1,7 @@
+# The project documentation, written by hand: Prettier would pad every table to its widest cell.
+/*.md
+/docs/
+/.claude/
+package-lock.json
+dist/
+.netlify/

@@ -1,0 +1,11 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-html/svelte"],
+  "ignoreFiles": ["dist/**", "docs/mockups/**", ".netlify/**"],
+  "rules": {
+    "color-hex-length": "long",
+    "selector-pseudo-class-no-unknown": [
+      true,
+      { "ignorePseudoClasses": ["global"] }
+    ]
+  }
+}
