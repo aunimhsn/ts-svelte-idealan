@@ -134,7 +134,7 @@ One size per role:
 
 The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css)) is copied into the components of the application.
 
-- **Buttons**: a border `--line-strong`, transparent; under the pointer `--surface-hover`. The main one (« Entrer », « Ajouter ») fills with `--signal`, darker by 10 % under the pointer. Disabled: 75 % opacity, the cursor « progress ». The action of a confirmation (« Retirer », « Vider ») fills with the blue from the left for `--duration-arm` (2 s) before it can be clicked.
+- **Buttons**: a border `--line-strong`, transparent; under the pointer `--surface-hover`. The main one (« Entrer », « Ajouter ») fills with `--signal`, darker by 10 % under the pointer. « Rafraîchir » fills with `--signal` on a PC only, at the end of the row of the filters; on a phone it keeps its border, so that it doesn't compete with « Ajouter » just above it (chosen by the owner on 2026-11-01). Disabled: 75 % opacity, the cursor « progress ». The action of a confirmation (« Retirer », « Vider ») fills with the blue from the left for `--duration-arm` (2 s) before it can be clicked.
 - **Fields**: `--field-bg`, a border `--line-strong`, its label above in Chakra Petch 600, a hint or an error below; at fault, a border `--error-text`.
 - **Chips** (filters): pressed, the border in `--signal`, a background `--signal-tint`, the text in `--signal-text`. The window of « Jouable à N » opens `--space-1` (4 px) under its chip, on a phone and on a PC: a small gap the owner liked (2026-11-01).
 - **Cards**: glass (`--surface` blurred by `--glass-blur` 8 px), the cover chamfered on top; under the pointer, a blue border and `--glow-card`, a slight tilt and press.

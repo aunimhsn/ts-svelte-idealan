@@ -276,8 +276,10 @@
 
   @media (width >= 900px) {
     .chips {
+      flex: 1;
       flex-wrap: wrap;
-      width: 100%;
+      width: auto;
+      min-width: 0;
       margin: 0;
       padding: 0 0 var(--space-1);
       overflow: visible;

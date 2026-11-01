@@ -397,9 +397,18 @@ input {
 }
 
 .app-count {
+  order: -2;
   margin: 0;
   color: var(--secondary);
   font-size: var(--size-small);
+}
+
+/* « Rafraîchir » after the filters in the page, on their row on a PC, and on the row of the
+   count on a phone, where the row of the filters scrolls sideways (chosen by the owner on
+   2026-11-01). */
+.app-refresh {
+  order: -1;
+  margin-left: auto;
 }
 
 .app-count strong {
@@ -1259,13 +1268,36 @@ input {
   }
 
   .app-bar {
+    align-items: start;
     margin-top: var(--space-6);
   }
 
+  .app-count,
+  .app-refresh {
+    order: 0;
+  }
+
+  .app-count {
+    flex-basis: 100%;
+  }
+
+  /* Filled with the blue on a PC only, far from « Ajouter »: on a phone, two blue buttons one
+     above the other would leave no main action. */
+  .app-refresh {
+    border-color: var(--signal);
+    background: var(--signal);
+    color: var(--on-signal);
+  }
+
+  .app-refresh:hover {
+    filter: brightness(0.9);
+  }
+
   .app-chips {
+    flex: 1;
     flex-wrap: wrap;
-    order: 3;
-    width: 100%;
+    width: auto;
+    min-width: 0;
     margin: 0;
     padding: 0 0 var(--space-1);
     overflow: visible;

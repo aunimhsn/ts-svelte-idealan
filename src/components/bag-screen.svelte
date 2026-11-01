@@ -132,16 +132,6 @@
     {:else if app.loading}
       <p class="count" role="status">{fr.bag.loading}</p>
     {/if}
-    <button
-      type="button"
-      class="button is-small refresh"
-      aria-disabled={app.loading}
-      onclick={() => {
-        if (!app.loading) void app.refresh();
-      }}
-    >
-      <Icon name="refresh" size={16} /><span>{fr.bag.refresh}</span>
-    </button>
     {#if app.games.length > 0}
       <BagFilters
         {choices}
@@ -152,6 +142,16 @@
         onplayers={(chosen) => (chosenPlayers = chosen)}
       />
     {/if}
+    <button
+      type="button"
+      class="button is-small refresh"
+      aria-disabled={app.loading}
+      onclick={() => {
+        if (!app.loading) void app.refresh();
+      }}
+    >
+      <Icon name="refresh" size={16} /><span>{fr.bag.refresh}</span>
+    </button>
   </div>
   {#if app.view !== null}
     {#if shown.length > 0}
@@ -223,11 +223,16 @@
     margin: var(--space-5) 0 var(--space-4);
   }
 
+  /* « Rafraîchir » after the filters in the page, on their row on a PC, and on the row of the
+     count on a phone, where the row of the filters scrolls sideways (chosen by the owner on
+     2026-11-01). */
   .refresh {
+    order: -1;
     margin-left: auto;
   }
 
   .count {
+    order: -2;
     margin: 0;
     color: var(--secondary);
     font-size: var(--size-small);
@@ -272,7 +277,29 @@
     }
 
     .bar {
+      align-items: start;
       margin-top: var(--space-6);
+    }
+
+    .count,
+    .refresh {
+      order: 0;
+    }
+
+    .count {
+      flex-basis: 100%;
+    }
+
+    /* Filled with the blue on a PC only, far from « Ajouter »: on a phone, two blue buttons one
+       above the other would leave no main action. */
+    .refresh {
+      border-color: var(--signal);
+      background: var(--signal);
+      color: var(--on-signal);
+    }
+
+    .refresh:hover {
+      filter: brightness(0.9);
     }
 
     .games {
