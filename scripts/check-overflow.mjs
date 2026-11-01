@@ -45,7 +45,16 @@ const screens = [
     path: "/",
     kept,
     bag: "answers",
-    click: "header button[aria-haspopup='dialog']",
+    click: "header .open-settings",
+    opens: "dialog[open]",
+  },
+  // Emptying the bag, opened from the header.
+  {
+    name: "emptying the bag",
+    path: "/",
+    kept,
+    bag: "answers",
+    click: "header .open-empty",
     opens: "dialog[open]",
   },
   { name: "the bag without the server", path: "/", kept, bag: "down" },

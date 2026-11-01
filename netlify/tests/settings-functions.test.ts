@@ -3,6 +3,10 @@ import {
   config as deletePlayerConfig,
   handleDeletePlayer,
 } from "../functions/delete-player";
+import {
+  config as emptyBagConfig,
+  handleEmptyBag,
+} from "../functions/empty-bag";
 import { handleEnter } from "../functions/enter";
 import { handleGetBag } from "../functions/get-bag";
 import { handleVote } from "../functions/vote";
@@ -121,6 +125,7 @@ const setUp = async () => {
     rename: call("rename-player", handleRenamePlayer),
     reset: call("reset-player-code", handleResetPlayerCode),
     remove: call("delete-player", handleDeletePlayer),
+    empty: call("empty-bag", handleEmptyBag),
     getBag: call("get-bag", handleGetBag),
     vote: call("vote", handleVote),
   };
@@ -137,6 +142,7 @@ describe("the addresses", () => {
     [renamePlayerConfig, "/api/rename-player"],
     [resetPlayerCodeConfig, "/api/reset-player-code"],
     [deletePlayerConfig, "/api/delete-player"],
+    [emptyBagConfig, "/api/empty-bag"],
   ])("answers on %j", (config, path) => {
     expect(config.path).toBe(path);
   });
@@ -152,6 +158,7 @@ describe("the admin only", () => {
       [bag.rename, { id: "j3", nickname: "Zed" }],
       [bag.reset, { id: "j3" }],
       [bag.remove, { id: "j3" }],
+      [bag.empty, { appids: [10, 20] }],
     ] as const) {
       expect(await run(bag.member, body)).toEqual({
         status: 403,
@@ -386,5 +393,58 @@ describe("delete-player", () => {
       status: 409,
       body: { error: "cannot-delete-self" },
     });
+  });
+});
+
+describe("empty-bag", () => {
+  it("removes the games sent and keeps the others with their votes", async () => {
+    const bag = await setUp();
+    const { status, body } = await bag.empty(bag.admin, { appids: [20] });
+    expect(status).toBe(200);
+    expect(body.games).toEqual([
+      game(10, "j2", { j2: "up", j1: "up", j3: "down" }),
+    ]);
+    expect(body.accounts).toBeUndefined();
+    expect(bag.data.get(BAG_KEY)).toEqual({ games: body.games });
+    // The players stay.
+    expect(body.players.map((player) => player.id)).toEqual(["j1", "j2", "j3"]);
+  });
+
+  it("keeps a game added after the admin chose, since it isn't sent", async () => {
+    const bag = await setUp();
+    const stored = bag.data.get(BAG_KEY) as { games: BagGame[] };
+    bag.write(BAG_KEY, { games: [...stored.games, game(30, "j3", {})] });
+    const { body } = await bag.empty(bag.admin, { appids: [10, 20] });
+    expect(body.games.map((kept) => kept.appid)).toEqual([30]);
+  });
+
+  it("skips a game already gone, without writing the bag", async () => {
+    const bag = await setUp();
+    const before = structuredClone(bag.data.get(BAG_KEY));
+    const { status, body } = await bag.empty(bag.admin, { appids: [99] });
+    expect(status).toBe(200);
+    expect(body.games).toHaveLength(2);
+    expect(bag.data.get(BAG_KEY)).toEqual(before);
+  });
+
+  it("refuses a list that isn't 1 to 50 distinct appids", async () => {
+    const bag = await setUp();
+    const many = Array.from({ length: 51 }, (_, index) => index + 1);
+    for (const body of [
+      {},
+      { appids: [] },
+      { appids: 10 },
+      { appids: [10, 10] },
+      { appids: [0] },
+      { appids: [-3] },
+      { appids: [1.5] },
+      { appids: ["10"] },
+      { appids: many },
+    ]) {
+      expect(await bag.empty(bag.admin, body)).toEqual({
+        status: 400,
+        body: { error: "invalid-request" },
+      });
+    }
   });
 });

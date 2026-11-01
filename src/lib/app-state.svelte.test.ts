@@ -48,12 +48,17 @@ type Route = (headers: Headers) => Response | Promise<Response>;
 
 // A server that answers each path with its route, and records the calls.
 const fakeServer = (routes: Record<string, Route>) => {
-  const calls: Array<{ path: string; headers: Headers }> = [];
+  const calls: Array<{ path: string; headers: Headers; body?: unknown }> = [];
   const fetcher = vi.fn(
     async (input: string | URL | Request, init?: RequestInit) => {
       const path = String(input);
       const headers = new Headers(init?.headers);
-      calls.push({ path, headers });
+      calls.push({
+        path,
+        headers,
+        body:
+          typeof init?.body === "string" ? JSON.parse(init.body) : undefined,
+      });
       const route = routes[path];
       if (!route) throw new Error(`No route for ${path}`);
       return route(headers);
@@ -553,6 +558,69 @@ describe("AppState", () => {
       expect(app.session).toBeNull();
       expect(app.settingsError).toBeNull();
       expect(kept().personalCode).toBeUndefined();
+    });
+  });
+
+  describe("emptying the bag", () => {
+    const games = [10, 20, 30].map((appid) => ({ ...game, appid }));
+    const adminView = (kept = games): BagView => ({
+      ...viewOf(kept),
+      role: "admin",
+    });
+
+    it("sends the games to remove, and shows the bag answered", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/empty-bag": () => Response.json(adminView([games[1]!])),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.emptyBag([10, 30])).toBe(true);
+      expect(calls.at(-1)?.body).toEqual({ appids: [10, 30] });
+      expect(app.games.map((kept) => kept.appid)).toEqual([20]);
+      expect(app.emptying).toBe(false);
+    });
+
+    it("sends nothing when no game is to remove", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.emptyBag([])).toBe(false);
+      expect(calls).toHaveLength(1);
+    });
+
+    it("shows a failure in the panel, not in the strip, and keeps the bag", async () => {
+      const { api } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/empty-bag": refuse("server-error", 500),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.emptyBag([10])).toBe(false);
+      expect(app.emptyError).toBe("server-error");
+      expect(app.toast).toBeNull();
+      expect(app.games).toHaveLength(3);
+      app.closeEmpty();
+      expect(app.emptyError).toBeNull();
+    });
+
+    it("runs one emptying at a time", async () => {
+      let answer: (response: Response) => void = () => {};
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/empty-bag": () =>
+          new Promise<Response>((resolve) => (answer = resolve)),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      const first = app.emptyBag([10]);
+      expect(app.emptying).toBe(true);
+      expect(await app.emptyBag([20])).toBe(false);
+      await vi.waitFor(() => expect(calls).toHaveLength(2));
+      answer(Response.json(adminView([games[1]!, games[2]!])));
+      expect(await first).toBe(true);
     });
   });
 });

@@ -2,9 +2,7 @@
      with « Renommer », their votes and games, the state of their account (« verrouillé », « code à
      choisir »), « Réinitialiser le code perso » and « Supprimer », with its confirmation; the admin's
      own line has neither, only « toi ». An error shows in a red bubble under the line of its player
-     (docs/branding.md, Components). A sheet from the bottom on a phone, a window on a PC, as the
-     confirmation: a native <dialog>, closed with « Fermer », « Échap » or a click on the dimmed
-     bag. -->
+     (docs/branding.md, Components). A tall panel (tall-panel.svelte). -->
 <script lang="ts">
   import { untrack } from "svelte";
   import fr from "../i18n/fr.json";
@@ -18,14 +16,12 @@
     settingsMessage,
   } from "../lib/settings";
   import ConfirmPanel from "./confirm-panel.svelte";
+  import TallPanel from "./tall-panel.svelte";
 
   let { app, onclose }: { app: AppState; onclose: () => void } = $props();
 
   const id = $props.id();
-  const titleId = `${id}-title`;
   const errorId = `${id}-error`;
-
-  let dialog: HTMLDialogElement;
 
   const accounts = $derived(
     app.view === null ? [] : accountsOf(app.view, app.accounts),
@@ -42,7 +38,6 @@
 
   // Once, when the panel opens: untracked, since reading the players changes the state it reads.
   $effect(() => {
-    dialog.showModal();
     untrack(() => void app.openSettings());
   });
 
@@ -69,112 +64,94 @@
     count === 1 ? one : many;
 </script>
 
-<dialog
-  bind:this={dialog}
-  class="panel"
-  aria-labelledby={titleId}
+<TallPanel
+  title={fr.settings.title}
   onclose={() => {
     app.closeSettings();
     onclose();
   }}
-  onclick={(event) => {
-    if (event.target === dialog) dialog.close();
-  }}
 >
-  <div class="content">
-    <span class="handle" aria-hidden="true"></span>
-    <div class="head">
-      <h2 id={titleId} class="title">{fr.settings.title}</h2>
-      <button
-        type="button"
-        class="button is-small"
-        onclick={() => dialog.close()}
-      >
-        {fr.settings.close}
-      </button>
-    </div>
-    <p class="note" tabindex="-1" aria-live="polite" bind:this={note}>
-      {#if app.accounts === null && app.settingsBusy === ""}
-        {fr.settings.loading}
-      {:else if accounts.length === 1}
-        {fr.settings.noteOne}
-      {:else}
-        {format(fr.settings.note, { count: accounts.length })}
-      {/if}
-    </p>
-    {#if error !== null && error.id === null}
-      <p class="error is-alone" role="alert">{settingsMessage(error.code)}</p>
+  <p class="note" tabindex="-1" aria-live="polite" bind:this={note}>
+    {#if app.accounts === null && app.settingsBusy === ""}
+      {fr.settings.loading}
+    {:else if accounts.length === 1}
+      {fr.settings.noteOne}
+    {:else}
+      {format(fr.settings.note, { count: accounts.length })}
     {/if}
-    <ul class="players">
-      {#each accounts as account (account.id)}
-        {@const counts = countsOf(games, account.id)}
-        {@const failed = error !== null && error.id === account.id}
-        <li class="player" class:is-invalid={failed}>
-          <form class="rename" onsubmit={(event) => rename(event, account)}>
-            <input
-              class="name"
-              value={drafts[account.id] ?? account.nickname}
-              oninput={(event) =>
-                (drafts[account.id] = event.currentTarget.value)}
-              aria-label={format(fr.settings.nicknameOf, {
-                nickname: account.nickname,
-              })}
-              aria-invalid={failed}
-              aria-describedby={failed ? errorId : undefined}
-              autocomplete="off"
-              autocapitalize="off"
-              spellcheck="false"
-              maxlength="32"
-            />
-            <button type="submit" class="button is-small" aria-disabled={busy}>
-              {fr.settings.rename}
-            </button>
-          </form>
-          <span class="stats">
-            <strong>{counts.votes}</strong>
-            {plural(counts.votes, fr.settings.votesOne, fr.settings.votes)} ·
-            <strong>{counts.games}</strong>
-            {plural(counts.games, fr.settings.gamesOne, fr.settings.games)}
-            {#if account.state === "locked"}
-              <span class="status is-locked">{fr.settings.locked}</span>
-            {:else if account.state === "reset"}
-              <span class="status">{fr.settings.codeToChoose}</span>
-            {/if}
-          </span>
-          {#if account.id === meId}
-            <span class="self">{fr.settings.self}</span>
-          {:else}
-            <button
-              type="button"
-              class="button is-small reset"
-              aria-disabled={busy}
-              onclick={() => {
-                if (!busy) void app.resetPlayerCode(account.id);
-              }}
-            >
-              {fr.settings.reset}
-            </button>
-            <button
-              type="button"
-              class="button is-small delete"
-              aria-disabled={busy}
-              onclick={() => {
-                if (!busy) deleting = account;
-              }}
-            >
-              {fr.settings.delete}
-            </button>
+  </p>
+  {#if error !== null && error.id === null}
+    <p class="error is-alone" role="alert">{settingsMessage(error.code)}</p>
+  {/if}
+  <ul class="players">
+    {#each accounts as account (account.id)}
+      {@const counts = countsOf(games, account.id)}
+      {@const failed = error !== null && error.id === account.id}
+      <li class="player" class:is-invalid={failed}>
+        <form class="rename" onsubmit={(event) => rename(event, account)}>
+          <input
+            class="name"
+            value={drafts[account.id] ?? account.nickname}
+            oninput={(event) =>
+              (drafts[account.id] = event.currentTarget.value)}
+            aria-label={format(fr.settings.nicknameOf, {
+              nickname: account.nickname,
+            })}
+            aria-invalid={failed}
+            aria-describedby={failed ? errorId : undefined}
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            maxlength="32"
+          />
+          <button type="submit" class="button is-small" aria-disabled={busy}>
+            {fr.settings.rename}
+          </button>
+        </form>
+        <span class="stats">
+          <strong>{counts.votes}</strong>
+          {plural(counts.votes, fr.settings.votesOne, fr.settings.votes)} ·
+          <strong>{counts.games}</strong>
+          {plural(counts.games, fr.settings.gamesOne, fr.settings.games)}
+          {#if account.state === "locked"}
+            <span class="status is-locked">{fr.settings.locked}</span>
+          {:else if account.state === "reset"}
+            <span class="status">{fr.settings.codeToChoose}</span>
           {/if}
-          {#if failed}
-            <p class="error" id={errorId} role="alert">
-              {settingsMessage(error.code, error.nickname)}
-            </p>
-          {/if}
-        </li>
-      {/each}
-    </ul>
-  </div>
-</dialog>
+        </span>
+        {#if account.id === meId}
+          <span class="self">{fr.settings.self}</span>
+        {:else}
+          <button
+            type="button"
+            class="button is-small reset"
+            aria-disabled={busy}
+            onclick={() => {
+              if (!busy) void app.resetPlayerCode(account.id);
+            }}
+          >
+            {fr.settings.reset}
+          </button>
+          <button
+            type="button"
+            class="button is-small delete"
+            aria-disabled={busy}
+            onclick={() => {
+              if (!busy) deleting = account;
+            }}
+          >
+            {fr.settings.delete}
+          </button>
+        {/if}
+        {#if failed}
+          <p class="error" id={errorId} role="alert">
+            {settingsMessage(error.code, error.nickname)}
+          </p>
+        {/if}
+      </li>
+    {/each}
+  </ul>
+</TallPanel>
 
 {#if deleting !== null}
   {@const player = deleting}
@@ -189,54 +166,6 @@
 {/if}
 
 <style>
-  .panel {
-    width: 100%;
-    max-width: none;
-    max-height: var(--height-sheet);
-    margin: auto 0 0;
-    padding: 0;
-    border: 0;
-    border-top: var(--hairline) solid var(--line-strong);
-    border-radius: var(--radius) var(--radius) 0 0;
-    background: var(--surface-solid);
-    color: var(--text);
-  }
-
-  .panel::backdrop {
-    background: var(--overlay);
-  }
-
-  .content {
-    display: flex;
-    flex-direction: column;
-    max-height: inherit;
-    padding: var(--space-3) var(--space-4) var(--space-6);
-  }
-
-  .handle {
-    display: block;
-    flex: none;
-    width: var(--handle-width);
-    height: var(--handle-height);
-    margin: 0 auto var(--space-4);
-    border-radius: var(--radius-pill);
-    background: var(--line-strong);
-  }
-
-  .head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-  }
-
-  .title {
-    margin: 0;
-    font: var(--weight-bold) var(--size-title) / var(--leading-title)
-      var(--font-title);
-    letter-spacing: var(--tracking-title);
-  }
-
   .note {
     margin: var(--space-2) 0 var(--space-4);
     color: var(--secondary);
@@ -356,22 +285,6 @@
   }
 
   @media (width >= 900px) {
-    .panel {
-      width: min(var(--width-dialog-tall), 90vw);
-      max-height: var(--height-dialog);
-      margin: auto;
-      border: var(--hairline) solid var(--line-strong);
-      border-radius: var(--radius);
-    }
-
-    .content {
-      padding: var(--space-8);
-    }
-
-    .handle {
-      display: none;
-    }
-
     .player {
       grid-template-columns: var(--col-player) auto 1fr auto var(
           --col-player-action

@@ -1,6 +1,6 @@
 <!-- The bag (specs.md, The bag): the header, the adding, the count with « Rafraîchir », the
      filters, and the games sorted by score, with their votes, who voted, and « Retirer » with its
-     confirmation. The filters are all off when the bag shows, and after a reload of the page.
+     confirmation; for the admin, the settings and emptying the bag. The filters are all off when the bag shows, and after a reload of the page.
      It reloads every 30 seconds while the tab is shown, and at once when the tab comes back after
      a longer time; the reload stops with the screen, when the friend leaves. -->
 <script lang="ts">
@@ -21,6 +21,7 @@
   import AppHeader from "./app-header.svelte";
   import BagFilters from "./bag-filters.svelte";
   import ConfirmPanel from "./confirm-panel.svelte";
+  import EmptyPanel from "./empty-panel.svelte";
   import GameCard from "./game-card.svelte";
   import Icon from "./icon.svelte";
   import SettingsPanel from "./settings-panel.svelte";
@@ -61,8 +62,9 @@
   let openVoters = $state<number | null>(null);
   // The game whose removal waits for its confirmation.
   let removal = $state<BagGame | null>(null);
-  // The settings of the admin, open or not.
+  // The panels of the admin, open or not.
   let settingsOpen = $state(false);
+  let emptyOpen = $state(false);
 
   const votesText = (game: BagGame) => {
     const count = Object.keys(game.votes).length;
@@ -115,7 +117,11 @@
 
 <svelte:window onclick={onWindowClick} onkeydown={onWindowKey} />
 
-<AppHeader {app} onsettings={() => (settingsOpen = true)} />
+<AppHeader
+  {app}
+  onsettings={() => (settingsOpen = true)}
+  onempty={() => (emptyOpen = true)}
+/>
 <main class="main">
   <AddGame {app} />
   <div class="bar">
@@ -209,6 +215,10 @@
 
 {#if settingsOpen && app.view?.role === "admin"}
   <SettingsPanel {app} onclose={() => (settingsOpen = false)} />
+{/if}
+
+{#if emptyOpen && app.view?.role === "admin"}
+  <EmptyPanel {app} onclose={() => (emptyOpen = false)} />
 {/if}
 
 <style>

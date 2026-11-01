@@ -2,6 +2,16 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 7a. Settings
+
+Merged on 2026-11-02 in [#15](https://github.com/aunimhsn/ts-svelte-idealan/pull/15). Tools: mock-up, build.
+
+- « Réglages » in the admin's header; four admin-only functions (`get-settings`, `rename-player`, `reset-player-code`, `delete-player`) answering the bag with `accounts` (active, locked, reset).
+- A refused rename in a red bubble under its line, and the labels « verrouillé » and « code à choisir », chosen in the mock-up.
+- The admin's own line without « Réinitialiser » nor « Supprimer ».
+- `vote` and `add-game` check the player again inside the write of the bag (`isStillPlayer`), and a deletion cleans every player gone.
+- The review applied in full (6 points).
+
 ## 6d. Filters
 
 Merged on 2026-11-01 in [#14](https://github.com/aunimhsn/ts-svelte-idealan/pull/14). Tools: build.

@@ -20,6 +20,7 @@
   "header": {
     "admin": "admin",
     "settings": "Réglages",
+    "emptyBag": "Vider le sac",
     "logout": "Se déconnecter"
   },
   "add": {
@@ -87,11 +88,17 @@
     "deleteBoth": "{games} et {votes} partent avec lui.",
     "deleteOne": "{what} part avec lui.",
     "deleteMany": "{what} partent avec lui.",
-    "deleteAction": "Supprimer"
+    "deleteAction": "Supprimer",
+    "emptyTitle": "Vider le sac ?",
+    "emptyText": "{count} jeux seront retirés. Cette action est définitive.",
+    "emptyTextOne": "1 jeu sera retiré. Cette action est définitive.",
+    "emptyAction": "Vider"
+  },
+  "panel": {
+    "close": "Fermer"
   },
   "settings": {
     "title": "Réglages",
-    "close": "Fermer",
     "note": "{count} joueurs. Un pseudo en double se supprime ici.",
     "noteOne": "1 joueur. Un pseudo en double se supprime ici.",
     "loading": "Lecture des joueurs…",
@@ -106,6 +113,18 @@
     "reset": "Réinitialiser le code perso",
     "delete": "Supprimer",
     "self": "toi"
+  },
+  "empty": {
+    "title": "Vider le sac",
+    "note": "Coche les jeux à garder : leurs votes restent.",
+    "noGames": "Le sac est vide.",
+    "kept": "gardés",
+    "keptOne": "gardé",
+    "removed": "retirés",
+    "removedOne": "retiré",
+    "action": "Vider ({count} jeux)",
+    "actionOne": "Vider ({count} jeu)",
+    "emptying": "Vidage…"
   },
   "kinds": {
     "coop": "Coop",

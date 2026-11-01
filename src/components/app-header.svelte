@@ -1,5 +1,5 @@
 <!-- The header of the bag: the name, the friend's nickname (« admin » for the owner, on a PC) and
-     « Se déconnecter »; for the admin, « Réglages », on a second row on a phone. The strip of the
+     « Se déconnecter »; for the admin, « Réglages » and « Vider le sac », on a second row on a phone. The strip of the
      errors hangs under it. -->
 <script lang="ts">
   import fr from "../i18n/fr.json";
@@ -8,7 +8,11 @@
   import AppLogo from "./app-logo.svelte";
   import ErrorStrip from "./error-strip.svelte";
 
-  let { app, onsettings }: { app: AppState; onsettings: () => void } = $props();
+  let {
+    app,
+    onsettings,
+    onempty,
+  }: { app: AppState; onsettings: () => void; onempty: () => void } = $props();
 </script>
 
 <header class="header">
@@ -18,11 +22,19 @@
       {#if app.view?.role === "admin"}
         <button
           type="button"
-          class="button admin"
+          class="button admin open-settings"
           aria-haspopup="dialog"
           onclick={onsettings}
         >
           {fr.header.settings}
+        </button>
+        <button
+          type="button"
+          class="button admin open-empty"
+          aria-haspopup="dialog"
+          onclick={onempty}
+        >
+          {fr.header.emptyBag}
         </button>
       {/if}
       <span class="nick" data-one-line>

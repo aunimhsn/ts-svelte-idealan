@@ -179,6 +179,7 @@
   /* Layers, from the back. */
   --layer-floor: -2;
   --layer-behind: -1; /* behind the content of its own box */
+  --layer-above: 1; /* above the content of its own box: the box over a cover */
   --layer-header: 2;
   --layer-bubble: 5;
   --layer-popover: 6;
