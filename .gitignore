@@ -1,0 +1,31 @@
+# Temporary files the owner gives Claude Code for context: screenshots,
+# examples, references. Never committed; only .gitkeep is tracked.
+/inputs/*
+!/inputs/.gitkeep
+
+# Temporary files Claude Code produces for the owner: reports, code review
+# notes, previews, screenshots. Never committed; only .gitkeep is tracked.
+/outputs/*
+!/outputs/.gitkeep
+
+# Personal Claude Code settings.
+/.claude/settings.local.json
+
+# Caches of the Python scripts of the skills.
+__pycache__/
+
+# Dependencies and build output.
+node_modules
+/dist/
+
+# System and editor files.
+.DS_Store
+Thumbs.db
+
+# Local Netlify files (the link to the site, the local blobs).
+.netlify/
+
+# Environment variables: only the list of their names is committed.
+.env
+.env.*
+!.env.example
