@@ -7,6 +7,7 @@ const view = {
   panel: params.get("panel") || "",
   theme: params.get("theme") || "night",
   blue: params.get("blue") || "electric",
+  logo: params.get("logo") || "bulb",
 };
 document.documentElement.dataset.theme = view.theme;
 document.documentElement.dataset.blue = view.blue;
@@ -26,6 +27,19 @@ const ICON = {
 // The mark of Sylent (sylent.art), filled with the color of the text.
 const MARK = `<svg class="app-mark" viewBox="0 0 908 2000.3" fill="currentColor" aria-hidden="true"><rect x="8.8" y="218.2" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -171.45 428.7256)" width="742.3" height="364.9"/><rect x="156.9" y="1417.3" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -1030.6389 960.5798)" width="742.3" height="364.9"/><rect x="82.9" y="818.4" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -601.5629 694.9067)" width="742.3" height="364.9"/></svg>`;
 
+// The proposals of logo, on a 32 px grid: lines in the color of the text, one detail in the blue
+// signal (class app-logo-accent).
+const LOGOS = {
+  bulb: { name: "Ampoule LAN", body: `<path d="M10.5 19.5C8 17.6 6.5 15 6.5 12a9.5 9.5 0 0 1 19 0c0 3-1.5 5.6-4 7.5" stroke-width="2.6"/><path d="M10.5 19.5h11v7h-11z" stroke-width="2.6"/><path d="M13.5 22v2M16 22v2M18.5 22v2" stroke-width="1.8"/><path class="app-logo-accent" d="M12 14.5l4-4 4 4" stroke-width="2.8"/>` },
+  bag: { name: "Sac", body: `<path d="M8.5 11.5h15l2.5 15.5H6z" stroke-width="2.6"/><path d="M11.5 11.5c0-4 2-6.5 4.5-6.5s4.5 2.5 4.5 6.5" stroke-width="2.6"/><path class="app-logo-accent" d="M11.5 22l4.5-4.5 4.5 4.5" stroke-width="3"/>` },
+  i: { name: "i qui vote", body: `<path d="M16 15v14" stroke-width="6"/><path class="app-logo-accent is-filled" d="M16 2.5l7.5 7.5h-15z"/>` },
+  port: { name: "Prise RJ45", body: `<path d="M4.5 4.5h23v23h-23z" stroke-width="2.4"/><path d="M9 10h14v9.5h-3.5V24h-7v-4.5H9z" stroke-width="2.4"/><path class="app-logo-accent" d="M12.5 10v4M15 10v4M17.5 10v4M20 10v4" stroke-width="1.8"/>` },
+  stripes: { name: "Galons", body: `<path d="M6 27l10-8 10 8" stroke-width="3.4"/><path d="M6 19.5l10-8 10 8" stroke-width="3.4"/><path class="app-logo-accent" d="M6 12l10-8 10 8" stroke-width="3.4"/>` },
+  network: { name: "Réseau", body: `<path d="M16 9.5L8 22.5M16 9.5l8 13M10.5 25h11" stroke-width="2.4"/><circle cx="7" cy="25" r="3.5" stroke-width="2.4"/><circle cx="25" cy="25" r="3.5" stroke-width="2.4"/><circle class="app-logo-accent is-filled" cx="16" cy="7" r="4.5"/>` },
+};
+const logo = (size, key = view.logo) =>
+  `<svg class="app-logo" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${(LOGOS[key] || LOGOS.bulb).body}</svg>`;
+
 const voteOf = game => (game.by === viewer ? "own" : game.up.includes(viewer) ? "up" : game.down.includes(viewer) ? "down" : null);
 const score = game => game.up.length - game.down.length;
 const signed = n => (n > 0 ? `+${n}` : String(n));
@@ -42,7 +56,7 @@ function header() {
   const admin = view.as === "admin";
   return `<header class="app-header">
     <div class="app-header-in">
-      <span class="app-brand">Idealan</span>
+      <span class="app-brand">${logo(28)}<span>Idealan</span></span>
       <div class="app-header-actions">
         ${admin ? `<button type="button" class="app-button is-ghost">Réglages</button><button type="button" class="app-button is-ghost">Vider le sac</button>` : ""}
         <span class="app-nick">${viewer}${admin ? ` <span class="app-role">admin</span>` : ""}</span>
@@ -125,6 +139,7 @@ function welcome() {
     <main class="app-welcome">
       <div class="app-welcome-head">
         <span class="app-ghost" aria-hidden="true">LAN</span>
+        <div class="app-welcome-logo">${logo(72)}</div>
         <h1 class="app-display">Idealan</h1>
         <p class="app-lead">Le sac à jeux de la LAN</p>
       </div>
@@ -154,7 +169,29 @@ function confirmRemove(game) {
   </div>`;
 }
 
-document.body.innerHTML = view.screen === "welcome" ? welcome() : bag();
+// The board of the logo: every size where it appears, down to the 16 px of a browser tab.
+function logoBoard() {
+  const tile = (size, light) => `<span class="app-tile${light ? " is-light" : ""}" style="--tile:${size}px">${logo(Math.round(size * 0.8))}</span>`;
+  return `<div class="app app-board">
+    <div class="app-floor" aria-hidden="true"></div>
+    <div class="app-board-lockup">${logo(120)}<span class="app-board-word">Idealan</span></div>
+    <div class="app-board-row">
+      <figure>${tile(180)}<figcaption>Icône d’appli · 180</figcaption></figure>
+      <figure>${tile(48)}<figcaption>48</figcaption></figure>
+      <figure>${tile(32)}<figcaption>32</figcaption></figure>
+      <figure>${tile(16)}<figcaption>16</figcaption></figure>
+      <figure>${tile(32, true)}<figcaption>32 sur blanc</figcaption></figure>
+      <figure>${tile(16, true)}<figcaption>16 sur blanc</figcaption></figure>
+      <figure><span class="app-browser-tab">${tile(16)}<span>Idealan</span><i>×</i></span><figcaption>Onglet du navigateur</figcaption></figure>
+    </div>
+    <div class="app-board-row">
+      <span class="app-brand">${logo(28)}<span>Idealan</span></span>
+      <span class="app-board-name">${LOGOS[view.logo]?.name || ""}</span>
+    </div>
+  </div>`;
+}
+
+document.body.innerHTML = view.screen === "welcome" ? welcome() : view.screen === "logo" ? logoBoard() : bag();
 
 // Interactions: votes, filters, who voted, the confirmation.
 const root = document.querySelector(".app");

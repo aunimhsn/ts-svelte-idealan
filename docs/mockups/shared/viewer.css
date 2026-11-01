@@ -21,3 +21,5 @@ section > p { margin: 0 0 12px; max-width: 900px; color: #adb5bd; }
 .frame.is-pc { width: 960px; height: 540px; }
 .frame.is-pc iframe { width: 1920px; height: 1080px; transform: scale(.5); transform-origin: 0 0; }
 .slot a { color: #8ec5ff; font-size: 12px; }
+.frame.is-board { width: 1200px; max-width: calc(100vw - 32px); height: 640px; }
+.frame.is-board iframe { width: 1200px; height: 640px; }
