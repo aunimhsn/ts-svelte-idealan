@@ -11,6 +11,7 @@ import { isNotice, welcomeErrorOf, type Notice } from "./messages";
 import type { WelcomeError } from "./messages";
 import {
   readKept,
+  sameSession,
   sessionOf,
   writeKept,
   type Kept,
@@ -96,10 +97,9 @@ export class AppState {
     }
   }
 
-  // Back to the welcome: the personal code is forgotten, the access code too when it changed.
-  #leave(notice: Notice | null, keep: Kept) {
+  // Leaves the bag shown: the answers to the calls asked before are ignored.
+  #reset(notice: Notice | null) {
     this.#epoch += 1;
-    this.#keep(keep);
     this.view = null;
     this.loadedAt = null;
     this.toast = null;
@@ -108,6 +108,32 @@ export class AppState {
     this.adding = false;
     this.notice = notice;
     this.#reloadFailed = false;
+  }
+
+  // Back to the welcome: the personal code is forgotten, the access code too when it changed.
+  // If another tab entered meanwhile with other credentials, its session is taken instead of
+  // being written over.
+  #leave(notice: Notice, keep: Kept) {
+    const stored = readKept(this.#storage);
+    const storedSession = sessionOf(stored);
+    if (storedSession !== null && !sameSession(storedSession, this.session)) {
+      this.#reset(null);
+      this.kept = stored;
+      void this.refresh();
+      return;
+    }
+    this.#reset(notice);
+    this.#keep(keep);
+  }
+
+  // Another tab of the browser changed what is kept (« Se déconnecter », a new entry, a refusal):
+  // this tab follows, so that it never sends a personal code the other one forgot.
+  syncKept() {
+    const stored = readKept(this.#storage);
+    const changed = !sameSession(sessionOf(stored), this.session);
+    if (changed) this.#reset(null);
+    this.kept = stored;
+    if (changed && this.session !== null) void this.refresh();
   }
 
   // What an answer of the bag leads to: the bag shown, the friend sent back to the welcome
@@ -234,6 +260,7 @@ export class AppState {
 
   // « Se déconnecter »: forgets the friend in this browser.
   logout() {
-    this.#leave(null, {});
+    this.#reset(null);
+    this.#keep({});
   }
 }

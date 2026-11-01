@@ -196,4 +196,20 @@ describe("createApi", () => {
     expect(await api.getBag(() => credentials)).toEqual({ ok: true, view });
     expect(fetcher).toHaveBeenCalledTimes(3);
   });
+
+  it("doesn't try player-busy again once the session is forgotten", async () => {
+    let current: Credentials | null = credentials;
+    const fetcher = vi.fn(async () =>
+      errorAnswer("player-busy", 429, { "retry-after": "2" }),
+    );
+    const wait = vi.fn(async () => {
+      current = null;
+    });
+    const api = createApi({ fetcher, wait });
+    expect(await api.getBag(() => current)).toEqual({
+      ok: false,
+      error: "no-session",
+    });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
 });

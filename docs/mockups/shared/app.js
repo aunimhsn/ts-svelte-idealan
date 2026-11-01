@@ -40,7 +40,7 @@ const escape = text => text.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;"
 // The states drawn from the address (?state=…): the errors of the welcome, the states of the bag.
 const STATES = {
   "wrong-code": { values: { code: "••••••••" }, errors: { code: "Ce code d’accès n’est pas le bon&nbsp;: vérifie-le dans la conversation." } },
-  "nick-refused": { values: { code: "••••••••", nick: "Nova 2" }, errors: { nick: "3 à 16 lettres sans accents et chiffres, sans espace." } },
+  "nick-refused": { values: { code: "••••••••", nick: "Nova 2" }, errors: { nick: "3 à 16 lettres ou chiffres, sans accents ni espace." } },
   "wrong-pin": { values: { code: "••••••••", nick: "Nova", pin: "••••" }, errors: { pin: "Ce n’est pas le code perso de Nova. Oublié&nbsp;? Demande à l’admin de le réinitialiser." } },
   "code-changed": { values: { nick: "Nova" }, banner: "Le code d’accès a changé&nbsp;: redemande-le dans la conversation." },
   empty: { games: [], count: 0 },
@@ -212,7 +212,7 @@ function welcome() {
       </div>
       <form class="app-form" onsubmit="return false">
         ${welcomeField("code", "Code d’accès", "password", "Reçu dans la conversation", "")}
-        ${welcomeField("nick", "Pseudo du joueur", "text", "Nova", "3 à 16 lettres sans accents et chiffres")}
+        ${welcomeField("nick", "Pseudo du joueur", "text", "Nova", "3 à 16 lettres ou chiffres, sans accents")}
         ${welcomeField("pin", "Code perso", "password", "4 chiffres", "Nouveau venu&nbsp;: choisis-le. Déjà venu&nbsp;: redonne-le.", 'inputmode="numeric" maxlength="4"')}
         <button type="submit" class="app-button is-primary is-wide">Entrer</button>
       </form>

@@ -57,7 +57,7 @@
   {/if}
   <div class="body">
     <div class="info">
-      <h2 class="title">{game.name}</h2>
+      <h3 class="title">{game.name}</h3>
       {#if tags.length > 0}
         <p class="tags">{tags.join(" · ")}</p>
       {/if}

@@ -51,8 +51,10 @@
     <button
       type="button"
       class="button is-small refresh"
-      disabled={app.loading}
-      onclick={() => app.refresh()}
+      aria-disabled={app.loading}
+      onclick={() => {
+        if (!app.loading) void app.refresh();
+      }}
     >
       <Icon name="refresh" size={16} /><span>{fr.bag.refresh}</span>
     </button>

@@ -1,8 +1,10 @@
 <!-- Adding a game (specs.md, The bag): « Lien Steam » across the width, then « Joueurs max »,
-     « facultatif » and « Ajouter »; one row on a PC. While Steam is read, the fields are locked. -->
+     « facultatif » and « Ajouter »; one row on a PC. While Steam is read, the fields are locked
+     (read only, not disabled, so that the keyboard focus stays where it was). -->
 <script lang="ts">
   import fr from "../i18n/fr.json";
   import type { AppState } from "../lib/app-state.svelte";
+  import { ERROR_STRIP_ID } from "./error-strip.svelte";
 
   let { app }: { app: AppState } = $props();
 
@@ -35,8 +37,9 @@
       autocapitalize="off"
       autocomplete="off"
       spellcheck="false"
-      disabled={app.adding}
+      readonly={app.adding}
       aria-invalid={app.fault === "link"}
+      aria-describedby={app.fault === "link" ? ERROR_STRIP_ID : undefined}
     />
   </div>
   <div class="field players" class:is-invalid={app.fault === "maxPlayers"}>
@@ -52,11 +55,16 @@
       size="3"
       placeholder={fr.add.maxPlayersPlaceholder}
       autocomplete="off"
-      disabled={app.adding}
+      readonly={app.adding}
       aria-invalid={app.fault === "maxPlayers"}
+      aria-describedby={app.fault === "maxPlayers" ? ERROR_STRIP_ID : undefined}
     />
   </div>
-  <button type="submit" class="button is-primary submit" disabled={app.adding}>
+  <button
+    type="submit"
+    class="button is-primary submit"
+    aria-disabled={app.adding}
+  >
     {#if app.adding}
       <span class="spinner" aria-hidden="true"></span>{fr.add.reading}
     {:else}

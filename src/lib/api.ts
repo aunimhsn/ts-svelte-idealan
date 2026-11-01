@@ -34,13 +34,13 @@ const MAX_BUSY_RETRIES = 3;
 const DEFAULT_RETRY_SECONDS = 2;
 const MAX_RETRY_SECONDS = 10;
 
-// A function lasts a few seconds, Steam included (8 seconds at most): past this, the call is
-// given up, so that it never holds the calls behind it.
+// A function lasts a few seconds, Steam included (8 seconds at most): past this, a try is given
+// up, so that it never holds the calls behind it.
 const TIMEOUT_MS = 25_000;
 
 // A header carries only the characters up to U+00FF, without NUL, CR or LF: `fetch` throws on
 // any other. A code typed with one (« ☺ ») can't be the right one.
-const HEADER_SAFE = /^[^\0\r\nĀ-￿]*$/;
+const HEADER_SAFE = /^[^\0\r\n\u0100-\uffff]*$/;
 
 const ERROR_CODE = /^[a-z]+(?:-[a-z]+)*$/;
 
@@ -116,29 +116,58 @@ export const createApi = ({
   let pending = 0;
   const refused = new Set<string>();
 
-  const send = async ({ path, method, headers, body }: Call) => {
+  // Sends a call once: its answer, or `server-unreachable`.
+  const sendOnce = async ({ path, method, headers, body }: Call) => {
     if (!Object.values(headers).every((value) => HEADER_SAFE.test(value))) {
-      return { ok: false, error: "wrong-access-code" } as const;
+      return {
+        result: { ok: false, error: "wrong-access-code" } as const,
+        response: null,
+      };
     }
+    try {
+      const response = await fetcher(path, {
+        method,
+        headers: {
+          ...headers,
+          ...(body ? { "content-type": "application/json" } : {}),
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+      return { result: await readAnswer(response), response };
+    } catch {
+      return {
+        result: { ok: false, error: "server-unreachable" } as const,
+        response: null,
+      };
+    }
+  };
+
+  // Sends the call, and tries `player-busy` again after its `retry-after`. The call is asked
+  // again before each try, so that a session forgotten meanwhile is never sent.
+  const send = async (call: () => Call | null): Promise<ApiResult> => {
     for (let retry = 0; ; retry += 1) {
-      let response: Response;
-      try {
-        response = await fetcher(path, {
-          method,
-          headers: {
-            ...headers,
-            ...(body ? { "content-type": "application/json" } : {}),
-          },
-          body: body ? JSON.stringify(body) : undefined,
-          signal: AbortSignal.timeout(TIMEOUT_MS),
-        });
-      } catch {
-        return { ok: false, error: "server-unreachable" } as const;
+      const ready = call();
+      if (
+        ready === null ||
+        (ready.session !== undefined && refused.has(ready.session))
+      ) {
+        return { ok: false, error: "no-session" };
       }
-      const result = await readAnswer(response);
+      const { result, response } = await sendOnce(ready);
+      // Settled here, before the next call of the queue is sent.
+      if (
+        ready.session !== undefined &&
+        !result.ok &&
+        endsSession(result.error)
+      ) {
+        refused.add(ready.session);
+      }
+      if (ready.session === undefined && result.ok) refused.clear();
       if (
         result.ok ||
         result.error !== "player-busy" ||
+        response === null ||
         retry >= MAX_BUSY_RETRIES
       ) {
         return result;
@@ -151,26 +180,7 @@ export const createApi = ({
   // null when there is nothing to send anymore.
   const enqueue = (call: () => Call | null): Promise<ApiResult> => {
     pending += 1;
-    const run = queue.then(async (): Promise<ApiResult> => {
-      const ready = call();
-      if (
-        ready === null ||
-        (ready.session !== undefined && refused.has(ready.session))
-      ) {
-        return { ok: false, error: "no-session" };
-      }
-      const result = await send(ready);
-      // Settled here, before the next call of the queue is sent.
-      if (
-        ready.session !== undefined &&
-        !result.ok &&
-        endsSession(result.error)
-      ) {
-        refused.add(ready.session);
-      }
-      if (ready.session === undefined && result.ok) refused.clear();
-      return result;
-    });
+    const run = queue.then(() => send(call));
     queue = run.catch(() => undefined);
     return run.finally(() => {
       pending -= 1;

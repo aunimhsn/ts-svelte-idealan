@@ -268,4 +268,43 @@ describe("AppState", () => {
     expect(app.session).toBeNull();
     expect(kept()).toEqual({});
   });
+
+  it("follows another tab: logged out there, logged out here", async () => {
+    const { api } = fakeServer({
+      "/api/get-bag": () => Response.json(viewOf([game])),
+    });
+    const memory = memoryStorage(session);
+    const app = new AppState(api, memory.storage);
+    await vi.waitFor(() => expect(app.view).not.toBeNull());
+    memory.storage.removeItem(KEPT_KEY);
+    app.syncKept();
+    expect(app.session).toBeNull();
+    expect(app.view).toBeNull();
+  });
+
+  it("takes the session another tab entered with, rather than writing over it", async () => {
+    const renewed = { ...session, personalCode: "5678" };
+    const memory = memoryStorage(session);
+    const { api, calls } = fakeServer({
+      "/api/get-bag": (headers) => {
+        if (headers.get("x-player-code") === "1234") {
+          // Meanwhile, another tab entered with the new code.
+          memory.storage.setItem(KEPT_KEY, JSON.stringify(renewed));
+          return Response.json(
+            { error: "personal-code-reset" },
+            { status: 401 },
+          );
+        }
+        return Response.json(viewOf([game]));
+      },
+    });
+    const app = new AppState(api, memory.storage);
+    await vi.waitFor(() => expect(app.view).not.toBeNull());
+    expect(memory.kept()).toEqual(renewed);
+    expect(app.notice).toBeNull();
+    expect(calls.map((call) => call.headers.get("x-player-code"))).toEqual([
+      "1234",
+      "5678",
+    ]);
+  });
 });

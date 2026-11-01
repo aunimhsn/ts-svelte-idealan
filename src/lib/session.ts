@@ -83,6 +83,15 @@ export const sessionOf = (kept: Kept): Session | null =>
       }
     : null;
 
+// Whether two sessions carry the same credentials (both none, or the same three fields): the
+// nickname aside, which the admin may rename.
+export const sameSession = (a: Session | null, b: Session | null) =>
+  a === null || b === null
+    ? a === b
+    : a.accessCode === b.accessCode &&
+      a.playerId === b.playerId &&
+      a.personalCode === b.personalCode;
+
 // The storage of the browser, or null when it can't be reached (blocked site data).
 export const browserStorage = (): KeptStorage | null => {
   try {

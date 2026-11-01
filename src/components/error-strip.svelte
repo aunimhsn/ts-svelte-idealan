@@ -1,5 +1,10 @@
 <!-- The errors of the bag (specs.md, Error handling): a strip of translucent red under the
      header, over the page, with white text and a cross to close it; the bag keeps what it showed. -->
+<script lang="ts" module>
+  // The id of the message, for the field at fault to point to it (aria-describedby).
+  export const ERROR_STRIP_ID = "bag-error";
+</script>
+
 <script lang="ts">
   import fr from "../i18n/fr.json";
   import Icon from "./icon.svelte";
@@ -9,7 +14,7 @@
 
 <div class="strip" role="alert">
   <div class="inner">
-    <p>{message}</p>
+    <p id={ERROR_STRIP_ID}>{message}</p>
     <button
       type="button"
       class="close"

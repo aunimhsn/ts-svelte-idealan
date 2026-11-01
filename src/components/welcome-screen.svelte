@@ -19,19 +19,27 @@
   let nickname = $state(untrack(() => app.kept.nickname ?? ""));
   let personalCode = $state("");
   let error = $state<WelcomeError | null>(null);
+  // The nickname as it was sent, named by the errors (not as it is being typed).
+  let sentNickname = $state("");
   let entering = $state(false);
+  let banner = $state<HTMLElement>();
+
+  // A friend sent back from the bag: the banner that says why takes the focus, so that a screen
+  // reader reads it at once.
+  $effect(() => {
+    banner?.focus();
+  });
 
   const inputs: Partial<Record<WelcomeField, HTMLInputElement>> = {};
 
   const errorOf = (field: WelcomeField) =>
-    error?.field === field
-      ? welcomeMessage(error.code, readNickname(nickname) ?? nickname)
-      : null;
+    error?.field === field ? welcomeMessage(error.code, sentNickname) : null;
 
   const submit = async (event: SubmitEvent) => {
     event.preventDefault();
     if (entering) return;
     entering = true;
+    sentNickname = readNickname(nickname) ?? nickname.trim();
     error = await app.enter({ accessCode, nickname, personalCode });
     entering = false;
     if (error !== null) {
@@ -43,7 +51,9 @@
 
 <main class="welcome">
   {#if app.notice !== null}
-    <p class="banner" role="status">{fr.notices[app.notice]}</p>
+    <p class="banner" role="alert" tabindex="-1" bind:this={banner}>
+      {fr.notices[app.notice]}
+    </p>
   {/if}
   <div class="head">
     <div class="head-logo"><AppLogo size={72} /></div>
@@ -146,6 +156,11 @@
 
   .banner {
     margin-bottom: var(--space-8);
+  }
+
+  /* Focused by the script only, to be read: no ring. */
+  .banner:focus {
+    outline: none;
   }
 
   .head {

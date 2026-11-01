@@ -115,7 +115,7 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 - Two codes, set by the owner in Netlify and sent in the friends' group conversation: the **member code** reads the bag, adds, votes and removes one's own games; the **admin code**, the owner's only, also removes any game, renames, resets and deletes players, and empties the bag.
 - Reading the bag needs a code too: only the members and the owner see the games and the nicknames.
 - The admin code moderates the games and the players, not the votes: the owner votes once per game, like every friend.
-- The identity is the player's nickname (« Sylent »), not their first name: 3 to 16 letters without accents and digits, no space or special character; the first letter is capitalized automatically; compared without case (« SYLENT » is « Sylent »), shown as typed.
+- The identity is the player's nickname (« Sylent »), not their first name: 3 to 16 letters or digits, without accents, spaces or special characters; the first letter is capitalized automatically; compared without case (« SYLENT » is « Sylent »), shown as typed.
 - The personal code (4 digits) protects a nickname: taking it on another device (the phone before the LAN, the PC on the day) asks for it. A friend who forgot it asks the admin to reset it.
 - 5 wrong personal codes in a row lock the nickname, even for the right code, until the admin resets its code (step 7); an entry by the welcome with the right code clears the count, never the reloads of the bag. Each try is written before its code is checked, so that calls sent all at once can't check more than 5 codes; a try whose check never ended (the server crashed) expires after 2 minutes, so that it never locks a friend for good. While a friend's other calls hold the last tries, the server answers « try again in a moment » rather than « locked ». 4 digits are 10,000 codes, which a script would otherwise try in minutes. Accepted by the owner on 2026-11-01: a friend can lock another's nickname on purpose by typing 5 wrong codes, and only the admin unlocks it.
 - « Se déconnecter » forgets the friend in this browser (a PC lent at the LAN). Coming back under another nickname makes a new player: their former games and votes stay with the former nickname; only the admin renames a player.
@@ -134,7 +134,7 @@ Each error is a short sentence, with « tu ». On the welcome, it sits under the
 | Wrong personal code | The welcome says the personal code is wrong for this nickname, and to ask the admin if forgotten. |
 | 5 wrong personal codes in a row | The welcome says the nickname is locked, and to ask the admin to reset its code. |
 | The bag has 50 players | A new nickname is refused: « vois avec l’admin ». |
-| A nickname refused (length, characters) | The welcome says what is allowed: 3 to 16 letters without accents and digits. |
+| A nickname refused (length, characters) | The welcome says what is allowed: « 3 à 16 lettres ou chiffres, sans accents ni espace. » (reworded with the owner on 2026-11-01: « sans accents et chiffres » read as « without digits »). |
 | Steam doesn't answer, or limits the calls | The game is not added: « Steam ne répond pas : réessaie dans une minute. » The bag is not affected. |
 | The game has no cover | A neutral placeholder with the name of the game. |
 | The server doesn't answer | The bag keeps what it showed, with a message that says when it was read (« le sac affiché date de 21 h 04 »); « Rafraîchir » tries again. A reload every 30 seconds that fails says it once, not at each try. |
