@@ -3,6 +3,13 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  # Skips the build, and its credits, when nothing that ends up in the site changed since the last
+  # deploy: an allowlist of what the build reads (the tests and the documentation are left out).
+  # Exit 0 skips; any other exit, a failing `git` included, builds. Two cases build before the
+  # diff, which would find nothing and skip: an empty $CACHED_COMMIT_REF (`git diff` would compare
+  # the working tree), and a build without cache, where Netlify gives $CACHED_COMMIT_REF the value
+  # of $COMMIT_REF (a first deploy preview, « Clear cache and deploy », a retry).
+  ignore = "test -n \"$CACHED_COMMIT_REF\" && test \"$CACHED_COMMIT_REF\" != \"$COMMIT_REF\" && git diff --quiet \"$CACHED_COMMIT_REF\" \"$COMMIT_REF\" -- src public netlify/functions netlify/lib index.html package.json package-lock.json vite.config.ts svelte.config.js tsconfig.json tsconfig.node.json netlify.toml .nvmrc ':(exclude)src/*.test.ts'"
 
 [dev]
   # `netlify dev` starts Vite and serves the interface and the functions on one address.

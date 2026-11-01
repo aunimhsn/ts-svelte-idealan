@@ -45,5 +45,8 @@
     "esbuild": false,
     "netlify-cli": false,
     "unix-dgram": false
+  },
+  "dependencies": {
+    "@netlify/blobs": "^11.1.7"
   }
 }

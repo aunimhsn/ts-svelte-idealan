@@ -35,12 +35,15 @@ Rejected:
 
 - Each function of `netlify/functions/` gives its address in its `config` (`path: "/api/<name>"`), so that the interface calls `/api/ping` rather than `/.netlify/functions/ping`. The skeleton has one, `ping`, which answers `{ "ok": true }` to a `GET`; the home screen shows whether it answers.
 - The tests of the functions live in `netlify/tests/`, not next to them: Netlify bundles every file of `netlify/functions/` as a function, a test included.
+- The code shared by the functions lives in `netlify/lib/` (the store, the access codes, Steam), for the same reason; the reading of a Steam link, needed by the interface too, lives in `src/lib/steam-link.ts`.
+- Every function checks the access code first (`netlify/lib/access.ts`), sent in the `x-access-code` header rather than in the query, which the logs of Netlify keep. The codes are the environment variables `MEMBER_CODE` and `ADMIN_CODE`, secret values of the contexts Production, Deploy previews and Branch deploys, for the Functions scope only (set by the owner on 2026-11-01): Netlify never shows them again and fails a build whose files contain one. They are compared by their SHA-256 digests, so that the time of the answer tells nothing; without `MEMBER_CODE`, a function answers `server-not-configured` rather than « wrong code ».
+- `GET /api/steam-game?appid=<appid>` answers the Steam page of a game: it lets step 5 be tried on a deploy preview, from the servers of Netlify; step 6 removes it once `add-game` reads the game itself.
 - An error answers with an error code (`{ "error": "method-not-allowed" }`) and its HTTP status; the interface turns the code into a French message of `src/i18n/fr.json`.
 - The width check serves `dist/` without the functions: a call to `/api/` answers 404 there, so each screen is checked in its error state until the bag gets test data.
 
 ## Data
 
-- `bag`, `players` and `steam/<appid>` live in a site-wide store (`getStore`). A deploy preview reads and writes the same store as the production site: the functions use another store name outside production (decided at step 5), so that a preview never touches the friends' bag.
+- `bag`, `players` and `steam/<appid>` live in a site-wide store (`getStore`) in production. A site-wide store is shared by every deploy, previews included: outside production (a deploy preview, a branch deploy, `netlify dev`), the functions use a store of the deploy (`getDeployStore`), emptied with each push, so that a preview never touches the friends' bag (`netlify/lib/store.ts`; chosen by the owner on 2026-11-01 over a store shared by every preview, accepting to start each try from an empty bag).
 - Every write of `bag` or `players` reads the key with its ETag, changes it, and writes it with `onlyIfMatch`; when `modified` is `false`, another friend wrote meanwhile: read again and retry, a few times at most.
 - A new nickname goes into `players` under the same conditional write, so that two friends taking the same nickname at the same second can't both get it.
 - The votes and the adder of a game point to the fixed id of a player (`j1`), so that renaming writes only `players`.
@@ -49,7 +52,8 @@ Rejected:
 ## Steam
 
 - The `appid` is read in the link (`/app/<digits>`), so that a friend only pastes the link of the game's page; the full list of Steam apps (`IStoreService/GetAppList`, which needs a key) is not needed.
-- The game comes from `https://store.steampowered.com/api/appdetails?appids=<appid>&cc=fr&l=french&filters=basic,categories,genres` (one `appid` per call, about 7 KB with the filters), undocumented and rate limited, without a key: its answer is cached in Netlify Blobs (`steam/<appid>`), and only `type: "game"` goes in the bag (a soundtrack or a DLC answers too).
+- The link is read by `src/lib/steam-link.ts`: `store.steampowered.com` (`/app/<appid>`, `/agecheck/app/<appid>`) and `steamcommunity.com` (`/app/<appid>`), in `http` or `https`; an `appid` is a whole number from 1 to 4,294,967,295 without a leading zero; `/sub/` and `/bundle/` are packages.
+- The game comes from `https://store.steampowered.com/api/appdetails?appids=<appid>&cc=fr&l=french&filters=basic,categories,genres` (one `appid` per call, about 7 KB with the filters), undocumented and rate limited, without a key: its answer is cached in Netlify Blobs (`steam/<appid>`), and only `type: "game"` goes in the bag (a soundtrack or a DLC answers too). The cache keeps a page that is not a game too, so that Steam is not asked again, but not an `appid` that Steam doesn't know (a game not released yet may get it). The answer is untrusted (`netlify/lib/steam-game.ts`): only the type, name, cover, categories (id and French name) and genres are kept, checked one by one, the texts cut at 200 characters, the cover kept only on `https://*.steamstatic.com`. Steam is given 8 seconds; a refusal (429), an error, an unexpected answer or no answer is `steam-unavailable`. When Blobs fails, Steam is asked as if nothing was cached.
 - The cover is `header_image` of the answer; the vertical cover of the Steam CDN is an idea of the backlog.
 
 ## Commands

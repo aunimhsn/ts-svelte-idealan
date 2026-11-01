@@ -2,6 +2,16 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 4. Design system
+
+Merged on 2026-11-01 in [#9](https://github.com/aunimhsn/ts-svelte-idealan/pull/9). Tools: design system.
+
+- `docs/mockups/shared/tokens.css`: every length, color, shadow, duration, layer, weight, line height and letter spacing of the mock-up as a named token (about 110, by role), one breakpoint at 900 px; it becomes the tokens file of the application.
+- `docs/mockups/shared/app.css` rewritten on these tokens only; the three logos set aside dropped.
+- `docs/branding.md`: the tokens with their reasons and their contrasts on the real background `#04050a` (every text passes AA), the components, motion, tone, icons, accessibility.
+- The owner's decisions, with the options set aside: the borders kept at 55 % of the blue (2.1:1, below the 3:1 of WCAG 1.4.11, accepted); a bordeaux `#8c1626` for the strip of the errors, among four reds; the Steam link written in 14 px everywhere, accepting that an iPhone zooms when the field is tapped.
+- `design-journal.md`: the entry of idealan, with the lesson of the bolder fourth style.
+
 ## 3. Mock-up
 
 Merged on 2026-11-01 in [#8](https://github.com/aunimhsn/ts-svelte-idealan/pull/8). Tools: mock-up.
