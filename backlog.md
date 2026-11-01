@@ -43,6 +43,8 @@ One entry per item, in the section of its kind: what it is in one sentence, what
 
 - Move to TypeScript 7 (the rewrite in Go) once `svelte-check` and `typescript-eslint` accept it (their peer dependencies stop at `^6.0.0` and `<6.1.0` on 2026-11-01): one `build` pull request that raises `typescript`, `svelte-check` and `typescript-eslint` together, runs `npm run check` again and updates `docs/technical-choices.md`; about one session once the tools are ready. Dependabot no longer proposes it once the major version is ignored (#3): check at the end of each cycle. Noted on 2026-11-01.
 
+- A French VPS to host several projects, instead of the free plan of Netlify (300 credits a month, 15 per production deploy): no credit limit, data in France; in return, the server to maintain (security updates, firewall, certificates, backups), the functions and Blobs to replace (a Node.js server and SQLite, for example), and the deploy previews to rebuild (Coolify does it). Compare with a paid Netlify plan before choosing. Depends on: the retrospective of this project, and the template. Noted on 2026-11-01.
+
 - The links to `astro-static-website-template`, renamed `ts-astro-static-website-template` on 2026-11-01, in the documents of `rust-cli-template`, `sylent.art` and the other projects: GitHub redirects them, but the redirect breaks if a repository takes the old name again. Noted on 2026-11-01.
 
 ## Waiting on others
