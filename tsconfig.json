@@ -1,11 +1,12 @@
 {
+  "$comment": "The interface, which runs in the browser: no types of Node.js, so that process.env or a module of Node.js doesn't compile in src/. The functions and the configuration files are in tsconfig.node.json.",
   "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["node", "vite/client"],
+    "types": ["vite/client"],
     "strict": true,
     "noEmit": true,
     "allowJs": true,
@@ -13,11 +14,5 @@
     "resolveJsonModule": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": [
-    "src",
-    "netlify",
-    "vite.config.ts",
-    "svelte.config.js",
-    "eslint.config.js"
-  ]
+  "include": ["src"]
 }

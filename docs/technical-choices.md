@@ -6,7 +6,7 @@ The technical choices of the [roadmap](../roadmap.md), with their reasons and th
 
 | Topic | Choice | Reason |
 |---|---|---|
-| Hosting | Netlify, free plan, at its `netlify.app` address | The interface and the server part in one place, deployed from GitHub on every merge, with a deploy preview per pull request. The `netlify.app` address keeps the project apart from the owner's business. Limits in [external-services.md](external-services.md). |
+| Hosting | Netlify, free plan, at `ts-svelte-idealan-sylent.netlify.app` | The interface and the server part in one place, deployed from GitHub on every merge, with a deploy preview per pull request. The address carries the owner's name, who signs every product they make (2026-11-01: the former rule that kept the project apart from the owner's business is removed). Limits in [external-services.md](external-services.md). |
 | Interface | [Svelte](https://svelte.dev/) 5 with the runes, built with [Vite](https://vite.dev/), in TypeScript | A component is one file with its HTML, script and style; the reactivity is part of the language (`$state`, `$derived`), without hooks. The owner prefers it to React. |
 | Server | Netlify Functions, in TypeScript | Plain files of `netlify/functions/` that use the standard `Request`, `Response` and `fetch`: they call the Steam Store (which the browser can't call, no CORS), check the access code and write the bag. |
 | Data | Netlify Blobs | A key-value store of Netlify, without an account or a service of its own; one key per game, so that two friends adding two games at once don't overwrite each other. |

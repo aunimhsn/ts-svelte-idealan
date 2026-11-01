@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "engines": {
-    "node": ">=24"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "netlify dev",
@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "svelte-check --fail-on-warnings && eslint . && stylelint \"**/*.{css,svelte}\"",
+    "lint": "svelte-check --fail-on-warnings && tsc -p tsconfig.node.json && eslint . && stylelint \"**/*.{css,svelte}\"",
     "test": "vitest run",
     "check:overflow": "node scripts/check-overflow.mjs",
     "check": "npm run format:check && npm run lint && npm run test && npm run build && npm run check:overflow"

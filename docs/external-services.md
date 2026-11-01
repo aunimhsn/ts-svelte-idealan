@@ -11,7 +11,7 @@ To check in step 1:
 - The limits of the free plan: bandwidth, builds, calls and duration of the functions, size and number of blobs.
 - What happens when a limit is reached on the free plan (the site paused, or charged), with no payment method on the account.
 - Whether the deploy previews of a public repository are public, and what they show (the bag of the production site, or an empty one).
-- The rules of the names of a site (`<name>.netlify.app`) and whether `idealan` is free.
+- The rules of the names of a site (`<name>.netlify.app`): the name chosen is `ts-svelte-idealan-sylent`.
 
 ## Steam Store (games and covers)
 

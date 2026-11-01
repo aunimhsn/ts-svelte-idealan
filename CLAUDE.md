@@ -11,7 +11,7 @@
 ## Project
 
 - Idealan (« idée » + « LAN ») is a small web application for a LAN party between friends: before the event, each friend pastes the link of a Steam game they would like to play into a shared « bag »; on the day, the group opens the page and picks what to play.
-- Built with Svelte 5 (runes) and Vite in TypeScript; the server part is Netlify Functions, the data lives in Netlify Blobs; hosted on Netlify at its `netlify.app` address only, never on a domain of the owner, so that the project stays apart from the owner's business.
+- Built with Svelte 5 (runes) and Vite in TypeScript; the server part is Netlify Functions, the data lives in Netlify Blobs; hosted on Netlify at `ts-svelte-idealan-sylent.netlify.app`, signed with the owner's name like every product they make.
 - No user accounts: a shared access code, checked by the functions on the server, protects the writes; each friend gives a nickname, kept in their browser.
 - The Steam data (name, cover, categories) comes from the public Steam Store; no Steam key is needed for version 1. Any key or code lives in the Netlify environment variables, never in the repository or in the code sent to the browser.
 - The repository is public: never commit secrets, the access code, the friends' nicknames or any personal data.
@@ -138,6 +138,6 @@ Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.
 ## Deployment
 
 - Netlify deploys the application on every push to `main`, i.e. when a pull request is merged, and gives every pull request a deploy preview: GitHub Actions only checks, it doesn't deploy.
-- The site keeps its `netlify.app` address (`idealan.netlify.app` if the name is free); never set a custom domain of the owner.
+- The site lives at `ts-svelte-idealan-sylent.netlify.app`, the name chosen by the owner on 2026-11-01.
 - The environment variables (the access code, later a Steam key) are set in the Netlify site settings by the owner; never print their values, in the code, the logs or the conversation.
 - Never enter a payment method or change the plan of the Netlify account: the free plan pauses the site instead of charging it when a limit is reached.

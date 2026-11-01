@@ -2,7 +2,7 @@
   "$comment": "The interface texts, in French: no French text is written in a component or a function (CLAUDE.md, Language).",
   "app": {
     "name": "Idealan",
-    "description": "Le sac à jeux de la LAN : chacun y glisse les jeux Steam qu’il aimerait y jouer."
+    "description": "Le sac à jeux de la LAN : chacun y glisse les jeux Steam auxquels il aimerait jouer."
   },
   "status": {
     "checking": "Connexion au serveur…",

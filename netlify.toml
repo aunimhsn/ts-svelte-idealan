@@ -7,5 +7,20 @@
 [dev]
   # `netlify dev` starts Vite and serves the interface and the functions on one address.
   framework = "#custom"
-  command = "vite"
+  # A fixed port: if 5173 is taken, Vite stops at once instead of netlify dev waiting for it.
+  command = "vite --strictPort"
   targetPort = 5173
+
+# The security headers of every answer. The Content Security Policy lets the page load only its
+# own files, call only its own functions, and show images only from itself and the Steam CDN
+# (the covers): a script slipped into a game name couldn't load anything else or send the access
+# code elsewhere. Inline styles are allowed: the dev server of Vite injects its styles in the
+# page, and a style can't run code. Add a host here when the page needs one;
+# scripts/check-overflow.mjs serves this policy too, so a file it blocks fails the check.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://*.steamstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
