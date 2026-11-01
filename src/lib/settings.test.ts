@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { BagGame, BagView } from "./bag";
-import { accountsOf, countsOf, deleteText, settingsMessage } from "./settings";
+import { accountsOf, countsOf, deleteText } from "./settings";
 
 const game = (
   appid: number,
@@ -63,23 +63,5 @@ describe("deleteText", () => {
     [{ games: 0, votes: 0 }, "Il n’a ni jeu ni vote."],
   ])("says what goes with %j", (counts, text) => {
     expect(deleteText(counts)).toBe(text);
-  });
-});
-
-describe("settingsMessage", () => {
-  it("names the nickname taken, and falls back on an unknown code", () => {
-    expect(settingsMessage("nickname-taken", "Lou")).toBe(
-      "Lou existe déjà : choisis un autre pseudo.",
-    );
-    expect(settingsMessage("no-such-code")).toContain("recharge la page");
-  });
-
-  it("takes the texts the welcome shares, kept in one place", () => {
-    expect(settingsMessage("invalid-nickname")).toBe(
-      "3 à 16 lettres ou chiffres, sans accents ni espace.",
-    );
-    expect(settingsMessage("server-unreachable")).toContain(
-      "Le serveur ne répond pas",
-    );
   });
 });

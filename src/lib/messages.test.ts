@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import fr from "../i18n/fr.json";
 import {
+  adminMessage,
   bagMessage,
   format,
   formatTime,
@@ -103,5 +104,23 @@ describe("format", () => {
   it("fills the names it is given and leaves the others", () => {
     expect(format("{a} et {b}", { a: 1 })).toBe("1 et {b}");
     expect(formatTime(new Date(2026, 10, 7, 9, 5))).toBe("9\u00a0h\u00a005");
+  });
+});
+
+describe("adminMessage", () => {
+  it("names the nickname taken, and falls back on an unknown code", () => {
+    expect(adminMessage("nickname-taken", "Lou")).toBe(
+      "Lou existe déjà : choisis un autre pseudo.",
+    );
+    expect(adminMessage("no-such-code")).toContain("recharge la page");
+  });
+
+  it("takes the texts the welcome shares, kept in one place", () => {
+    expect(adminMessage("invalid-nickname")).toBe(
+      "3 à 16 lettres ou chiffres, sans accents ni espace.",
+    );
+    expect(adminMessage("server-unreachable")).toContain(
+      "Le serveur ne répond pas",
+    );
   });
 });

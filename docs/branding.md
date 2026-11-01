@@ -166,7 +166,7 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 
 <!-- Where they come from, their license, their format and sizes. -->
 
-- **Covers**: the header images of the Steam CDN (460 × 215, the ratio kept by every cover), never copied into the repository; shown at the width of a card (about 340 px on a phone, 300 px on a PC) and as 88 px thumbnails in the emptying (`--thumb`). A missing cover becomes a striped block (`--stripe`) with the name of the game. The footer says « Données et images : Steam. Idealan n’est pas affilié à Valve. »
+- **Covers**: the header images of the Steam CDN (460 × 215, the ratio kept by every cover), never copied into the repository; shown at the width of a card (about 340 px on a phone, 300 px on a PC) and as 88 px thumbnails in the emptying (`--thumb`). A missing cover becomes a striped block (`--stripes`, drawn with `--stripe`) with the name of the game; a bare striped block in the emptying, where the name is written next to it. The footer says « Données et images : Steam. Idealan n’est pas affilié à Valve. »
 - **Icons**: SVG lines in the color of the text, never text symbols, drawn in the mock-up (`ICON` of `app.js`): vote up and down, refresh, chevron, people.
 - **The logo and the signature**: see [Brand assets](#brand-assets) and [Logo](#logo).
 

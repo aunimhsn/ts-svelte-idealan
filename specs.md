@@ -68,6 +68,9 @@ Before what can't be undone, with the numbers at stake, and « Annuler » or the
 ### Emptying the bag (admin panel)
 
 - The bag with a box per game: the admin checks the games to keep (their votes stay), then « Vider (38 jeux) » opens the confirmation and removes all the others.
+- The whole bag, whatever the filters, in the order of the bag when the panel opens: a reload never moves a game under the finger, and a game added meanwhile comes last. No box is checked when the panel opens; « Vider » waits until a game is to remove (chosen by the owner on 2026-11-02).
+- Only the games the admin saw unchecked are removed: a game a friend adds while the confirmation is open stays in the bag, and the confirmation says exactly how many go (chosen by the owner on 2026-11-02). The players stay, and so do the Steam pages read, so that a game added again doesn't ask Steam.
+- An error of the emptying (the server not answering) shows in a red block over the bar of the panel, since the strip of the bag is under it; the panel stays open with the boxes as they were.
 
 ### Layout
 

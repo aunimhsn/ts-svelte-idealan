@@ -262,6 +262,9 @@ export const createApi = ({
       ),
     deletePlayer: (credentials: CredentialsOf, id: string) =>
       enqueue(sessionCall(credentials, "/api/delete-player", "POST", { id })),
+    // Empties the bag of the admin: the games to remove, not the ones kept.
+    emptyBag: (credentials: CredentialsOf, appids: number[]) =>
+      enqueue(sessionCall(credentials, "/api/empty-bag", "POST", { appids })),
   };
 };
 

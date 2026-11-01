@@ -115,6 +115,11 @@
   --scanline-pitch: 3px; /* a dark line of 1 px every 3 px */
   --stripe: rgb(255 255 255 / 3%); /* the stripes of a missing cover */
   --stripe-width: 10px;
+  --stripes: repeating-linear-gradient(
+    135deg,
+    transparent 0 var(--stripe-width),
+    var(--stripe) var(--stripe-width) calc(2 * var(--stripe-width))
+  ); /* a missing cover, on a card or in the emptying */
   --glow-text:
     0 0 12px color-mix(in srgb, var(--signal) 80%, transparent),
     0 0 36px color-mix(in srgb, var(--signal) 50%, transparent);
@@ -179,6 +184,7 @@
   /* Layers, from the back. */
   --layer-floor: -2;
   --layer-behind: -1; /* behind the content of its own box */
+  --layer-above: 1; /* above the content of its own box: the box over a cover */
   --layer-header: 2;
   --layer-bubble: 5;
   --layer-popover: 6;

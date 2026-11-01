@@ -1,5 +1,5 @@
 // What the settings of the admin show (specs.md, Settings): one line per player with their
-// counts and the state of their account, and the texts of the deletion and of the errors.
+// counts and the state of their account, and the texts of the deletion.
 import fr from "../i18n/fr.json";
 import type { AccountState, BagGame, BagView, PlayerAccount } from "./bag";
 import { format } from "./messages";
@@ -56,21 +56,3 @@ export const deleteText = ({ games, votes }: Counts) => {
     }),
   );
 };
-
-const has = <T extends object>(
-  texts: T,
-  code: string,
-): code is keyof T & string => Object.hasOwn(texts, code);
-
-// The message of an error of the settings, under the line of its player. `nickname` is the one
-// the admin typed, for « … existe déjà ». The errors the welcome knows too (a nickname against
-// the rules, the server not answering) take its texts, kept in one place.
-export const settingsMessage = (code: string, nickname = "") =>
-  format(
-    has(fr.settingsErrors, code)
-      ? fr.settingsErrors[code]
-      : has(fr.welcomeErrors, code)
-        ? fr.welcomeErrors[code]
-        : fr.welcomeErrors.unexpected,
-    { nickname },
-  );

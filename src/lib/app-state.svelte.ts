@@ -98,6 +98,9 @@ export class AppState {
   accounts = $state<PlayerAccount[] | null>(null);
   settingsError = $state<SettingsError | null>(null);
   settingsBusy = $state<string | null>(null);
+  // The emptying of the bag: running or not, and its error, shown in its panel.
+  emptying = $state(false);
+  emptyError = $state<string | null>(null);
   session = $derived(sessionOf(this.kept));
 
   #api: Api;
@@ -161,6 +164,8 @@ export class AppState {
     this.accounts = null;
     this.settingsError = null;
     this.settingsBusy = null;
+    this.emptying = false;
+    this.emptyError = null;
     this.notice = notice;
     this.#reloadFailed = false;
   }
@@ -415,6 +420,26 @@ export class AppState {
     return this.#settings(id, () =>
       this.#api.deletePlayer(this.#credentials, id),
     );
+  }
+
+  // Empties the bag, once confirmed: removes the games of `appids`, the ones the admin saw
+  // unchecked. Answers whether the bag was emptied; its error shows in the panel, over the strip.
+  async emptyBag(appids: number[]) {
+    if (this.emptying || appids.length === 0) return false;
+    this.emptying = true;
+    this.emptyError = null;
+    const epoch = this.#epoch;
+    const result = await this.#api.emptyBag(this.#credentials, appids);
+    if (epoch !== this.#epoch) return false;
+    this.emptying = false;
+    const outcome = this.#settle(result);
+    if (outcome.ok) return true;
+    if (outcome.error !== null) this.emptyError = outcome.error;
+    return false;
+  }
+
+  clearEmptyError() {
+    this.emptyError = null;
   }
 
   closeToast() {
