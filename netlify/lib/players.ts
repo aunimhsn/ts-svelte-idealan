@@ -106,6 +106,16 @@ export const readAttempts = (value: unknown): Attempts => {
   throw new Error("An attempts key has an unexpected shape.");
 };
 
+// Whether the player of `id` is still in `players`: read again inside a write of the bag, so that a
+// call checked just before the admin deleted its player can't leave a vote or a game behind
+// (the review of step 7a). The deletion writes `players` before the bag: a write of the bag that
+// read the player still there either lands before the bag is cleaned, or is tried again and sees
+// the player gone.
+export const isStillPlayer = async (store: JsonStore, id: string) =>
+  readPlayers(await store.getJSON(PLAYERS_KEY)).list.some(
+    (player) => player.id === id,
+  );
+
 export const viewOfPlayer = ({ id, nickname }: Player): PlayerView => ({
   id,
   nickname,

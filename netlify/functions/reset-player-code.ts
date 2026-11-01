@@ -1,6 +1,7 @@
 // Resets the personal code of a player and unlocks their nickname (specs.md, Settings):
 // POST /api/reset-player-code with { id }, the admin code and the admin in the headers. The first
-// one to enter with the nickname then chooses its new code. Answers the bag with the accounts.
+// one to enter with the nickname then chooses its new code; never the admin's own. Answers the bag
+// with the accounts.
 import type { Config, Context } from "@netlify/functions";
 import type { Environment } from "../lib/access";
 import {
@@ -27,7 +28,7 @@ export const handleResetPlayerCode = async (
   if (!opened.ok) return opened.response;
   const id = playerIdOf(await readBody(request));
   if (id === null) return errorResponse("invalid-request", 400);
-  const refused = await resetPlayerCode(store, id);
+  const refused = await resetPlayerCode(store, id, opened.session.player.id);
   if (refused !== null) {
     return errorResponse(refused, STATUS_OF_SETTINGS_ERROR[refused]);
   }

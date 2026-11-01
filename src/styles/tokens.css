@@ -147,6 +147,8 @@
   --width-welcome: 420px;
   --width-dialog: 520px;
   --width-dialog-tall: 1080px;
+  --height-sheet: 92dvh; /* the tallest panels: dvh follows the address bar of a phone */
+  --height-dialog: 86dvh;
   --width-bubble: 260px; /* who voted, « Jouable à » */
   --width-link: 560px; /* the link field on a PC */
   --width-players: 72px; /* the field « joueurs max » */

@@ -63,11 +63,14 @@ const has = <T extends object>(
 ): code is keyof T & string => Object.hasOwn(texts, code);
 
 // The message of an error of the settings, under the line of its player. `nickname` is the one
-// the admin typed, for « … existe déjà ».
+// the admin typed, for « … existe déjà ». The errors the welcome knows too (a nickname against
+// the rules, the server not answering) take its texts, kept in one place.
 export const settingsMessage = (code: string, nickname = "") =>
   format(
     has(fr.settingsErrors, code)
       ? fr.settingsErrors[code]
-      : fr.settingsErrors.unexpected,
+      : has(fr.welcomeErrors, code)
+        ? fr.welcomeErrors[code]
+        : fr.welcomeErrors.unexpected,
     { nickname },
   );

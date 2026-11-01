@@ -73,4 +73,13 @@ describe("settingsMessage", () => {
     );
     expect(settingsMessage("no-such-code")).toContain("recharge la page");
   });
+
+  it("takes the texts the welcome shares, kept in one place", () => {
+    expect(settingsMessage("invalid-nickname")).toBe(
+      "3 à 16 lettres ou chiffres, sans accents ni espace.",
+    );
+    expect(settingsMessage("server-unreachable")).toContain(
+      "Le serveur ne répond pas",
+    );
+  });
 });

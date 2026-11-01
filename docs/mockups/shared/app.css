@@ -1017,7 +1017,7 @@ input {
 .app-dialog.is-tall {
   display: flex;
   flex-direction: column;
-  max-height: 92vh;
+  max-height: var(--height-sheet);
 }
 
 .app-dialog-head {
@@ -1074,6 +1074,7 @@ input {
 }
 
 .app-player-self {
+  grid-column: -2 / -1;
   align-self: center;
   justify-self: center;
   color: var(--dim);
@@ -1400,7 +1401,7 @@ input {
 
   .app-dialog.is-tall {
     width: min(var(--width-dialog-tall), 90vw);
-    max-height: 86vh;
+    max-height: var(--height-dialog);
   }
 
   .app-player {

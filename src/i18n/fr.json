@@ -145,15 +145,11 @@
     "player-locked": "Ton pseudo est verrouillé après 5 codes perso faux : demande à l’admin de réinitialiser ton code."
   },
   "settingsErrors": {
-    "invalid-nickname": "3 à 16 lettres ou chiffres, sans accents ni espace.",
     "nickname-taken": "{nickname} existe déjà : choisis un autre pseudo.",
-    "player-not-found": "Ce joueur n’est plus dans le sac : ferme les réglages et rouvre-les.",
+    "cannot-reset-self": "Tu ne peux pas réinitialiser ton propre code perso.",
     "cannot-delete-self": "Tu ne peux pas te supprimer toi-même.",
     "admin-only": "Seul l’admin peut changer les réglages : entre avec le code admin.",
-    "player-busy": "Trop d’actions en même temps : réessaie dans un instant.",
-    "server-unreachable": "Le serveur ne répond pas : réessaie dans un instant.",
-    "server-error": "Le serveur a eu un souci : réessaie dans un instant.",
-    "unexpected": "Le serveur a refusé la demande : recharge la page et réessaie."
+    "player-busy": "Trop d’actions en même temps : réessaie dans un instant."
   },
   "bagErrors": {
     "not-a-steam-link": "Colle le lien d’un jeu de la boutique Steam.",

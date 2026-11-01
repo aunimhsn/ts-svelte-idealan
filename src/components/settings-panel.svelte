@@ -1,7 +1,7 @@
 <!-- The settings of the admin (specs.md, Settings): one line per player, their nickname in a field
      with « Renommer », their votes and games, the state of their account (« verrouillé », « code à
      choisir »), « Réinitialiser le code perso » and « Supprimer », with its confirmation; the admin's
-     own line has « toi » instead. An error shows in a red bubble under the line of its player
+     own line has neither, only « toi ». An error shows in a red bubble under the line of its player
      (docs/branding.md, Components). A sheet from the bottom on a phone, a window on a PC, as the
      confirmation: a native <dialog>, closed with « Fermer », « Échap » or a click on the dimmed
      bag. -->
@@ -54,6 +54,17 @@
     }
   };
 
+  // The note of the panel, where the keyboard focus goes once the line deleted is gone.
+  let note = $state<HTMLElement>();
+
+  const remove = async (id: string) => {
+    const removed = await app.deletePlayer(id);
+    const lost =
+      document.activeElement === null ||
+      document.activeElement === document.body;
+    if (removed && lost) note?.focus();
+  };
+
   const plural = (count: number, one: string, many: string) =>
     count === 1 ? one : many;
 </script>
@@ -82,7 +93,7 @@
         {fr.settings.close}
       </button>
     </div>
-    <p class="note" aria-live="polite">
+    <p class="note" tabindex="-1" aria-live="polite" bind:this={note}>
       {#if app.accounts === null && app.settingsBusy === ""}
         {fr.settings.loading}
       {:else if accounts.length === 1}
@@ -130,19 +141,19 @@
               <span class="status">{fr.settings.codeToChoose}</span>
             {/if}
           </span>
-          <button
-            type="button"
-            class="button is-small reset"
-            aria-disabled={busy}
-            onclick={() => {
-              if (!busy) void app.resetPlayerCode(account.id);
-            }}
-          >
-            {fr.settings.reset}
-          </button>
           {#if account.id === meId}
             <span class="self">{fr.settings.self}</span>
           {:else}
+            <button
+              type="button"
+              class="button is-small reset"
+              aria-disabled={busy}
+              onclick={() => {
+                if (!busy) void app.resetPlayerCode(account.id);
+              }}
+            >
+              {fr.settings.reset}
+            </button>
             <button
               type="button"
               class="button is-small delete"
@@ -172,7 +183,7 @@
     name={player.nickname}
     text={deleteText(countsOf(games, player.id))}
     action={fr.confirm.deleteAction}
-    onconfirm={() => void app.deletePlayer(player.id)}
+    onconfirm={() => void remove(player.id)}
     onclose={() => (deleting = null)}
   />
 {/if}
@@ -181,7 +192,7 @@
   .panel {
     width: 100%;
     max-width: none;
-    max-height: 92vh;
+    max-height: var(--height-sheet);
     margin: auto 0 0;
     padding: 0;
     border: 0;
@@ -302,7 +313,9 @@
     order: 2;
   }
 
+  /* Under « Supprimer » of the other lines: the admin's own line has no action. */
   .self {
+    grid-column: -2 / -1;
     place-self: center;
     color: var(--dim);
     font-size: var(--size-label);
@@ -345,7 +358,7 @@
   @media (width >= 900px) {
     .panel {
       width: min(var(--width-dialog-tall), 90vw);
-      max-height: 86vh;
+      max-height: var(--height-dialog);
       margin: auto;
       border: var(--hairline) solid var(--line-strong);
       border-radius: var(--radius);

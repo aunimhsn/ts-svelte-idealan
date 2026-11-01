@@ -503,6 +503,24 @@ describe("AppState", () => {
       expect(calls.at(-1)?.path).toBe("/api/rename-player");
     });
 
+    it("reads the players again when the one changed is gone", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/reset-player-code": refuse("player-not-found", 404),
+        "/api/get-settings": () => Response.json(adminView(accounts)),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.resetPlayerCode("j2")).toBe(false);
+      await vi.waitFor(() => expect(app.accounts).toEqual(accounts));
+      expect(app.settingsError).toBeNull();
+      expect(calls.map((call) => call.path)).toEqual([
+        "/api/get-bag",
+        "/api/reset-player-code",
+        "/api/get-settings",
+      ]);
+    });
+
     it("runs one change at a time", async () => {
       let answer: (response: Response) => void = () => {};
       const { api, calls } = fakeServer({

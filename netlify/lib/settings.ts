@@ -71,7 +71,10 @@ export const settingsView = async (
 };
 
 export type SettingsRefusal =
-  "player-not-found" | "nickname-taken" | "cannot-delete-self";
+  | "player-not-found"
+  | "nickname-taken"
+  | "cannot-reset-self"
+  | "cannot-delete-self";
 
 // Changes the player of `id` in `players`; null when they are not there.
 const updatePlayer = (
@@ -111,8 +114,15 @@ export const renamePlayer = (store: JsonStore, id: string, nickname: string) =>
 
 // Resets a personal code: the first one to enter with the nickname chooses the new one. The
 // tries are removed after, so that the nickname is unlocked; a failure between the two leaves
-// the code reset, which `enter` clears the tries of anyway.
-export const resetPlayerCode = async (store: JsonStore, id: string) => {
+// the code reset, which `enter` clears the tries of anyway. Never the admin's own: the first
+// friend to enter as them would take their nickname, their games and their votes (the review of
+// step 7a).
+export const resetPlayerCode = async (
+  store: JsonStore,
+  id: string,
+  adminId: string,
+): Promise<SettingsRefusal | null> => {
+  if (id === adminId) return "cannot-reset-self";
   const refused = await updatePlayer(store, id, (player) =>
     player.codeHash === null ? player : { ...player, codeHash: null },
   );
@@ -121,21 +131,25 @@ export const resetPlayerCode = async (store: JsonStore, id: string) => {
   return null;
 };
 
-// The bag without the games of a player and without their votes.
-const withoutPlayer = (bag: Bag, id: string): Bag => ({
+// The bag with only the games and the votes of the players of `known`.
+const onlyPlayers = (bag: Bag, known: Set<string>): Bag => ({
   games: bag.games
-    .filter((game) => game.addedBy !== id)
+    .filter((game) => known.has(game.addedBy))
     .map((game) => {
-      if (!(id in game.votes)) return game;
-      const votes = { ...game.votes };
-      delete votes[id];
+      const ids = Object.keys(game.votes);
+      if (ids.every((id) => known.has(id))) return game;
+      const votes = Object.fromEntries(
+        Object.entries(game.votes).filter(([id]) => known.has(id)),
+      );
       return { ...game, votes };
     }),
 });
 
 // Deletes a player, their games, their votes and their tries. The player goes first, so that
-// their calls are refused from then on; then the bag, then the tries. A player already gone is
-// cleaned all the same, so that a deletion that failed halfway can be done again.
+// their calls are refused from then on (the writes of the bag check it again: `isStillPlayer`);
+// then the bag, then the tries. The bag keeps only the games and votes of the players still
+// there, read again at each try: a player already gone is cleaned all the same, so that a
+// deletion that failed halfway is done again by the next one.
 export const deletePlayer = async (
   store: JsonStore,
   id: string,
@@ -149,9 +163,10 @@ export const deletePlayer = async (
       ? { result: null }
       : { write: { ...players, list }, result: null };
   });
-  await updateJSON<null>(store, BAG_KEY, (current) => {
+  await updateJSON<null>(store, BAG_KEY, async (current) => {
     const bag = readBag(current);
-    const next = withoutPlayer(bag, id);
+    const players = readPlayers(await store.getJSON(PLAYERS_KEY));
+    const next = onlyPlayers(bag, new Set(players.list.map(({ id }) => id)));
     const changed =
       next.games.length !== bag.games.length ||
       next.games.some((game, index) => game !== bag.games[index]);
@@ -164,6 +179,7 @@ export const deletePlayer = async (
 export const STATUS_OF_SETTINGS_ERROR = {
   "player-not-found": 404,
   "nickname-taken": 409,
+  "cannot-reset-self": 409,
   "cannot-delete-self": 409,
 } as const satisfies Record<SettingsRefusal, number>;
 

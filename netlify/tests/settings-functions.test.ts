@@ -5,6 +5,7 @@ import {
 } from "../functions/delete-player";
 import { handleEnter } from "../functions/enter";
 import { handleGetBag } from "../functions/get-bag";
+import { handleVote } from "../functions/vote";
 import {
   config as getSettingsConfig,
   handleGetSettings,
@@ -121,6 +122,7 @@ const setUp = async () => {
     reset: call("reset-player-code", handleResetPlayerCode),
     remove: call("delete-player", handleDeletePlayer),
     getBag: call("get-bag", handleGetBag),
+    vote: call("vote", handleVote),
   };
 };
 
@@ -291,6 +293,14 @@ describe("reset-player-code", () => {
     });
   });
 
+  it("never resets the admin's own code", async () => {
+    const bag = await setUp();
+    expect(await bag.reset(bag.admin, { id: "j1" })).toEqual({
+      status: 409,
+      body: { error: "cannot-reset-self" },
+    });
+  });
+
   it("refuses a player who is not there", async () => {
     const bag = await setUp();
     expect(await bag.reset(bag.admin, { id: "j9" })).toEqual({
@@ -327,6 +337,47 @@ describe("delete-player", () => {
     const { status, body } = await bag.remove(bag.admin, { id: "j2" });
     expect(status).toBe(200);
     expect(body.games).toEqual([game(20, "j1", { j1: "up" })]);
+  });
+
+  it("cleans the games and votes of every player gone, not only this one", async () => {
+    const bag = await setUp();
+    // A vote and a game left by a player deleted before (j7).
+    bag.write(BAG_KEY, {
+      games: [
+        game(10, "j2", { j2: "up", j7: "down" }),
+        game(30, "j7", { j7: "up" }),
+        game(20, "j1", { j1: "up" }),
+      ],
+    });
+    const { body } = await bag.remove(bag.admin, { id: "j3" });
+    expect(body.games).toEqual([
+      game(10, "j2", { j2: "up" }),
+      game(20, "j1", { j1: "up" }),
+    ]);
+  });
+
+  it("leaves no vote of a player deleted while their vote was being written", async () => {
+    const bag = await setUp();
+    let deleted = false;
+    // Nova's vote has passed the check of their code; the admin deletes Nova just before the
+    // vote is written: the vote is tried again, and refused.
+    bag.onBeforeWrite((key) => {
+      if (key !== BAG_KEY || deleted) return;
+      deleted = true;
+      const players = structuredClone(bag.data.get(PLAYERS_KEY)) as {
+        list: { id: string }[];
+      };
+      players.list = players.list.filter((player) => player.id !== "j2");
+      bag.write(PLAYERS_KEY, players);
+      bag.write(BAG_KEY, { games: [game(20, "j1", { j1: "up" })] });
+    });
+    expect(await bag.vote(bag.member, { appid: 20, vote: "up" })).toEqual({
+      status: 401,
+      body: { error: "unknown-player" },
+    });
+    expect(bag.data.get(BAG_KEY)).toEqual({
+      games: [game(20, "j1", { j1: "up" })],
+    });
   });
 
   it("never deletes the admin themself", async () => {

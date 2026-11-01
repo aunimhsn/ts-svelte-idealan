@@ -366,6 +366,11 @@ export class AppState {
     this.settingsBusy = null;
     const outcome = this.#settle(result);
     if (outcome.ok) return true;
+    // The player was deleted meanwhile: the players are read again, and their line goes.
+    if (outcome.error === "player-not-found" && id !== "") {
+      void this.openSettings();
+      return false;
+    }
     if (outcome.error !== null) {
       this.settingsError = {
         id: id === "" ? null : id,

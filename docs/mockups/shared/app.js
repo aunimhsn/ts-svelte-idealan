@@ -263,8 +263,7 @@ function settingsDialog() {
       <input class="app-player-name" value="${error ? failed.value : nick}" aria-label="Pseudo de ${nick}"${error ? ' aria-invalid="true" aria-describedby="rename-error"' : ""}>
       <button type="button" class="app-button is-ghost is-small app-player-rename">Renommer</button>
       <span class="app-player-stats"><strong>${votes}</strong> votes · <strong>${games}</strong> jeux${playerStatus(status)}</span>
-      <button type="button" class="app-button is-ghost is-small app-player-reset">Réinitialiser le code perso</button>
-      ${nick === viewer ? `<span class="app-player-self">toi</span>` : `<button type="button" class="app-button is-ghost is-small app-player-delete" data-delete="${nick}" data-games="${games}" data-votes="${votes}">Supprimer</button>`}
+      ${nick === viewer ? `<span class="app-player-self">toi</span>` : `<button type="button" class="app-button is-ghost is-small app-player-reset">Réinitialiser le code perso</button><button type="button" class="app-button is-ghost is-small app-player-delete" data-delete="${nick}" data-games="${games}" data-votes="${votes}">Supprimer</button>`}
       ${error ? `<p class="app-player-error" id="rename-error">${failed.text}</p>` : ""}
     </li>`;
     }).join("")}</ul>`, true);
