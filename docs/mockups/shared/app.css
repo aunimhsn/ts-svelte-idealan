@@ -1382,7 +1382,7 @@ input {
   left: 50%;
   color: var(--text);
   opacity: 0.06;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-50% + 15px)); /* 15 px lower, cut by the bottom of the page */
   pointer-events: none;
 }
 

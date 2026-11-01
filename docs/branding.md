@@ -30,7 +30,7 @@ Chosen by the owner on 2026-11-01 among four styles of the family of sylent.art,
 
 - The symbol: an RJ45 jack (the plug of a LAN) cut out of a white square, its four contacts in the blue signal (« Bloc évidé »), chosen on 2026-11-01 among six symbols, then among four drawings of the jack: a solid square reads best at 16 px.
 - Beside the name « Idealan », glowing in blue, in the header (symbol 28 px) and above the title of the welcome (symbol 72 px).
-- The footer signs with the wordmark « SYLENT » of sylent-courses alone (its letters joined, not the one of sylent.art), in the color of the text, linked to sylent.art; behind the footer, the mark of Sylent (the three bars) as a large faint watermark (230 px high on a phone, 280 px on a PC, 6 % opacity). Both chosen by the owner on 2026-11-01, after « Fait par Sylent », then the mark beside the wordmark.
+- The footer signs with the wordmark « SYLENT » of sylent-courses alone (its letters joined, not the one of sylent.art), in the color of the text, linked to sylent.art; behind the footer, the mark of Sylent (the three bars) as a large faint watermark (230 px high on a phone, 280 px on a PC, 6 % opacity, centered then 15 px lower, cut by the bottom of the page). Both chosen by the owner on 2026-11-01, after « Fait par Sylent », then the mark beside the wordmark.
 - « Idealan » is written in Montserrat 800 (the font of the wordmark of Sylent, SIL Open Font License), uppercase, its letters tightened by −0.02 em (`--tracking-brand`): −2 px at the 96 px of the board of the logo, chosen by the owner on 2026-11-01 among −5 to 0 px (first −1 to +1 px); in em, so that it holds at every size (about −0.5 px in the header).
 
 ## Colors
