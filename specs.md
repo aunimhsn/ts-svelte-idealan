@@ -31,9 +31,11 @@ One page (a single-page application): a friend not known to the browser sees the
 ### The bag
 
 - Header: the name of the application, the friend's nickname, « Se déconnecter »; for the admin, « Réglages » and « Vider le sac ».
-- Adding: a « Lien Steam » field and an « Ajouter » button. The game goes into the bag at once, without a preview (the friend has already seen its Steam page); the friend who adds it counts as an automatic upvote.
-- A bar: filters by kind of game (Coop, Coop en LAN, JcJ en LAN, Écran partagé, and the genres of Steam), the number of games (« 47 / 50 jeux »), and « Rafraîchir ».
-- The games, sorted by score (upvotes minus downvotes): the cover, the name, the categories, the score, an upvote and a downvote, « ajouté par Nova ».
+- Adding: a « Lien Steam » field, an optional « Joueurs max » field (a whole number from 1 to 99), and an « Ajouter » button. The game goes into the bag at once, without a preview (the friend has already seen its Steam page); the friend who adds it counts as an automatic upvote.
+- The maximum number of players comes only from the friend who adds the game: Steam doesn't give it, and PCGamingWiki, tested on 2026-11-01, had it for 21 of 24 classic LAN games but for none of the new releases, with server limits taken for player counts (Terraria: 255). Left empty, the card shows nothing about it; it can't be changed afterwards.
+- A bar: « Jouable à N » first, then the filters by kind of game (Coop, Coop en LAN, JcJ en LAN, Écran partagé, and the genres of Steam), the number of games (« 47 / 50 jeux »), and « Rafraîchir ».
+- « Jouable à N » hides the games whose maximum number of players is below N; the games without a number stay shown, since nobody knows. N starts at the number of players of the bag, and the friend changes it on the day (« Jouable à 9 »).
+- The games, sorted by score (upvotes minus downvotes): the cover, the name, the categories, « Jusqu’à 8 joueurs » when known, the score, an upvote and a downvote, « ajouté par Nova ».
 - A friend has one vote per game, up or down; a second tap on the same arrow withdraws it, a tap on the other one changes it. The friend who added a game can't vote on it otherwise.
 - « Retirer » on the games the friend added, and on every game for the admin.
 - Footer: « Données et images : Steam. Idealan n’est pas affilié à Valve. »
@@ -84,7 +86,7 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 
 | Key | Holds | Written by |
 |---|---|---|
-| `bag` | Up to 50 games, each with its `appid`, name, cover, categories, genres, the id of the player who added it, the date, and the votes (player id → up or down). About 50 KB. | Adding, voting, removing, emptying, deleting a player. |
+| `bag` | Up to 50 games, each with its `appid`, name, cover, categories, genres, the maximum number of players when given, the id of the player who added it, the date, and the votes (player id → up or down). About 50 KB. | Adding, voting, removing, emptying, deleting a player. |
 | `players` | Each player: a fixed id (`j1`), the nickname as typed, the personal code hashed (never readable), the date of creation. A nickname exists once, without case. | Entering with a new nickname; the admin's settings. |
 | `steam/<appid>` | The Steam page of a game: type, name, cover, categories, genres. Asked to Steam once, kept even when the game leaves the bag. | Adding a game not asked before. |
 
@@ -109,6 +111,7 @@ Each error is a short sentence, with « tu », next to what caused it.
 | Situation | Behavior |
 |---|---|
 | The link is not a Steam game | Refused, with the message of the table « Steam links ». |
+| « Joueurs max » is not a whole number from 1 to 99 | Refused, next to the field: « Indique un nombre de joueurs entre 1 et 99, ou laisse vide. » |
 | The game is already in the bag | Refused: « Ce jeu est déjà dans le sac : vote pour lui. » |
 | The bag holds 50 games | Refused: « Le sac est plein : vois avec l’admin. » |
 | Wrong access code | The welcome says the code is wrong; nothing is shown of the bag. |
