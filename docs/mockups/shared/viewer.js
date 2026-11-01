@@ -3,12 +3,18 @@
 // cut out of a square), the name in Montserrat 800 at −0.02 em (docs/branding.md).
 const LOGO_NAMES = { tile: "Bloc évidé" };
 const VARIANTS = {
+  line: { label: "Bordures", fallback: "now", options: { now: "Actuelles · 55 %", fields: "Champs à 80 %", all: "Tout à 80 %" } },
 };
 const params = new URLSearchParams(location.search);
 const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, v]) => [key, params.get(key) in v.options ? params.get(key) : v.fallback]));
 
 // The newest section first. Each slot: [label, device, address of app.html].
 const SECTIONS = [
+  ["Design system · the borders", "Today the borders of the fields and buttons are the blue at 55 % (2.1:1 on the background); WCAG asks 3:1 for the border that shows where a field is. « Champs à 80 % » lights only the fields (3.2:1), « Tout à 80 % » also the buttons, chips and votes.", [
+    ["Phone · welcome", "phone", "screen=welcome"],
+    ["Phone · the bag", "phone", "screen=bag"],
+    ["PC · settings", "pc", "screen=bag&as=admin&panel=settings"],
+  ]],
   ["States of the bag", "Each message sits where it comes from: under the adding block, or in a banner under the header.", [
     ["Phone · empty bag", "phone", "screen=bag&state=empty"],
     ["Phone · a link being read", "phone", "screen=bag&state=reading"],
@@ -55,7 +61,7 @@ const SECTIONS = [
 ];
 
 function frame([label, device, query]) {
-  const src = `app.html?${query}`;
+  const src = `app.html?${query}&${new URLSearchParams(chosen)}`;
   return `<div class="slot"><span>${label} · <a href="${src}" target="_blank">open alone</a></span>
     <div class="frame is-${device}"><iframe src="${src}" title="${label}" loading="lazy"></iframe></div></div>`;
 }

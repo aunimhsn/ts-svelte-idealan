@@ -1,7 +1,14 @@
-/* Tokens of the mock-up: app.css uses nothing else. Style D · Néon with the electric blue, chosen
-   by the owner on 2026-11-01 (docs/branding.md). Spacing in steps of 4 px, one size per role. */
+/* The design tokens of Idealan (step 4 of roadmap.md), written with their reasons in
+   docs/branding.md: app.css uses nothing else, and this file becomes the tokens file of the
+   application as it is. Style D · Néon with the electric blue, chosen by the owner on 2026-11-01.
+
+   Rule: every length, color, shadow, duration, layer, weight, line height and letter spacing is
+   a token; the ratios proper to one component (a percentage, a viewport share, an angle, a scale
+   factor, an opacity) stay in it. The breakpoint can't be a variable in a media query: it is
+   written as a number, 900 px, in app.css. Contrasts measured on --bg (#04050a). */
 
 :root {
+  /* Spacing: --space-N = N × 4 px. */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -12,55 +19,166 @@
   --space-10: 40px;
   --space-12: 48px;
 
-  --size-display: clamp(40px, 9vw, 64px);
-  --size-brand: 22px;
-  --size-title: 20px;
-  --size-card-title: 18px;
-  --size-body: 16px;
-  --size-small: 14px;
-  --size-caption: 13px;
-  --size-label: 12px;
-  --size-score: 20px;
-
-  --content: 1600px;
-  --tap: 44px;
-
-  /* Chakra Petch for the titles and the scores, Manrope for the text (SIL Open Font License). */
+  /* Typography: Chakra Petch for the titles and the scores, Manrope for the text, Montserrat 800
+     for the name « Idealan » (SIL Open Font License, self-hosted by the application). */
   --font-title: "Chakra Petch", "Manrope", system-ui, sans-serif;
   --font-text: "Manrope", system-ui, sans-serif;
-  --font-score: "Chakra Petch", "Manrope", system-ui, sans-serif;
-  --title-weight: 700;
-  --text-weight: 500;
-  --tracking-title: 0.02em;
-  --tracking-label: 0.14em;
-  /* « Idealan » in Montserrat 800: −2 px at 96 px, chosen by the owner on 2026-11-01. */
   --font-brand: "Montserrat", "Chakra Petch", system-ui, sans-serif;
-  --tracking-brand: -0.02em;
+  --font-system: system-ui, sans-serif; /* the drawing of a browser tab only */
 
-  /* The electric blue: the signal, the text set on it, and a lighter blue for small text on the
-     black background (contrasts measured on #0a0a0a). */
-  --signal: #2e6bff; /* white on it 4.5:1; on the background 4.4:1 */
+  /* One size per role. */
+  --size-board: 96px; /* the name on the board of the logo */
+  --size-display: clamp(40px, 9vw, 64px); /* « Idealan » on the welcome */
+  --size-number: 32px; /* the number of « Jouable à » */
+  --size-brand: 22px; /* « Idealan » in the header */
+  --size-title: 20px; /* titles of the panels, of the empty bag */
+  --size-score: 20px;
+  --size-card-title: 18px; /* 17 px on a PC, below */
+  --size-body: 16px;
+  --size-small: 14px; /* buttons, messages, the lines of a card */
+  --size-caption: 13px; /* field labels, chips, notes, the footer */
+  --size-label: 12px; /* uppercase labels */
+
+  --weight-text: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 800;
+
+  --leading-none: 1; /* buttons, scores, one-line titles */
+  --leading-title: 1.2;
+  --leading-snug: 1.35; /* labels, short lines, messages */
+  --leading-body: 1.5;
+
+  --tracking-brand: -0.02em; /* « Idealan »: −2 px at 96 px, chosen by the owner on 2026-11-01 */
+  --tracking-title: -0.02em; /* titles of the cards and the panels */
+  --tracking-button: 0.01em;
+  --tracking-label: 0.14em; /* uppercase labels */
+
+  /* Colors. The electric blue is the light of the room. */
+  --signal: #2e6bff; /* white on it 4.5:1; on --bg 4.5:1 */
   --on-signal: #ffffff;
-  --signal-text: #86a8ff; /* 8.5:1 */
-  --signal-tint: color-mix(in srgb, var(--signal) 14%, transparent);
+  --signal-text: #86a8ff; /* small blue text: 8.8:1 on --bg */
+  --signal-tint: color-mix(in srgb, var(--signal) 14%, transparent); /* active chips, the banner */
 
   --bg: #04050a;
-  --surface: rgb(10 14 28 / 72%);
+  --header-bg: color-mix(in srgb, var(--bg) 80%, transparent);
+  --surface: rgb(10 14 28 / 72%); /* the cards, over the floor */
   --surface-hover: rgb(16 22 44 / 82%);
-  --surface-solid: #0a0e1c;
+  --surface-solid: #0a0e1c; /* panels, bubbles, a missing cover */
   --field-bg: rgb(0 0 0 / 55%);
-  --line: color-mix(in srgb, var(--signal) 28%, transparent);
-  --line-strong: color-mix(in srgb, var(--signal) 55%, transparent);
-  --text: #f2f5ff;
-  --secondary: #a9b1c7;
-  --dim: #8a93ab;
-  --accent: var(--signal);
-  --on-accent: var(--on-signal);
-  --error-text: #ff8f85;
-  --error-bg: rgb(214 40 57 / 78%); /* white on it, over the background: about 6.9:1 */
-  --radius: 0;
-  --radius-small: 0;
-  --radius-chip: 0;
-  --cover-radius: 0;
+  --overlay: rgb(0 0 0 / 62%); /* behind a panel */
+
+  --line: color-mix(in srgb, var(--signal) 28%, transparent); /* separators, cards: 1.3:1 */
+  --line-strong: color-mix(in srgb, var(--signal) 55%, transparent); /* buttons, chips: 2.1:1 */
+  --field-line: var(--line-strong); /* the border of a field */
+
+  --text: #f2f5ff; /* 18.7:1 on --bg, 17.7:1 on --surface-solid */
+  --secondary: #a9b1c7; /* 9.5:1 */
+  --dim: #8a93ab; /* weak text, placeholders: 6.6:1, 6.0:1 on --signal-tint */
+  --focus: var(--text);
+
+  --error-text: #ff8f85; /* 9.2:1; also the border of a field at fault */
+  --error-bg: rgb(214 40 57 / 78%); /* the strip of the errors: white on it over --bg 7.2:1 */
+  --on-error: #ffffff;
+  --on-error-line: rgb(255 255 255 / 18%);
+  --on-error-hover: rgb(255 255 255 / 15%);
+
+  --icon-bg: #0a0a0a; /* the square of the favicon */
+  --icon-fg: #ffffff;
+  --mock-tab-bg: #35363a; /* the drawing of a browser tab, on the board of the logo */
+  --mock-tab-text: #e8eaed;
+  --mock-tab-radius: 8px;
+
+  /* Néon: the floor, the scanlines, the glows. */
+  --floor-line: color-mix(in srgb, var(--signal) 32%, transparent);
+  --floor-cell: 56px;
+  --floor-depth: 320px; /* the perspective of the floor */
+  --scanline: rgb(0 0 0 / 18%);
+  --scanline-pitch: 3px; /* a dark line of 1 px every 3 px */
+  --stripe: rgb(255 255 255 / 3%); /* the stripes of a missing cover */
+  --stripe-width: 10px;
+  --glow-text:
+    0 0 12px color-mix(in srgb, var(--signal) 80%, transparent),
+    0 0 36px color-mix(in srgb, var(--signal) 50%, transparent);
+  --glow-logo: drop-shadow(0 0 6px color-mix(in srgb, var(--signal) 70%, transparent));
+  --glow-header: 0 1px 24px color-mix(in srgb, var(--signal) 30%, transparent);
+  --glow-card:
+    0 0 0 1px var(--signal),
+    0 0 32px color-mix(in srgb, var(--signal) 45%, transparent);
+  --glow-vote: 0 0 16px color-mix(in srgb, var(--signal) 70%, transparent);
+  --glow-error: 0 8px 28px rgb(214 40 57 / 35%);
+  --shadow-pop: 0 12px 32px rgb(0 0 0 / 60%); /* bubbles and small windows */
   --glass-blur: 8px;
+
+  /* Shapes: sharp corners, the covers chamfered at their top right corner. */
+  --radius: 0;
+  --radius-pill: 999px; /* the handle of a sheet */
+  --radius-icon: 20%; /* the square of the favicon */
+  --chamfer: 18px;
+  --hairline: 1px; /* every border */
+  --stroke: 2px; /* the focus ring, the spinner, the lines of the floor */
+  --edge: 3px; /* the blue edge of the banner */
+  --focus-offset: 2px;
+
+  /* Sizes of the layout and of the components. */
+  --content: 1600px;
+  --tap: 44px; /* a touch target */
+  --tap-small: 36px; /* chips, small buttons; the votes on a PC */
+  --width-welcome: 420px;
+  --width-dialog: 520px;
+  --width-dialog-tall: 1080px;
+  --width-bubble: 260px; /* who voted, « Jouable à » */
+  --width-link: 560px; /* the link field on a PC */
+  --width-players: 72px; /* the field « joueurs max » */
+  --col-player: 240px; /* the nickname in the settings, on a PC */
+  --col-player-action: 110px;
+  --thumb: 88px; /* a cover in the list of the emptying */
+  --checkbox: 22px;
+  --spinner: 14px;
+  --arrow: 12px; /* the point of a bubble */
+  --handle-width: 40px;
+  --handle-height: 4px;
+  --mark: 20px; /* the mark of Sylent in the signature */
+  --wordmark: 16px; /* the height of the wordmark « SYLENT » */
+  --watermark: 230px; /* the mark behind the footer: 280 px on a PC */
+  --watermark-shift: 35px; /* lower than the middle, cut by the bottom of the page */
+  --watermark-opacity: 0.06;
+  --footer-height: 240px; /* 280 px on a PC */
+  --tilt-depth: 900px; /* the perspective of a card that tilts */
+
+  /* Motion: everything stops when the friend asked to reduce motion. */
+  --duration-fast: 150ms; /* colors of a button */
+  --duration: 200ms; /* the tilt of a card, the strip of the errors */
+  --duration-bump: 350ms; /* the score that jumps */
+  --duration-spin: 800ms;
+  --duration-floor: 2.6s; /* one cell of the floor */
+  --duration-arm: 2s; /* the action of a confirmation fills before it can be clicked */
+
+  /* Layers, from the back. */
+  --layer-floor: -2;
+  --layer-behind: -1; /* behind the content of its own box */
+  --layer-header: 2;
+  --layer-bubble: 5;
+  --layer-popover: 6;
+  --layer-toast: 8;
+  --layer-raised: 10; /* the card whose bubble is open */
+  --layer-overlay: 20;
+  --layer-scanlines: 30;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --size-card-title: 17px;
+    --watermark: 280px;
+    --footer-height: 280px;
+  }
+}
+
+/* Open decision of step 4, removed once decided: the borders of the fields reach 3:1 (WCAG 1.4.11). */
+:root[data-line="fields"] {
+  --field-line: color-mix(in srgb, var(--signal) 80%, transparent);
+}
+
+:root[data-line="all"] {
+  --line-strong: color-mix(in srgb, var(--signal) 80%, transparent);
 }

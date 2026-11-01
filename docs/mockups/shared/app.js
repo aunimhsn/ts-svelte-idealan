@@ -1,12 +1,13 @@
 // The application, drawn from its address: ?screen=bag|welcome|logo, as=friend|admin,
-// panel=voters|remove|settings|empty|delete|confirm-empty, state=…, logo. The viewer (index.html) shows this page in a phone frame and a PC frame.
+// panel=voters|remove|settings|empty|delete|confirm-empty, state=…. The viewer (index.html) shows this page in a phone frame and a PC frame.
 const params = new URLSearchParams(location.search);
 const view = {
   screen: params.get("screen") || "bag",
   as: params.get("as") || "friend",
   panel: params.get("panel") || "",
-  logo: params.get("logo") || "tile",
 };
+// The open decision of the viewer (?line=…), set on the root for tokens.css.
+if (params.get("line")) document.documentElement.dataset.line = params.get("line");
 const viewer = view.as === "admin" ? "Sylent" : "Nova";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -23,16 +24,14 @@ const ICON = {
 // The mark of Sylent (sylent.art), filled with the color of the text.
 const MARK = `<svg class="app-mark" viewBox="0 0 908 2000.3" fill="currentColor" aria-hidden="true"><rect x="8.8" y="218.2" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -171.45 428.7256)" width="742.3" height="364.9"/><rect x="156.9" y="1417.3" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -1030.6389 960.5798)" width="742.3" height="364.9"/><rect x="82.9" y="818.4" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -601.5629 694.9067)" width="742.3" height="364.9"/></svg>`;
 
-// The proposals of logo, on a 32 px grid: lines in the color of the text, one detail in the blue
-// signal (class app-logo-accent).
+// The logo « Bloc évidé », on a 32 px grid: an RJ45 jack cut out of a square in the color of the
+// text, its four contacts in the blue signal (class app-logo-accent). The symbols set aside are
+// listed in docs/branding.md; the Git history keeps their drawings.
 const LOGOS = {
-  frame: { name: "Cadre", body: `<path d="M4.5 4.5h23v23h-23z" stroke-width="2.4"/><path d="M9 10h14v9.5h-3.5V24h-7v-4.5H9z" stroke-width="2.4"/><path class="app-logo-accent" d="M12.5 10v4M15 10v4M17.5 10v4M20 10v4" stroke-width="1.8"/>` },
-  solid: { name: "Prise pleine", body: `<path class="is-filled" d="M3 6h26v15h-6v6H9v-6H3z"/><path class="app-logo-accent" d="M9 6v6M14 6v6M18 6v6M23 6v6" stroke-width="2.6"/>` },
   tile: { name: "Bloc évidé", body: `<path class="is-filled" fill-rule="evenodd" d="M3 3h26v26H3zM8 9v11h4v4h8v-4h4V9z"/><path class="app-logo-accent" d="M11.5 9v4.5M14.5 9v4.5M17.5 9v4.5M20.5 9v4.5" stroke-width="1.8"/>` },
-  plug: { name: "Fiche", body: `<path d="M8 4h16v13l-3.5 3.5h-9L8 17z" stroke-width="2.6"/><path class="app-logo-accent" d="M12 4v5M16 4v5M20 4v5" stroke-width="2.2"/><path d="M16 20.5V30" stroke-width="4"/>` },
 };
-const logo = (size, key = view.logo) =>
-  `<svg class="app-logo" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${(LOGOS[key] || LOGOS.tile).body}</svg>`;
+const logo = size =>
+  `<svg class="app-logo" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${LOGOS.tile.body}</svg>`;
 
 const voteOf = game => (game.by === viewer ? "own" : game.up.includes(viewer) ? "up" : game.down.includes(viewer) ? "down" : null);
 const score = game => game.up.length - game.down.length;
@@ -302,7 +301,7 @@ function logoBoard() {
     </div>
     <div class="app-board-row">
       <span class="app-brand">${logo(28)}<span>Idealan</span></span>
-      <span class="app-board-name">${LOGOS[view.logo]?.name || ""}</span>
+      <span class="app-board-name">${LOGOS.tile.name}</span>
     </div>
   </div>`;
 }

@@ -1,5 +1,6 @@
-/* The components of the application: tokens only (tokens.css). Phone first; from 900 px, the PC
-   layout of the wireframe (one row of adding, a grid of five covers). */
+/* The components of the application, in the style D · Néon: tokens only (tokens.css, written in
+   docs/branding.md). Phone first; from 900 px, the PC layout (one row of adding, a grid of five
+   covers). Each component keeps its ratios (percentages, viewport shares, angles, factors). */
 
 *,
 *::before,
@@ -10,7 +11,7 @@
 html {
   background: var(--bg);
   color: var(--text);
-  font: var(--text-weight) var(--size-body) / 1.5 var(--font-text);
+  font: var(--weight-text) var(--size-body) / var(--leading-body) var(--font-text);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -26,8 +27,8 @@ input {
 }
 
 :focus-visible {
-  outline: 2px solid var(--text);
-  outline-offset: 2px;
+  outline: var(--stroke) solid var(--focus);
+  outline-offset: var(--focus-offset);
 }
 
 .app {
@@ -39,17 +40,72 @@ input {
   overflow-x: clip;
 }
 
+/* The scanlines over the whole page. */
+.app::after {
+  content: "";
+  position: fixed;
+  z-index: var(--layer-scanlines);
+  inset: 0;
+  background: repeating-linear-gradient(
+    transparent 0 calc(var(--scanline-pitch) - var(--hairline)),
+    var(--scanline) calc(var(--scanline-pitch) - var(--hairline)) var(--scanline-pitch)
+  );
+  pointer-events: none;
+}
+
 .app-icon {
   flex: none;
+}
+
+/* The grid floor that runs to the horizon. */
+
+.app-floor {
+  position: fixed;
+  z-index: var(--layer-floor);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  height: 46vh;
+  overflow: hidden;
+  perspective: var(--floor-depth);
+  perspective-origin: 50% 0;
+  pointer-events: none;
+}
+
+.app-floor::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -150%;
+  left: -150%;
+  height: 300%;
+  background:
+    linear-gradient(var(--floor-line) var(--stroke), transparent var(--stroke)) 0 0 / 100% var(--floor-cell),
+    linear-gradient(90deg, var(--floor-line) var(--stroke), transparent var(--stroke)) 50% 0 / var(--floor-cell) 100%;
+  mask-image: linear-gradient(transparent, rgb(0 0 0 / 70%) 30%); /* a mask: only its opacity counts */
+  transform: rotateX(72deg);
+  transform-origin: 50% 0;
+  animation: app-floor var(--duration-floor) linear infinite;
+}
+
+@keyframes app-floor {
+  to {
+    background-position:
+      0 var(--floor-cell),
+      50% 0;
+  }
 }
 
 /* Header */
 
 .app-header {
   position: relative;
-  z-index: 2;
-  border-bottom: 1px solid var(--line);
-  background: var(--bg);
+  z-index: var(--layer-header);
+  border-bottom: var(--hairline) solid var(--line);
+  background: var(--header-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glow-header);
 }
 
 .app-header-in {
@@ -62,27 +118,45 @@ input {
   padding: var(--space-3) var(--space-4);
 }
 
+/* « Idealan » in Montserrat 800, uppercase, glowing: in the header, on the welcome, on the board. */
+.app-brand,
+.app-display,
+.app-board-word {
+  font-family: var(--font-brand);
+  font-weight: var(--weight-black);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-brand);
+  text-transform: uppercase;
+  text-shadow: var(--glow-text);
+}
+
 .app-brand {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font: var(--title-weight) var(--size-brand) / 1 var(--font-title);
-  letter-spacing: var(--tracking-title);
+  font-size: var(--size-brand);
 }
 
-/* The logo: lines in the color of the text, one detail in the blue signal. */
+/* The logo: the square in the color of the text, its four contacts in the blue signal; it glows
+   like the name. */
 .app-logo {
   flex: none;
   overflow: visible;
+}
+
+.app-logo .is-filled {
+  stroke: none;
+  fill: currentColor;
 }
 
 .app-logo-accent {
   stroke: var(--signal);
 }
 
-.app-logo-accent.is-filled {
-  stroke: none;
-  fill: var(--signal);
+.app-brand .app-logo,
+.app-welcome-logo .app-logo,
+.app-board-lockup .app-logo {
+  filter: var(--glow-logo);
 }
 
 .app-welcome-logo {
@@ -91,95 +165,13 @@ input {
   margin-bottom: var(--space-4);
 }
 
-/* The board of the logo */
-
-.app-board {
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-10);
-  padding: var(--space-10);
-}
-
-.app-board-lockup {
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);
-}
-
-.app-board-word {
-  font: var(--title-weight) 96px / 1 var(--font-title);
-  letter-spacing: var(--tracking-title);
-  text-transform: uppercase;
-  text-shadow:
-    0 0 12px color-mix(in srgb, var(--signal) 80%, transparent),
-    0 0 36px color-mix(in srgb, var(--signal) 50%, transparent);
-}
-
-.app-board-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: center;
-  gap: var(--space-8);
-}
-
-.app-board-row figure {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-2);
-  margin: 0;
-}
-
-.app-board-row figcaption,
-.app-board-name {
-  color: var(--dim);
-  font-size: var(--size-caption);
-}
-
-.app-tile {
-  display: grid;
-  place-items: center;
-  width: var(--tile);
-  height: var(--tile);
-  border-radius: calc(var(--tile) * 0.2);
-  background: #0a0a0a;
-  color: #ffffff;
-}
-
-.app-tile.is-light {
-  background: #ffffff;
-  color: #0a0a0a;
-  outline: 1px solid var(--line);
-}
-
-.app-browser-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-radius: 8px 8px 0 0;
-  background: #35363a;
-  color: #e8eaed;
-  font: 12px system-ui, sans-serif;
-}
-
-.app-browser-tab .app-tile {
-  border-radius: 3px;
-}
-
-.app-browser-tab i {
-  margin-left: var(--space-8);
-  font-style: normal;
-  opacity: 0.6;
-}
-
 .app-header-actions {
   display: contents;
 }
 
 .app-nick {
   margin-left: auto;
-  font: 700 var(--size-small) / 1 var(--font-title);
+  font: var(--weight-bold) var(--size-small) / var(--leading-none) var(--font-title);
 }
 
 .app-role {
@@ -211,15 +203,15 @@ input {
   gap: var(--space-2);
   min-height: var(--tap);
   padding: 0 var(--space-5);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-small);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
   background: transparent;
-  font: 700 var(--size-small) / 1 var(--font-title);
-  letter-spacing: 0.01em;
+  font: var(--weight-bold) var(--size-small) / var(--leading-none) var(--font-title);
+  letter-spacing: var(--tracking-button);
   cursor: pointer;
   transition:
-    background 0.15s,
-    border-color 0.15s;
+    background var(--duration-fast),
+    border-color var(--duration-fast);
 }
 
 .app-button:hover {
@@ -227,18 +219,18 @@ input {
 }
 
 .app-button.is-primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--on-signal);
 }
 
 .app-button.is-primary:hover {
-  background: var(--accent);
+  background: var(--signal);
   filter: brightness(0.9);
 }
 
 .app-button.is-small {
-  min-height: 36px;
+  min-height: var(--tap-small);
   padding: 0 var(--space-3);
   font-size: var(--size-caption);
 }
@@ -247,13 +239,61 @@ input {
   width: 100%;
 }
 
+.app-button:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+/* The action of a confirmation fills in blue before it can be clicked. */
+.app-button.is-arming {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: var(--signal);
+  background: transparent;
+  color: var(--text);
+  cursor: wait;
+}
+
+.app-button.is-arming::before {
+  content: "";
+  position: absolute;
+  z-index: var(--layer-behind);
+  inset: 0;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: app-arm var(--duration-arm) linear forwards;
+}
+
+@keyframes app-arm {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.app-spinner {
+  width: var(--spinner);
+  height: var(--spinner);
+  border: var(--stroke) solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: app-spin var(--duration-spin) linear infinite;
+}
+
+@keyframes app-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 .app-field {
   display: grid;
   gap: var(--space-2);
 }
 
 .app-field > span {
-  font: 600 var(--size-caption) / 1.3 var(--font-title);
+  font: var(--weight-semibold) var(--size-caption) / var(--leading-snug) var(--font-title);
   color: var(--secondary);
 }
 
@@ -261,8 +301,8 @@ input {
   min-height: var(--tap);
   width: 100%;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-small);
+  border: var(--hairline) solid var(--field-line);
+  border-radius: var(--radius);
   background: var(--field-bg);
 }
 
@@ -273,6 +313,14 @@ input {
 .app-field small {
   color: var(--dim);
   font-size: var(--size-caption);
+}
+
+.app-field small.is-error {
+  color: var(--error-text);
+}
+
+.app-field.is-invalid input {
+  border-color: var(--error-text);
 }
 
 /* Adding a game */
@@ -292,14 +340,22 @@ input {
   gap: var(--space-3);
 }
 
+.app-add.is-busy input {
+  opacity: 0.6;
+}
+
 .app-field-link {
   grid-column: 1 / -1;
 }
 
 .app-field-players {
-  grid-template-columns: auto 72px;
+  grid-template-columns: auto var(--width-players);
   align-items: center;
   grid-column: 1 / 3;
+}
+
+.app-field-players input {
+  text-align: center;
 }
 
 .app-field-name {
@@ -309,16 +365,24 @@ input {
 
 .app-field-name small {
   color: var(--dim);
-  font: 500 var(--size-label) / 1.2 var(--font-text);
+  font: var(--weight-text) var(--size-label) / var(--leading-title) var(--font-text);
 }
 
-.app-field-players input {
-  text-align: center;
+.app-message {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--secondary);
+  font-size: var(--size-small);
+}
+
+.app-message.is-error {
+  color: var(--error-text);
 }
 
 /* The bar: count, refresh, filters */
 
 .app-bar {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -335,7 +399,7 @@ input {
 
 .app-count strong {
   color: var(--text);
-  font-weight: 800;
+  font-weight: var(--weight-black);
 }
 
 .app-chips {
@@ -353,13 +417,13 @@ input {
   flex: none;
   align-items: center;
   gap: var(--space-1);
-  min-height: 36px;
+  min-height: var(--tap-small);
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-chip);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
   background: transparent;
   color: var(--secondary);
-  font: 600 var(--size-caption) / 1 var(--font-title);
+  font: var(--weight-semibold) var(--size-caption) / var(--leading-none) var(--font-title);
   cursor: pointer;
 }
 
@@ -374,7 +438,54 @@ input {
   color: var(--signal-text);
 }
 
-/* The games */
+/* « Jouable à N »: a small window under the filters */
+
+.app-popover {
+  position: absolute;
+  z-index: var(--layer-popover);
+  top: 100%;
+  left: 0;
+  display: grid;
+  gap: var(--space-3);
+  width: var(--width-bubble);
+  padding: var(--space-4);
+  border: var(--hairline) solid var(--line-strong);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow-pop);
+}
+
+.app-popover p {
+  margin: 0;
+}
+
+.app-popover-title {
+  font: var(--weight-bold) var(--size-small) / var(--leading-none) var(--font-title);
+}
+
+.app-popover-note {
+  color: var(--dim);
+  font-size: var(--size-caption);
+}
+
+.app-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.app-stepper .app-button {
+  width: var(--tap);
+  padding: 0;
+  font-size: var(--size-title);
+}
+
+.app-stepper-value {
+  min-width: 2ch;
+  font: var(--weight-bold) var(--size-number) / var(--leading-none) var(--font-title);
+  text-align: center;
+}
+
+/* The games: glass cards that tilt under the pointer, their covers chamfered. */
 
 .app-games {
   display: grid;
@@ -389,18 +500,34 @@ input {
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--line);
+  border: var(--hairline) solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   backdrop-filter: blur(var(--glass-blur));
+  transform: perspective(var(--tilt-depth)) rotateX(var(--tilt-x, 0)) rotateY(var(--tilt-y, 0)) scale(var(--press, 1));
+  transition:
+    transform var(--duration) ease-out,
+    box-shadow var(--duration);
+}
+
+.app-card:hover {
+  --press: 0.98;
+  border-color: var(--signal);
+  box-shadow: var(--glow-card);
+}
+
+/* The card whose bubble is open goes over the next ones. */
+.app-card:has(.app-voters:not([hidden])) {
+  z-index: var(--layer-raised);
 }
 
 .app-cover {
   position: relative;
   overflow: hidden;
-  border-radius: var(--cover-radius) var(--cover-radius) 0 0;
+  border-radius: var(--radius) var(--radius) 0 0;
   aspect-ratio: 460 / 215;
   background: var(--surface-solid);
+  clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%);
 }
 
 .app-cover img {
@@ -408,6 +535,25 @@ input {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.app-cover.is-missing {
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 var(--stripe-width),
+      var(--stripe) var(--stripe-width) calc(2 * var(--stripe-width))
+    ),
+    var(--surface-solid);
+  text-align: center;
+}
+
+.app-cover.is-missing span {
+  font: var(--weight-bold) var(--size-title) / var(--leading-title) var(--font-title);
+  color: var(--secondary);
 }
 
 .app-card-body {
@@ -428,8 +574,8 @@ input {
 
 .app-card-title {
   margin: 0 0 var(--space-1);
-  font: 700 var(--size-card-title) / 1.2 var(--font-title);
-  letter-spacing: -0.02em;
+  font: var(--weight-bold) var(--size-card-title) / var(--leading-title) var(--font-title);
+  letter-spacing: var(--tracking-title);
 }
 
 .app-tags,
@@ -437,7 +583,7 @@ input {
 .app-players-line {
   margin: 0;
   font-size: var(--size-small);
-  line-height: 1.35;
+  line-height: var(--leading-snug);
 }
 
 .app-tags {
@@ -460,7 +606,7 @@ input {
   transform: translateY(var(--space-2));
 }
 
-/* The votes: upvote, score, downvote; the friend's vote in the blue signal. */
+/* The votes: upvote, score, downvote; the friend's vote fills with the blue and glows. */
 
 .app-votes {
   position: relative;
@@ -476,14 +622,14 @@ input {
   width: var(--tap);
   height: var(--tap);
   padding: 0;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-small);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
   background: transparent;
   color: var(--secondary);
   cursor: pointer;
   transition:
-    background 0.15s,
-    color 0.15s;
+    background var(--duration-fast),
+    color var(--duration-fast);
 }
 
 .app-vote:hover:not(:disabled) {
@@ -495,6 +641,7 @@ input {
   border-color: var(--signal);
   background: var(--signal);
   color: var(--on-signal);
+  box-shadow: var(--glow-vote);
 }
 
 .app-vote:disabled {
@@ -511,7 +658,8 @@ input {
   padding: var(--space-1) 0;
   border: 0;
   background: none;
-  font: 800 var(--size-score) / 1 var(--font-score);
+  color: var(--text);
+  font: var(--weight-black) var(--size-score) / var(--leading-none) var(--font-title);
   cursor: pointer;
 }
 
@@ -521,7 +669,7 @@ input {
 }
 
 .app-score.is-bumped {
-  animation: app-bump 0.35s ease-out;
+  animation: app-bump var(--duration-bump) ease-out;
 }
 
 @keyframes app-bump {
@@ -534,27 +682,28 @@ input {
 
 .app-voters {
   position: absolute;
-  z-index: 5;
+  z-index: var(--layer-bubble);
   top: calc(100% + var(--space-2));
   right: 0;
-  width: min(260px, 80vw);
+  width: min(var(--width-bubble), 80vw);
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-small);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
   background: var(--surface-solid);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 55%);
+  box-shadow: var(--shadow-pop);
   font-size: var(--size-small);
 }
 
+/* Its point, under the score. */
 .app-voters::before {
   content: "";
   position: absolute;
-  top: -7px;
-  right: calc(var(--tap) / 2 - 6px);
-  width: 12px;
-  height: 12px;
-  border-top: 1px solid var(--line-strong);
-  border-left: 1px solid var(--line-strong);
+  top: calc(var(--arrow) / -2 - var(--hairline));
+  right: calc(var(--tap) / 2 - var(--arrow) / 2);
+  width: var(--arrow);
+  height: var(--arrow);
+  border-top: var(--hairline) solid var(--line-strong);
+  border-left: var(--hairline) solid var(--line-strong);
   background: var(--surface-solid);
   transform: rotate(45deg);
 }
@@ -568,7 +717,7 @@ input {
 .app-voters-title {
   margin: 0 0 var(--space-1);
   color: var(--dim);
-  font: 700 var(--size-label) / 1.2 var(--font-title);
+  font: var(--weight-bold) var(--size-label) / var(--leading-title) var(--font-title);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
@@ -584,7 +733,7 @@ input {
 }
 
 .app-voters li {
-  line-height: 1.5;
+  line-height: var(--leading-body);
 }
 
 .app-voters li.is-none {
@@ -598,7 +747,100 @@ input {
   text-align: center;
 }
 
-/* Footer and signature */
+/* States: banner, empty bag */
+
+.app-banner {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: var(--hairline) solid var(--line-strong);
+  border-left: var(--edge) solid var(--signal);
+  background: var(--signal-tint);
+  font-size: var(--size-small);
+}
+
+.app-welcome .app-banner {
+  margin-bottom: var(--space-8);
+}
+
+.app-empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-6);
+  border: var(--hairline) dashed var(--line-strong);
+  color: var(--secondary);
+  text-align: center;
+}
+
+.app-empty p {
+  margin: 0;
+}
+
+.app-empty-title {
+  color: var(--text);
+  font: var(--weight-bold) var(--size-title) / var(--leading-title) var(--font-title);
+}
+
+/* The errors of the bag: under the header, over the page, translucent red, closed with a cross. */
+
+.app-toast {
+  position: absolute;
+  z-index: var(--layer-toast);
+  top: 100%;
+  right: 0;
+  left: 0;
+  border-bottom: var(--hairline) solid var(--on-error-line);
+  background: var(--error-bg);
+  color: var(--on-error);
+  box-shadow: var(--glow-error);
+  backdrop-filter: blur(var(--glass-blur));
+  animation: app-toast-in var(--duration) ease-out;
+}
+
+@keyframes app-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--space-2)));
+  }
+}
+
+.app-toast-in {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+}
+
+.app-toast p {
+  flex: 1;
+  margin: 0;
+  font: var(--weight-semibold) var(--size-small) / var(--leading-snug) var(--font-text);
+}
+
+.app-toast-close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--on-error);
+  cursor: pointer;
+}
+
+.app-toast-close:hover {
+  background: var(--on-error-hover);
+}
+
+.app-toast-close:focus-visible {
+  outline-color: var(--on-error);
+}
+
+/* Footer and signature: the wordmark of Sylent over a large faint watermark of its mark. */
 
 .app-footer {
   position: relative;
@@ -607,7 +849,9 @@ input {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--space-3);
+  min-height: var(--footer-height);
   padding: var(--space-10) var(--space-4) var(--space-8);
   color: var(--dim);
   font-size: var(--size-caption);
@@ -623,7 +867,7 @@ input {
   align-items: center;
   gap: var(--space-2);
   color: var(--secondary);
-  font: 700 var(--size-caption) / 1 var(--font-title);
+  font: var(--weight-bold) var(--size-caption) / var(--leading-none) var(--font-title);
   text-decoration: none;
 }
 
@@ -633,16 +877,32 @@ input {
 
 .app-mark {
   width: auto;
-  height: 20px;
+  height: var(--mark);
 }
 
-/* The wordmark of Sylent (sylent-courses), as a mask so that it takes the color of the text. */
+/* The wordmark of Sylent (sylent-courses), as a mask so that it takes the color of the text; the
+   width keeps the ratio of the image (418 × 96). */
 .app-wordmark {
   display: block;
-  width: calc(16px * 418 / 96);
-  height: 16px;
+  width: calc(var(--wordmark) * 418 / 96);
+  height: var(--wordmark);
   background: currentColor;
   mask: url("../assets/sylent-wordmark.png") center / contain no-repeat;
+}
+
+.app-footer-mark {
+  position: absolute;
+  z-index: var(--layer-behind);
+  top: 50%;
+  left: 50%;
+  color: var(--text);
+  opacity: var(--watermark-opacity);
+  transform: translate(-50%, calc(-50% + var(--watermark-shift)));
+  pointer-events: none;
+}
+
+.app-footer-mark .app-mark {
+  height: var(--watermark);
 }
 
 /* Welcome */
@@ -650,7 +910,7 @@ input {
 .app-welcome {
   flex: 1;
   width: 100%;
-  max-width: 420px;
+  max-width: var(--width-welcome);
   margin: 0 auto;
   padding: var(--space-12) var(--space-4) var(--space-6);
 }
@@ -663,8 +923,7 @@ input {
 
 .app-display {
   margin: 0;
-  font: var(--title-weight) var(--size-display) / 1 var(--font-title);
-  letter-spacing: var(--tracking-title);
+  font-size: var(--size-display);
 }
 
 .app-lead {
@@ -681,40 +940,40 @@ input {
 
 .app-overlay {
   position: fixed;
-  z-index: 20;
+  z-index: var(--layer-overlay);
   inset: 0;
   display: flex;
   align-items: flex-end;
-  background: rgb(0 0 0 / 62%);
+  background: var(--overlay);
 }
 
 .app-dialog {
   width: 100%;
   padding: var(--space-3) var(--space-4) var(--space-6);
-  border-top: 1px solid var(--line-strong);
+  border-top: var(--hairline) solid var(--line-strong);
   border-radius: var(--radius) var(--radius) 0 0;
   background: var(--surface-solid);
 }
 
 .app-handle {
   display: block;
-  width: 40px;
-  height: 4px;
+  width: var(--handle-width);
+  height: var(--handle-height);
   margin: 0 auto var(--space-4);
-  border-radius: 2px;
+  border-radius: var(--radius-pill);
   background: var(--line-strong);
 }
 
 .app-dialog-title {
   margin: 0 0 var(--space-3);
-  font: var(--title-weight) var(--size-title) / 1.2 var(--font-title);
-  letter-spacing: -0.02em;
+  font: var(--weight-bold) var(--size-title) / var(--leading-title) var(--font-title);
+  letter-spacing: var(--tracking-title);
 }
 
 .app-dialog-name {
   overflow: hidden;
   margin: 0;
-  font: 700 var(--size-body) / 1.4 var(--font-title);
+  font: var(--weight-bold) var(--size-body) / var(--leading-snug) var(--font-title);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -728,389 +987,6 @@ input {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
-}
-
-/* PC */
-
-@media (min-width: 900px) {
-  .app-header-in {
-    padding: var(--space-3) var(--space-8);
-  }
-
-  .app-header-in::after {
-    display: none;
-  }
-
-  .app-header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    margin-left: auto;
-  }
-
-  .app-header-actions > .app-button:not(.is-small) {
-    order: 0;
-    min-height: 36px;
-    padding: 0 var(--space-4);
-    font-size: var(--size-caption);
-  }
-
-  .app-nick {
-    margin: 0 var(--space-2) 0 var(--space-4);
-  }
-
-  .app-main {
-    padding: var(--space-6) var(--space-8);
-  }
-
-  .app-add {
-    grid-template-columns: minmax(0, 560px) auto auto;
-    justify-content: start;
-    gap: var(--space-4);
-  }
-
-  .app-field-link {
-    grid-column: auto;
-  }
-
-  .app-field-players {
-    grid-column: auto;
-  }
-
-  .app-bar {
-    margin-top: var(--space-6);
-  }
-
-  .app-chips {
-    flex-wrap: wrap;
-    order: 3;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-  }
-
-  .app-games {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: var(--space-6);
-  }
-
-  .app-card-title {
-    font-size: 17px;
-  }
-
-  .app-vote {
-    width: 36px;
-    height: 36px;
-  }
-
-  .app-tags,
-  .app-by,
-  .app-players-line {
-    font-size: var(--size-caption);
-  }
-
-  .app-overlay {
-    align-items: center;
-    justify-content: center;
-  }
-
-  .app-dialog {
-    width: 520px;
-    padding: var(--space-8);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius);
-  }
-
-  .app-handle {
-    display: none;
-  }
-
-  .app-dialog-actions {
-    grid-template-columns: auto auto;
-    justify-content: end;
-  }
-
-  .app-welcome {
-    padding-top: 12vh;
-  }
-}
-
-/* Néon: grid floor, scanlines, chamfered covers, glowing title, tilted cards. */
-
-.app-floor {
-  position: fixed;
-  z-index: -2;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: block;
-  height: 46vh;
-  overflow: hidden;
-  perspective: 320px;
-  perspective-origin: 50% 0;
-  pointer-events: none;
-}
-
-.app-floor::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: -150%;
-  left: -150%;
-  height: 300%;
-  background:
-    linear-gradient(color-mix(in srgb, var(--signal) 32%, transparent) 2px, transparent 2px) 0 0 / 100% 56px,
-    linear-gradient(90deg, color-mix(in srgb, var(--signal) 32%, transparent) 2px, transparent 2px) 50% 0 / 56px 100%;
-  mask-image: linear-gradient(transparent, rgb(0 0 0 / 70%) 30%);
-  transform: rotateX(72deg);
-  transform-origin: 50% 0;
-  animation: app-floor 2.6s linear infinite;
-}
-
-.app::after {
-  content: "";
-  position: fixed;
-  z-index: 30;
-  inset: 0;
-  background: repeating-linear-gradient(transparent 0 2px, rgb(0 0 0 / 18%) 2px 3px);
-  pointer-events: none;
-}
-
-@keyframes app-floor {
-  to {
-    background-position:
-      0 56px,
-      50% 0;
-  }
-}
-
-.app-header {
-  background: rgb(4 5 10 / 80%);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 1px 24px color-mix(in srgb, var(--signal) 30%, transparent);
-}
-
-.app-brand,
-.app-display {
-  text-transform: uppercase;
-  text-shadow:
-    0 0 12px color-mix(in srgb, var(--signal) 80%, transparent),
-    0 0 36px color-mix(in srgb, var(--signal) 50%, transparent);
-}
-
-.app-cover {
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
-}
-
-.app-card {
-  transform: perspective(900px) rotateX(var(--tilt-x, 0)) rotateY(var(--tilt-y, 0)) scale(var(--press, 1));
-  transition:
-    transform 0.2s ease-out,
-    box-shadow 0.2s;
-}
-
-.app-card:hover {
-  --press: 0.98;
-  border-color: var(--signal);
-  box-shadow:
-    0 0 0 1px var(--signal),
-    0 0 32px color-mix(in srgb, var(--signal) 45%, transparent);
-}
-
-.app-vote[aria-pressed="true"] {
-  box-shadow: 0 0 16px color-mix(in srgb, var(--signal) 70%, transparent);
-}
-
-.app-score {
-  color: var(--text);
-}
-
-
-/* The card whose bubble is open goes over the next ones. */
-.app-card:has(.app-voters:not([hidden])) {
-  z-index: 10;
-}
-
-.app-logo .is-filled {
-  stroke: none;
-  fill: currentColor;
-}
-
-/* The logo glows like the title. */
-.app-brand .app-logo,
-.app-welcome-logo .app-logo,
-.app-board-lockup .app-logo {
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--signal) 70%, transparent));
-}
-
-/* States: banner, messages under the adding block, empty bag, a cover that is missing */
-
-.app-banner {
-  margin: 0 0 var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--line-strong);
-  border-left: 3px solid var(--signal);
-  background: var(--signal-tint);
-  font-size: var(--size-small);
-}
-
-.app-welcome .app-banner {
-  margin-bottom: var(--space-8);
-}
-
-.app-message {
-  grid-column: 1 / -1;
-  margin: 0;
-  color: var(--secondary);
-  font-size: var(--size-small);
-}
-
-.app-message.is-error,
-.app-field small.is-error {
-  color: var(--error-text);
-}
-
-.app-field.is-invalid input {
-  border-color: var(--error-text);
-}
-
-.app-add.is-busy input {
-  opacity: 0.6;
-}
-
-.app-button:disabled {
-  cursor: progress;
-  opacity: 0.75;
-}
-
-.app-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: app-spin 0.8s linear infinite;
-}
-
-@keyframes app-spin {
-  to {
-    transform: rotate(1turn);
-  }
-}
-
-.app-empty {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-3);
-  padding: var(--space-10) var(--space-6);
-  border: 1px dashed var(--line-strong);
-  color: var(--secondary);
-  text-align: center;
-}
-
-.app-empty p {
-  margin: 0;
-}
-
-.app-empty-title {
-  color: var(--text);
-  font: var(--title-weight) var(--size-title) / 1.2 var(--font-title);
-}
-
-.app-cover.is-missing {
-  display: grid;
-  place-items: center;
-  padding: var(--space-4);
-  background:
-    repeating-linear-gradient(135deg, transparent 0 10px, rgb(255 255 255 / 3%) 10px 20px),
-    var(--surface-solid);
-  text-align: center;
-}
-
-.app-cover.is-missing span {
-  font: var(--title-weight) var(--size-title) / 1.2 var(--font-title);
-  color: var(--secondary);
-}
-
-/* « Jouable à N »: a small window under the filters */
-
-.app-bar {
-  position: relative;
-}
-
-.app-popover {
-  position: absolute;
-  z-index: 6;
-  top: 100%;
-  left: 0;
-  display: grid;
-  gap: var(--space-3);
-  width: 260px;
-  padding: var(--space-4);
-  border: 1px solid var(--line-strong);
-  background: var(--surface-solid);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 60%);
-}
-
-.app-popover p {
-  margin: 0;
-}
-
-.app-popover-title {
-  font: 700 var(--size-small) / 1 var(--font-title);
-}
-
-.app-popover-note {
-  color: var(--dim);
-  font-size: var(--size-caption);
-}
-
-.app-stepper {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-.app-stepper .app-button {
-  width: var(--tap);
-  padding: 0;
-  font-size: var(--size-title);
-}
-
-.app-stepper-value {
-  min-width: 2ch;
-  font: 700 32px / 1 var(--font-score);
-  text-align: center;
-}
-
-/* The action that fills in blue before it can be clicked */
-
-.app-button.is-arming {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border-color: var(--signal);
-  background: transparent;
-  color: var(--text);
-  cursor: wait;
-}
-
-.app-button.is-arming::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: var(--signal);
-  transform: scaleX(0);
-  transform-origin: left;
-  animation: app-arm 2s linear forwards;
-}
-
-@keyframes app-arm {
-  to {
-    transform: scaleX(1);
-  }
 }
 
 /* Tall panels: settings and emptying the bag */
@@ -1152,16 +1028,16 @@ input {
   grid-template-columns: 1fr auto;
   gap: var(--space-2);
   padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--hairline) solid var(--line);
 }
 
 .app-player-name {
-  min-height: 36px;
+  min-height: var(--tap-small);
   min-width: 0;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-strong);
+  border: var(--hairline) solid var(--field-line);
   background: var(--field-bg);
-  font: 700 var(--size-small) / 1 var(--font-title);
+  font: var(--weight-bold) var(--size-small) / var(--leading-none) var(--font-title);
 }
 
 .app-player-stats {
@@ -1190,7 +1066,7 @@ input {
 
 .app-keep {
   display: grid;
-  grid-template-columns: auto 88px 1fr auto;
+  grid-template-columns: auto var(--thumb) 1fr auto;
   align-items: center;
   gap: var(--space-3);
   min-height: var(--tap);
@@ -1198,33 +1074,33 @@ input {
 }
 
 .app-keep input {
-  width: 22px;
-  height: 22px;
+  width: var(--checkbox);
+  height: var(--checkbox);
   margin: 0;
   accent-color: var(--signal);
 }
 
 .app-keep img {
-  width: 88px;
+  width: var(--thumb);
   height: auto;
   aspect-ratio: 460 / 215;
   object-fit: cover;
 }
 
+.app-keep:has(input:not(:checked)) img {
+  opacity: 0.45;
+  filter: grayscale(0.7);
+}
+
 .app-keep-name {
   overflow: hidden;
-  font: 600 var(--size-small) / 1.3 var(--font-title);
+  font: var(--weight-semibold) var(--size-small) / var(--leading-snug) var(--font-title);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .app-keep-score {
-  font: 700 var(--size-small) / 1 var(--font-score);
-}
-
-.app-keep:has(input:not(:checked)) img {
-  opacity: 0.45;
-  filter: grayscale(0.7);
+  font: var(--weight-bold) var(--size-small) / var(--leading-none) var(--font-title);
 }
 
 .app-dialog-bar {
@@ -1235,7 +1111,7 @@ input {
   gap: var(--space-3);
   margin-top: var(--space-3);
   padding-top: var(--space-3);
-  border-top: 1px solid var(--line);
+  border-top: var(--hairline) solid var(--line);
 }
 
 .app-dialog-bar p {
@@ -1248,14 +1124,193 @@ input {
   flex: 1 1 auto;
 }
 
-@media (min-width: 900px) {
+/* The board of the logo (mock-up only): the symbol at every size, down to a browser tab. */
+
+.app-board {
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-10);
+  padding: var(--space-10);
+}
+
+.app-board-lockup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.app-board-word {
+  font-size: var(--size-board);
+}
+
+.app-board-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-8);
+}
+
+.app-board-row figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.app-board-row figcaption,
+.app-board-name {
+  color: var(--dim);
+  font-size: var(--size-caption);
+}
+
+.app-tile {
+  display: grid;
+  place-items: center;
+  width: var(--tile);
+  height: var(--tile);
+  border-radius: var(--radius-icon);
+  background: var(--icon-bg);
+  color: var(--icon-fg);
+}
+
+.app-tile.is-light {
+  background: var(--icon-fg);
+  color: var(--icon-bg);
+  outline: var(--hairline) solid var(--line);
+}
+
+.app-browser-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--mock-tab-radius) var(--mock-tab-radius) 0 0;
+  background: var(--mock-tab-bg);
+  color: var(--mock-tab-text);
+  font: var(--size-label) var(--font-system);
+}
+
+.app-browser-tab i {
+  margin-left: var(--space-8);
+  font-style: normal;
+  opacity: 0.6;
+}
+
+/* Phone only */
+
+@media (width < 900px) {
+  .app-role {
+    display: none;
+  }
+}
+
+/* PC */
+
+@media (width >= 900px) {
+  .app-header-in {
+    padding: var(--space-3) var(--space-8);
+  }
+
+  .app-header-in::after {
+    display: none;
+  }
+
+  .app-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-left: auto;
+  }
+
+  .app-header-actions > .app-button:not(.is-small) {
+    order: 0;
+    min-height: var(--tap-small);
+    padding: 0 var(--space-4);
+    font-size: var(--size-caption);
+  }
+
+  .app-nick {
+    margin: 0 var(--space-2) 0 var(--space-4);
+  }
+
+  .app-main {
+    padding: var(--space-6) var(--space-8);
+  }
+
+  .app-add {
+    grid-template-columns: minmax(0, var(--width-link)) auto auto;
+    justify-content: start;
+    gap: var(--space-4);
+  }
+
+  .app-field-link,
+  .app-field-players {
+    grid-column: auto;
+  }
+
+  .app-bar {
+    margin-top: var(--space-6);
+  }
+
+  .app-chips {
+    flex-wrap: wrap;
+    order: 3;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .app-games {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
+  .app-vote {
+    width: var(--tap-small);
+    height: var(--tap-small);
+  }
+
+  .app-tags,
+  .app-by,
+  .app-players-line {
+    font-size: var(--size-caption);
+  }
+
+  .app-toast-in {
+    padding-right: var(--space-6);
+    padding-left: var(--space-8);
+  }
+
+  .app-overlay {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-dialog {
+    width: var(--width-dialog);
+    padding: var(--space-8);
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: var(--radius);
+  }
+
+  .app-handle {
+    display: none;
+  }
+
+  .app-dialog-actions {
+    grid-template-columns: auto auto;
+    justify-content: end;
+  }
+
   .app-dialog.is-tall {
-    width: min(1080px, 90vw);
+    width: min(var(--width-dialog-tall), 90vw);
     max-height: 86vh;
   }
 
   .app-player {
-    grid-template-columns: 240px auto 1fr auto 110px;
+    grid-template-columns: var(--col-player) auto 1fr auto var(--col-player-action);
     align-items: center;
     gap: var(--space-3);
   }
@@ -1289,121 +1344,13 @@ input {
   .app-dialog-bar .app-button {
     flex: none;
   }
-}
 
-
-/* « Idealan » in Montserrat 800. */
-.app-brand,
-.app-display,
-.app-board-word {
-  font-family: var(--font-brand);
-  font-weight: 800;
-  letter-spacing: var(--tracking-brand);
-}
-
-@media (max-width: 899px) {
-  .app-role {
-    display: none;
+  .app-welcome {
+    padding-top: 12vh;
   }
 }
 
-
-/* The errors of the bag: under the header, over the page, translucent red, closed with a cross. */
-.app-toast {
-  position: absolute;
-  z-index: 8;
-  top: 100%;
-  right: 0;
-  left: 0;
-  border-bottom: 1px solid rgb(255 255 255 / 18%);
-  background: var(--error-bg);
-  color: #ffffff;
-  box-shadow: 0 8px 28px rgb(214 40 57 / 35%);
-  backdrop-filter: blur(10px);
-  animation: app-toast-in 0.2s ease-out;
-}
-
-.app-toast-in {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  max-width: var(--content);
-  margin: 0 auto;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-}
-
-.app-toast p {
-  flex: 1;
-  margin: 0;
-  font: 600 var(--size-small) / 1.4 var(--font-text);
-}
-
-.app-toast-close {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: var(--tap);
-  height: var(--tap);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.app-toast-close:hover {
-  background: rgb(255 255 255 / 15%);
-}
-
-.app-toast-close:focus-visible {
-  outline-color: #ffffff;
-}
-
-@keyframes app-toast-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-}
-
-@media (min-width: 900px) {
-  .app-toast-in {
-    padding-left: var(--space-8);
-    padding-right: var(--space-6);
-  }
-}
-
-
-/* The mark of Sylent, large and faint behind the footer, as a watermark. */
-.app-footer-mark {
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  color: var(--text);
-  opacity: 0.06;
-  transform: translate(-50%, calc(-50% + 35px)); /* 35 px lower, cut by the bottom of the page */
-  pointer-events: none;
-}
-
-.app-footer-mark .app-mark {
-  height: 230px;
-}
-
-.app-footer {
-  min-height: 240px;
-  justify-content: flex-end;
-}
-
-@media (min-width: 900px) {
-  .app-footer-mark .app-mark {
-    height: 280px;
-  }
-
-  .app-footer {
-    min-height: 280px;
-  }
-}
+/* Nothing moves for a friend who asked to reduce motion. */
 
 @media (prefers-reduced-motion: reduce) {
   *,
