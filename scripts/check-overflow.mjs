@@ -37,6 +37,7 @@ const screens = [
     kept,
     bag: "answers",
     click: "[aria-controls$='-players']",
+    opens: "[aria-labelledby$='-players-title']",
   },
   { name: "the bag without the server", path: "/", kept, bag: "down" },
 ];
@@ -197,7 +198,13 @@ const check = async (width, screen) => {
       errors.push(`${where}: the screen expected didn't show`);
       return;
     }
-    if (screen.click) await page.locator(screen.click).click();
+    if (screen.click) {
+      await page.locator(screen.click).click();
+      if (!(await page.locator(screen.opens).isVisible())) {
+        errors.push(`${where}: the click didn't open what it should`);
+        return;
+      }
+    }
     const reached = await page.evaluate(widest);
     if (reached > width) {
       errors.push(`${where}: ${reached} px wide`);

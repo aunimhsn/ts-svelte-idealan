@@ -1,8 +1,10 @@
 // The filters of the bag (specs.md, The bag): « Jouable à N », then the tags of the cards. Every
 // filter is off when the bag shows, and after a reload of the page: they live only in the screen.
+import fr from "../i18n/fr.json";
 import type { BagGame } from "./bag";
 import { MAX_PLAYERS, MIN_PLAYERS } from "./field-rules";
 import { tagsOf } from "./games";
+import { format } from "./messages";
 
 export interface Filters {
   // The tags a game must all have, as the cards name them (« Coop en LAN », « Action »).
@@ -61,3 +63,13 @@ export const isFiltering = (filters: Filters) =>
 // N kept between 1 and 99, as « Joueurs max ».
 export const clampPlayers = (count: number) =>
   Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, count));
+
+// N of « Jouable à N »: as the friend chose it with − and +, else the number of players of the
+// bag, which it follows until the friend changes it.
+export const playersOf = (chosen: number | null, bagPlayers: number) =>
+  chosen ?? clampPlayers(bagPlayers);
+
+// What follows the number of games shown when a filter is on: « jeu sur 47 » for 0 and 1 (French
+// keeps the singular), « jeux sur 47 » from 2.
+export const shownOf = (shown: number, total: number) =>
+  format(shown > 1 ? fr.bag.filtered : fr.bag.filteredOne, { count: total });

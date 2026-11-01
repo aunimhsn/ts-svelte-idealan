@@ -15,25 +15,26 @@
   let {
     choices,
     bagPlayers,
+    players,
     tags = $bindable(),
     playersOn = $bindable(),
-    chosenPlayers = $bindable(),
+    onplayers,
   }: {
     // The tags offered, those of at least one game of the bag.
     choices: readonly string[];
     // The number of players of the bag.
     bagPlayers: number;
+    // N of « Jouable à N » (playersOf).
+    players: number;
     tags: string[];
     playersOn: boolean;
-    // N as the friend chose it with − and +, or null while it follows the bag.
-    chosenPlayers: number | null;
+    // The friend chose N with − or +.
+    onplayers: (players: number) => void;
   } = $props();
 
   const id = $props.id();
   const popoverId = `${id}-players`;
   const titleId = `${id}-players-title`;
-
-  const players = $derived(chosenPlayers ?? clampPlayers(bagPlayers));
 
   let open = $state(false);
   let chip = $state<HTMLButtonElement>();
@@ -51,8 +52,10 @@
     if (refocus) chip?.focus();
   };
 
+  // At 1 or 99, a tap changes nothing, and N keeps following the bag.
   const step = (by: number) => {
-    chosenPlayers = clampPlayers(players + by);
+    const next = clampPlayers(players + by);
+    if (next !== players) onplayers(next);
   };
 
   const toggle = (tag: string) => {
@@ -108,6 +111,51 @@
       >{/if}
     <Icon name="chevron" size={14} />
   </button>
+  <!-- Right after its chip, so that the keyboard goes from one to the other; placed against the
+       bar, it is neither clipped nor scrolled with the row of the chips. -->
+  <div
+    class="popover"
+    id={popoverId}
+    role="group"
+    aria-labelledby={titleId}
+    hidden={!open}
+    bind:this={popover}
+    onfocusout={onFocusOut}
+  >
+    <p class="popover-title" id={titleId}>{fr.filters.players}</p>
+    <div class="stepper">
+      <button
+        type="button"
+        class="button"
+        aria-label={fr.filters.fewer}
+        aria-disabled={players <= MIN_PLAYERS}
+        onclick={() => step(-1)}>−</button
+      >
+      <output class="stepper-value" aria-live="polite">{players}</output>
+      <button
+        type="button"
+        class="button"
+        aria-label={fr.filters.more}
+        aria-disabled={players >= MAX_PLAYERS}
+        onclick={() => step(1)}>+</button
+      >
+    </div>
+    <p class="popover-note">
+      {bagPlayers === 1
+        ? fr.filters.inBagOne
+        : format(fr.filters.inBag, { count: bagPlayers })}
+    </p>
+    <button
+      type="button"
+      class="button is-small"
+      onclick={() => {
+        playersOn = false;
+        close(true);
+      }}
+    >
+      {fr.filters.clear}
+    </button>
+  </div>
   {#each choices as tag (tag)}
     <button
       type="button"
@@ -119,49 +167,6 @@
     </button>
   {/each}
 </div>
-<div
-  class="popover"
-  id={popoverId}
-  role="group"
-  aria-labelledby={titleId}
-  hidden={!open}
-  bind:this={popover}
-  onfocusout={onFocusOut}
->
-  <p class="popover-title" id={titleId}>{fr.filters.players}</p>
-  <div class="stepper">
-    <button
-      type="button"
-      class="button"
-      aria-label={fr.filters.fewer}
-      aria-disabled={players <= MIN_PLAYERS}
-      onclick={() => step(-1)}>−</button
-    >
-    <output class="stepper-value" aria-live="polite">{players}</output>
-    <button
-      type="button"
-      class="button"
-      aria-label={fr.filters.more}
-      aria-disabled={players >= MAX_PLAYERS}
-      onclick={() => step(1)}>+</button
-    >
-  </div>
-  <p class="popover-note">
-    {bagPlayers === 1
-      ? fr.filters.inBagOne
-      : format(fr.filters.inBag, { count: bagPlayers })}
-  </p>
-  <button
-    type="button"
-    class="button is-small"
-    onclick={() => {
-      playersOn = false;
-      close(true);
-    }}
-  >
-    {fr.filters.clear}
-  </button>
-</div>
 
 <style>
   /* The space under the chips, as under the row that scrolls on a phone, keeps a small gap
@@ -170,8 +175,8 @@
     display: flex;
     gap: var(--space-2);
     width: calc(100% + 2 * var(--space-4));
-    margin: 0 calc(-1 * var(--space-4));
-    padding: 0 var(--space-4) var(--space-1);
+    margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-4)) 0;
+    padding: var(--space-1) var(--space-4);
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -255,6 +260,11 @@
     width: var(--tap);
     padding: 0;
     font-size: var(--size-title);
+  }
+
+  /* At 1 or 99: nothing to wait for, unlike a busy button. */
+  .stepper .button[aria-disabled="true"] {
+    cursor: default;
   }
 
   .stepper-value {

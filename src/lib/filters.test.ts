@@ -5,6 +5,8 @@ import {
   clampPlayers,
   isFiltering,
   passes,
+  playersOf,
+  shownOf,
   tagChoices,
 } from "./filters";
 
@@ -77,5 +79,21 @@ describe("clampPlayers", () => {
     expect(clampPlayers(0)).toBe(1);
     expect(clampPlayers(9)).toBe(9);
     expect(clampPlayers(100)).toBe(99);
+  });
+});
+
+describe("playersOf", () => {
+  it("follows the bag until the friend chooses N", () => {
+    expect(playersOf(null, 9)).toBe(9);
+    expect(playersOf(null, 120)).toBe(99);
+    expect(playersOf(5, 9)).toBe(5);
+  });
+});
+
+describe("shownOf", () => {
+  it("keeps the singular for 0 and 1 game", () => {
+    expect(shownOf(0, 47)).toBe("jeu sur 47");
+    expect(shownOf(1, 47)).toBe("jeu sur 47");
+    expect(shownOf(2, 47)).toBe("jeux sur 47");
   });
 });

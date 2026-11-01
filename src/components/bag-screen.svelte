@@ -10,9 +10,10 @@
   import type { BagGame } from "../lib/bag";
   import { format } from "../lib/messages";
   import {
-    clampPlayers,
     isFiltering,
     passes,
+    playersOf,
+    shownOf,
     tagChoices,
     type Filters,
   } from "../lib/filters";
@@ -36,10 +37,16 @@
 
   const choices = $derived(tagChoices(app.games));
   const bagPlayers = $derived(app.view?.players.length ?? 0);
+  const players = $derived(playersOf(chosenPlayers, bagPlayers));
   // A tag whose last game left the bag no longer filters: its chip is gone.
   const filters = $derived<Filters>({
     tags: tags.filter((tag) => choices.includes(tag)),
-    players: playersOn ? (chosenPlayers ?? clampPlayers(bagPlayers)) : null,
+    players: playersOn ? players : null,
+  });
+  // And it is unpressed, so that it doesn't come back pressed with the next game that has it.
+  $effect(() => {
+    const kept = tags.filter((tag) => choices.includes(tag));
+    if (kept.length < tags.length) tags = kept;
   });
   const shown = $derived(app.games.filter((game) => passes(game, filters)));
 
@@ -114,9 +121,7 @@
       <p class="count" tabindex="-1" aria-live="polite" bind:this={count}>
         {#if isFiltering(filters)}
           <strong>{shown.length}</strong>
-          {format(shown.length > 1 ? fr.bag.filtered : fr.bag.filteredOne, {
-            count: total,
-          })}
+          {shownOf(shown.length, total)}
           <span>{fr.bag.filtering}</span>
         {:else}
           <strong>{total}</strong>
@@ -141,9 +146,10 @@
       <BagFilters
         {choices}
         {bagPlayers}
+        {players}
         bind:tags
         bind:playersOn
-        bind:chosenPlayers
+        onplayers={(chosen) => (chosenPlayers = chosen)}
       />
     {/if}
   </div>
