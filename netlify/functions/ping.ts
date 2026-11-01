@@ -1,5 +1,5 @@
-// Answers that the server part runs: the skeleton of every function of the application, until
-// the functions of steps 5 and 6 (read a Steam game, add a game to the bag).
+// Answers that the server part runs: the home screen of the skeleton shows it, until the welcome
+// of step 6b.
 import type { Config } from "@netlify/functions";
 
 export default async (request: Request): Promise<Response> => {

@@ -1,6 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { config, handleSteamGame } from "../functions/steam-game";
-import { ACCESS_CODE_HEADER } from "../lib/access";
 import {
   readSteamAnswer,
   readSteamGame,
@@ -8,18 +6,7 @@ import {
   type SteamPage,
 } from "../lib/steam-game";
 import type { JsonStore } from "../lib/store";
-
-// A store kept in memory, as Netlify Blobs would keep it.
-const memoryStore = (entries: Record<string, unknown> = {}) => {
-  const data = new Map(Object.entries(entries));
-  const store: JsonStore = {
-    getJSON: async (key) => data.get(key) ?? null,
-    setJSON: async (key, value) => {
-      data.set(key, structuredClone(value));
-    },
-  };
-  return { store, data };
-};
+import { memoryStore } from "./memory-store";
 
 const COVER =
   "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1";
@@ -67,6 +54,21 @@ describe("readSteamAnswer", () => {
   it("keeps only the fields the bag needs", () => {
     expect(readSteamAnswer(730, steamAnswer())).toEqual(COUNTER_STRIKE);
   });
+
+  it("keeps the appid given by Steam, which may differ from the link's", () => {
+    expect(
+      readSteamAnswer(730, steamAnswer({ steam_appid: 731 })),
+    ).toMatchObject({ appid: 731 });
+  });
+
+  it.each([undefined, "731", 0, -1, 1.5, 2 ** 32])(
+    "keeps the appid of the link when Steam gives %j",
+    (steam_appid) => {
+      expect(readSteamAnswer(730, steamAnswer({ steam_appid }))).toMatchObject({
+        appid: 730,
+      });
+    },
+  );
 
   it("knows when Steam doesn't know the appid", () => {
     expect(readSteamAnswer(999, { "999": { success: false } })).toBe("unknown");
@@ -157,6 +159,18 @@ describe("readSteamGame", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it("answers a cached page whose appid differs from the link's", async () => {
+    const { store } = memoryStore({
+      "steam/730": { ...COUNTER_STRIKE, appid: 731 },
+    });
+    const fetcher = steamAnswering(steamAnswer());
+    expect(await readSteamGame(730, { store, fetcher })).toMatchObject({
+      ok: true,
+      game: { appid: 731 },
+    });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("asks Steam again when the cached page has another shape", async () => {
     const { store, data } = memoryStore({ "steam/730": { name: "Old" } });
     const fetcher = steamAnswering(steamAnswer());
@@ -219,6 +233,9 @@ describe("readSteamGame", () => {
       getJSON: async () => {
         throw new Error("Blobs is down");
       },
+      getVersioned: async () => {
+        throw new Error("Blobs is down");
+      },
       setJSON: async () => {
         throw new Error("Blobs is down");
       },
@@ -229,82 +246,5 @@ describe("readSteamGame", () => {
         fetcher: steamAnswering(steamAnswer()),
       }),
     ).toEqual({ ok: true, game: COUNTER_STRIKE });
-  });
-});
-
-describe("steam-game", () => {
-  const env = {
-    MEMBER_CODE: "member-test-code",
-    ADMIN_CODE: "admin-test-code",
-  };
-
-  const ask = (
-    query: string,
-    { code = "member-test-code", method = "GET" } = {},
-    fetcher = steamAnswering(steamAnswer()),
-  ) =>
-    handleSteamGame(
-      new Request(`http://localhost/api/steam-game${query}`, {
-        method,
-        headers: { [ACCESS_CODE_HEADER]: code },
-      }),
-      env,
-      { store: memoryStore().store, fetcher },
-    );
-
-  beforeEach(() => {
-    vi.spyOn(console, "error").mockImplementation(() => {});
-  });
-  afterEach(() => vi.restoreAllMocks());
-
-  it("answers on /api/steam-game", () => {
-    expect(config.path).toBe("/api/steam-game");
-  });
-
-  it("answers the game of an appid", async () => {
-    const response = await ask("?appid=730");
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ game: COUNTER_STRIKE });
-  });
-
-  it("refuses another method", async () => {
-    const response = await ask("?appid=730", { method: "POST" });
-    expect(response.status).toBe(405);
-    expect(await response.json()).toEqual({ error: "method-not-allowed" });
-  });
-
-  it("checks the access code before anything else", async () => {
-    const fetcher = steamAnswering(steamAnswer());
-    const response = await ask("?appid=730", { code: "wrong" }, fetcher);
-    expect(response.status).toBe(401);
-    expect(await response.json()).toEqual({ error: "wrong-access-code" });
-    expect(fetcher).not.toHaveBeenCalled();
-  });
-
-  it.each(["", "?appid=", "?appid=abc", "?appid=0", "?appid=730/../1"])(
-    "refuses the appid of %j",
-    async (query) => {
-      const fetcher = steamAnswering(steamAnswer());
-      const response = await ask(query, {}, fetcher);
-      expect(response.status).toBe(400);
-      expect(await response.json()).toEqual({ error: "invalid-appid" });
-      expect(fetcher).not.toHaveBeenCalled();
-    },
-  );
-
-  it("answers 404 for what is not a game", async () => {
-    const response = await ask(
-      "?appid=730",
-      {},
-      steamAnswering(steamAnswer({ type: "dlc" })),
-    );
-    expect(response.status).toBe(404);
-    expect(await response.json()).toEqual({ error: "not-a-game" });
-  });
-
-  it("answers 502 when Steam is unavailable", async () => {
-    const response = await ask("?appid=730", {}, steamAnswering({}, 429));
-    expect(response.status).toBe(502);
-    expect(await response.json()).toEqual({ error: "steam-unavailable" });
   });
 });
