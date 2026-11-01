@@ -9,6 +9,11 @@ updates:
     groups:
       npm-minor:
         update-types: [minor, patch]
+    ignore:
+      # The types of Node.js follow the version the site runs on (.nvmrc): raise their major
+      # version by hand, with .nvmrc and the engines of package.json.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
