@@ -48,6 +48,44 @@ describe("createApi", () => {
     });
   });
 
+  it("sends a vote and a removal with their body", async () => {
+    const fetcher = vi.fn(async () => Response.json(view));
+    const api = createApi({ fetcher });
+    await api.vote(() => credentials, 730, null);
+    await api.removeGame(() => credentials, 730);
+    const calls = fetcher.mock.calls as unknown as Array<[string, RequestInit]>;
+    expect(calls.map(([path]) => path)).toEqual([
+      "/api/vote",
+      "/api/remove-game",
+    ]);
+    expect(JSON.parse(calls[0]?.[1].body as string)).toEqual({
+      appid: 730,
+      vote: null,
+    });
+    expect(JSON.parse(calls[1]?.[1].body as string)).toEqual({ appid: 730 });
+  });
+
+  it("drops a call waiting while another player took the session", async () => {
+    let answer: (() => void) | undefined;
+    const fetcher = vi.fn(
+      () =>
+        new Promise<Response>((resolve) => {
+          answer = () => resolve(Response.json(view));
+        }),
+    );
+    const api = createApi({ fetcher });
+    let current = credentials;
+    const first = api.getBag(() => current);
+    const vote = api.vote(() => current, 730, "up");
+    await vi.waitFor(() => expect(answer).toBeDefined());
+    // Meanwhile, another tab entered under another nickname.
+    current = { ...credentials, playerId: "j2", personalCode: "5678" };
+    answer?.();
+    await first;
+    expect(await vote).toEqual({ ok: false, error: "no-session" });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
   it("answers the error code of the function", async () => {
     const api = createApi({
       fetcher: async () => errorAnswer("bag-full", 409),

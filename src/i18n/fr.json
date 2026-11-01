@@ -47,7 +47,21 @@
     "formerPlayer": "un ancien joueur",
     "maxPlayers": "Jusqu’à {count} joueurs",
     "maxPlayersOne": "Jusqu’à 1 joueur",
-    "score": "Score"
+    "score": "Score",
+    "up": "Pour",
+    "down": "Contre",
+    "scoreLabel": "Score {score} : voir qui a voté",
+    "nobody": "personne",
+    "remove": "Retirer",
+    "removing": "Retrait…"
+  },
+  "confirm": {
+    "cancel": "Annuler",
+    "removeTitle": "Retirer ce jeu du sac ?",
+    "removeVotesNone": "Il n’a aucun vote.",
+    "removeVotesOne": "Il a 1 vote.",
+    "removeVotes": "Il a {count} votes.",
+    "removeAction": "Retirer"
   },
   "kinds": {
     "coop": "Coop",
@@ -94,6 +108,9 @@
     "already-in-bag": "Ce jeu est déjà dans le sac : vote pour lui.",
     "bag-full": "Le sac est plein : vois avec l’admin.",
     "steam-unavailable": "Steam ne répond pas : réessaie dans une minute.",
+    "game-not-found": "Ce jeu n’est plus dans le sac : quelqu’un vient de le retirer.",
+    "own-game": "Tu as ajouté ce jeu : ton vote pour lui est déjà compté.",
+    "not-allowed": "Seuls l’admin et celui qui a ajouté ce jeu peuvent le retirer.",
     "player-busy": "Trop d’actions en même temps : réessaie dans un instant.",
     "server-not-configured": "Le serveur n’est pas prêt : préviens l’admin.",
     "server-unreachable": "Le serveur ne répond pas : « Rafraîchir » réessaie.",
