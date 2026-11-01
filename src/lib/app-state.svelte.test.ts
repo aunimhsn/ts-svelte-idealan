@@ -602,7 +602,7 @@ describe("AppState", () => {
       expect(app.emptyError).toBe("server-error");
       expect(app.toast).toBeNull();
       expect(app.games).toHaveLength(3);
-      app.closeEmpty();
+      app.clearEmptyError();
       expect(app.emptyError).toBeNull();
     });
 

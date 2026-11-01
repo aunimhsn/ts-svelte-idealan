@@ -1,8 +1,9 @@
 <!-- The bag (specs.md, The bag): the header, the adding, the count with « Rafraîchir », the
      filters, and the games sorted by score, with their votes, who voted, and « Retirer » with its
-     confirmation; for the admin, the settings and emptying the bag. The filters are all off when the bag shows, and after a reload of the page.
-     It reloads every 30 seconds while the tab is shown, and at once when the tab comes back after
-     a longer time; the reload stops with the screen, when the friend leaves. -->
+     confirmation; for the admin, the settings and emptying the bag. The filters are all off when
+     the bag shows, and after a reload of the page. It reloads every 30 seconds while the tab is
+     shown, and at once when the tab comes back after a longer time; the reload stops with the
+     screen, when the friend leaves. -->
 <script lang="ts">
   import fr from "../i18n/fr.json";
   import { RELOAD_MS, type AppState } from "../lib/app-state.svelte";

@@ -163,11 +163,11 @@
     "wrong-personal-code": "Ton code perso a changé : redonne-le pour revenir.",
     "player-locked": "Ton pseudo est verrouillé après 5 codes perso faux : demande à l’admin de réinitialiser ton code."
   },
-  "settingsErrors": {
+  "adminErrors": {
     "nickname-taken": "{nickname} existe déjà : choisis un autre pseudo.",
     "cannot-reset-self": "Tu ne peux pas réinitialiser ton propre code perso.",
     "cannot-delete-self": "Tu ne peux pas te supprimer toi-même.",
-    "admin-only": "Seul l’admin peut changer les réglages : entre avec le code admin.",
+    "admin-only": "Seul l’admin peut faire ça : entre avec le code admin.",
     "player-busy": "Trop d’actions en même temps : réessaie dans un instant."
   },
   "bagErrors": {

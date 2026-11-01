@@ -8,13 +8,8 @@
   import fr from "../i18n/fr.json";
   import type { AppState } from "../lib/app-state.svelte";
   import type { PlayerAccount } from "../lib/bag";
-  import { format } from "../lib/messages";
-  import {
-    accountsOf,
-    countsOf,
-    deleteText,
-    settingsMessage,
-  } from "../lib/settings";
+  import { adminMessage, format } from "../lib/messages";
+  import { accountsOf, countsOf, deleteText } from "../lib/settings";
   import ConfirmPanel from "./confirm-panel.svelte";
   import TallPanel from "./tall-panel.svelte";
 
@@ -71,7 +66,7 @@
     onclose();
   }}
 >
-  <p class="note" tabindex="-1" aria-live="polite" bind:this={note}>
+  <p class="panel-note" tabindex="-1" aria-live="polite" bind:this={note}>
     {#if app.accounts === null && app.settingsBusy === ""}
       {fr.settings.loading}
     {:else if accounts.length === 1}
@@ -81,7 +76,7 @@
     {/if}
   </p>
   {#if error !== null && error.id === null}
-    <p class="error is-alone" role="alert">{settingsMessage(error.code)}</p>
+    <p class="error-block alone" role="alert">{adminMessage(error.code)}</p>
   {/if}
   <ul class="players">
     {#each accounts as account (account.id)}
@@ -144,8 +139,8 @@
           </button>
         {/if}
         {#if failed}
-          <p class="error" id={errorId} role="alert">
-            {settingsMessage(error.code, error.nickname)}
+          <p class="error-block error" id={errorId} role="alert">
+            {adminMessage(error.code, error.nickname)}
           </p>
         {/if}
       </li>
@@ -166,12 +161,6 @@
 {/if}
 
 <style>
-  .note {
-    margin: var(--space-2) 0 var(--space-4);
-    color: var(--secondary);
-    font-size: var(--size-small);
-  }
-
   .players {
     flex: 1;
     min-height: 0;
@@ -252,18 +241,13 @@
     text-transform: uppercase;
   }
 
-  /* An error: a red bubble under the line, its point toward the field. */
+  /* An error of a player: a red bubble under their line, its point toward the field. */
   .error {
     position: relative;
     grid-column: 1 / -1;
     justify-self: start;
     order: 1;
     margin: var(--space-1) 0 0;
-    padding: var(--space-2) var(--space-3);
-    background: var(--error-bg);
-    box-shadow: var(--glow-error);
-    color: var(--on-error);
-    font-size: var(--size-caption);
   }
 
   .error::before {
@@ -276,12 +260,9 @@
     border-left: calc(var(--arrow) / 2) solid transparent;
   }
 
-  .error.is-alone {
+  /* An error of the panel, when the players couldn't be read. */
+  .alone {
     margin: 0 0 var(--space-3);
-  }
-
-  .error.is-alone::before {
-    display: none;
   }
 
   @media (width >= 900px) {

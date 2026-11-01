@@ -1,6 +1,6 @@
 <!-- The header of the bag: the name, the friend's nickname (« admin » for the owner, on a PC) and
-     « Se déconnecter »; for the admin, « Réglages » and « Vider le sac », on a second row on a phone. The strip of the
-     errors hangs under it. -->
+     « Se déconnecter »; for the admin, « Réglages » and « Vider le sac », on a second row on a
+     phone. The strip of the errors hangs under it. -->
 <script lang="ts">
   import fr from "../i18n/fr.json";
   import type { AppState } from "../lib/app-state.svelte";

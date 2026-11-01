@@ -270,13 +270,7 @@
     display: grid;
     place-items: center;
     padding: var(--space-4);
-    background:
-      repeating-linear-gradient(
-        135deg,
-        transparent 0 var(--stripe-width),
-        var(--stripe) var(--stripe-width) calc(2 * var(--stripe-width))
-      ),
-      var(--surface-solid);
+    background: var(--stripes), var(--surface-solid);
     text-align: center;
   }
 

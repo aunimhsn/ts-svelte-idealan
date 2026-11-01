@@ -9,9 +9,16 @@
 
   let {
     title,
+    describedby,
     onclose,
     children,
-  }: { title: string; onclose: () => void; children: Snippet } = $props();
+  }: {
+    title: string;
+    // The id of the instructions of the panel, read with its title when it opens.
+    describedby?: string;
+    onclose: () => void;
+    children: Snippet;
+  } = $props();
 
   const id = $props.id();
   const titleId = `${id}-title`;
@@ -29,6 +36,7 @@
   bind:this={dialog}
   class="panel"
   aria-labelledby={titleId}
+  aria-describedby={describedby}
   {onclose}
   onclick={(event) => {
     if (event.target === dialog) dialog.close();

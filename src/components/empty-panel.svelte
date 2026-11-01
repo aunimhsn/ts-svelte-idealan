@@ -20,15 +20,22 @@
     toRemove,
   } from "../lib/empty-bag";
   import { inOrder, signed } from "../lib/games";
-  import { settingsMessage } from "../lib/settings";
+  import { adminMessage } from "../lib/messages";
   import ConfirmPanel from "./confirm-panel.svelte";
   import TallPanel from "./tall-panel.svelte";
 
   let { app, onclose }: { app: AppState; onclose: () => void } = $props();
 
+  const id = $props.id();
+  const noteId = `${id}-note`;
+
   let panel = $state<ReturnType<typeof TallPanel>>();
 
   const order = untrack(() => app.games.map((game) => game.appid));
+  // Once, when the panel opens: an emptying that failed after the panel was closed shows nothing.
+  $effect(() => {
+    untrack(() => app.clearEmptyError());
+  });
   const games = $derived(inOrder(app.view?.games ?? [], order));
 
   // The games checked, to keep; the covers that didn't load.
@@ -50,12 +57,13 @@
 <TallPanel
   bind:this={panel}
   title={fr.empty.title}
+  describedby={noteId}
   onclose={() => {
-    app.closeEmpty();
+    app.clearEmptyError();
     onclose();
   }}
 >
-  <p class="note">
+  <p class="panel-note" id={noteId}>
     {games.length === 0 ? fr.empty.noGames : fr.empty.note}
   </p>
   <ul class="games">
@@ -93,10 +101,10 @@
     {/each}
   </ul>
   {#if app.emptyError !== null}
-    <p class="error" role="alert">{settingsMessage(app.emptyError)}</p>
+    <p class="error-block error" role="alert">{adminMessage(app.emptyError)}</p>
   {/if}
   <div class="bar">
-    <p aria-live="polite">
+    <p aria-live="polite" aria-atomic="true">
       <strong>{keptCount}</strong>
       {keptWord(keptCount)} ·
       <strong>{removed.length}</strong>
@@ -127,12 +135,6 @@
 {/if}
 
 <style>
-  .note {
-    margin: var(--space-2) 0 var(--space-4);
-    color: var(--secondary);
-    font-size: var(--size-small);
-  }
-
   .games {
     display: grid;
     flex: 1;
@@ -169,13 +171,7 @@
   }
 
   .cover.is-missing {
-    background:
-      repeating-linear-gradient(
-        135deg,
-        transparent 0 var(--stripe-width),
-        var(--stripe) var(--stripe-width) calc(2 * var(--stripe-width))
-      ),
-      var(--surface-solid);
+    background: var(--stripes), var(--surface-solid);
   }
 
   /* A game to remove fades: the ones kept stand out. */
@@ -197,14 +193,9 @@
       var(--font-title);
   }
 
-  /* An error of the emptying, over the bar: the strip of the bag is under the panel. */
+  /* An error of the emptying, over the bar. */
   .error {
     margin: var(--space-3) 0 0;
-    padding: var(--space-2) var(--space-3);
-    background: var(--error-bg);
-    box-shadow: var(--glow-error);
-    color: var(--on-error);
-    font-size: var(--size-caption);
   }
 
   .bar {

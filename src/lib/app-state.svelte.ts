@@ -438,7 +438,7 @@ export class AppState {
     return false;
   }
 
-  closeEmpty() {
+  clearEmptyError() {
     this.emptyError = null;
   }
 
