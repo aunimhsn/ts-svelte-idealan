@@ -109,6 +109,10 @@ input {
 .app-board-word {
   font: var(--title-weight) 96px / 1 var(--font-title);
   letter-spacing: var(--tracking-title);
+  text-transform: uppercase;
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--signal) 80%, transparent),
+    0 0 36px color-mix(in srgb, var(--signal) 50%, transparent);
 }
 
 .app-board-row {
@@ -381,17 +385,6 @@ input {
   backdrop-filter: blur(var(--glass-blur));
 }
 
-.app-card::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 8%;
-  border-radius: inherit;
-  background: var(--cover) center / cover;
-  filter: blur(36px) saturate(1.4);
-  opacity: calc(0.55 * var(--card-glow));
-}
-
 .app-cover {
   position: relative;
   overflow: hidden;
@@ -405,10 +398,6 @@ input {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.app-rank {
-  display: none;
 }
 
 .app-card-body {
@@ -626,18 +615,6 @@ input {
   text-align: center;
 }
 
-.app-ghost {
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  color: var(--ghost-word);
-  font: 800 clamp(120px, 40vw, 220px) / 0.8 var(--font-title);
-  letter-spacing: -0.06em;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
 .app-display {
   margin: 0;
   font: var(--title-weight) var(--size-display) / 1 var(--font-title);
@@ -813,34 +790,9 @@ input {
   }
 }
 
-/* C · Tableau des scores: the rank on the cover. */
+/* Néon: grid floor, scanlines, chamfered covers, glowing title, tilted cards. */
 
-:root[data-theme="scores"] .app-rank {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: block;
-  padding: 0 var(--space-3) var(--space-1) var(--space-3);
-  background: linear-gradient(transparent, rgb(0 0 0 / 70%));
-  color: #ffffff;
-  font: 800 56px / 0.9 var(--font-score);
-  text-shadow: 0 2px 10px rgb(0 0 0 / 60%);
-}
-
-:root[data-theme="scores"] .app-card:nth-child(-n + 3) .app-rank {
-  color: var(--signal-text);
-}
-
-:root[data-theme="scores"] .app-card-title {
-  text-transform: uppercase;
-  font-family: var(--font-score);
-  font-size: 22px;
-  letter-spacing: 0.01em;
-}
-
-/* D · Néon: grid floor, scanlines, chamfered covers, glowing title, tilted cards. */
-
-:root[data-theme="neon"] .app-floor {
+.app-floor {
   position: fixed;
   z-index: -2;
   right: 0;
@@ -854,7 +806,7 @@ input {
   pointer-events: none;
 }
 
-:root[data-theme="neon"] .app-floor::before {
+.app-floor::before {
   content: "";
   position: absolute;
   top: 0;
@@ -870,7 +822,7 @@ input {
   animation: app-floor 1.6s linear infinite;
 }
 
-:root[data-theme="neon"] .app::after {
+.app::after {
   content: "";
   position: fixed;
   z-index: 30;
@@ -887,55 +839,44 @@ input {
   }
 }
 
-.app-floor {
-  display: none;
-}
-
-:root[data-theme="neon"] .app-header {
+.app-header {
   background: rgb(4 5 10 / 80%);
   backdrop-filter: blur(8px);
   box-shadow: 0 1px 24px color-mix(in srgb, var(--signal) 30%, transparent);
 }
 
-:root[data-theme="neon"] .app-brand,
-:root[data-theme="neon"] .app-display {
+.app-brand,
+.app-display {
   text-transform: uppercase;
   text-shadow:
     0 0 12px color-mix(in srgb, var(--signal) 80%, transparent),
     0 0 36px color-mix(in srgb, var(--signal) 50%, transparent);
 }
 
-:root[data-theme="neon"] .app-cover {
+.app-cover {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
 }
 
-:root[data-theme="neon"] .app-card {
+.app-card {
   transform: perspective(900px) rotateX(var(--tilt-x, 0)) rotateY(var(--tilt-y, 0));
   transition:
     transform 0.2s ease-out,
     box-shadow 0.2s;
 }
 
-:root[data-theme="neon"] .app-card:hover {
+.app-card:hover {
   border-color: var(--signal);
   box-shadow:
     0 0 0 1px var(--signal),
     0 0 32px color-mix(in srgb, var(--signal) 45%, transparent);
 }
 
-:root[data-theme="neon"] .app-vote[aria-pressed="true"] {
+.app-vote[aria-pressed="true"] {
   box-shadow: 0 0 16px color-mix(in srgb, var(--signal) 70%, transparent);
 }
 
-:root[data-theme="neon"] .app-score {
+.app-score {
   color: var(--text);
-}
-
-/* B · Écran de LAN: a header of frosted glass. */
-
-:root[data-theme="screen"] .app-header {
-  background: rgb(7 7 8 / 70%);
-  backdrop-filter: blur(16px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -946,7 +887,7 @@ input {
     transition: none !important;
   }
 
-  :root[data-theme="neon"] .app-card {
+  .app-card {
     transform: none;
   }
 }
@@ -954,4 +895,16 @@ input {
 /* The card whose bubble is open goes over the next ones. */
 .app-card:has(.app-voters:not([hidden])) {
   z-index: 10;
+}
+
+.app-logo .is-filled {
+  stroke: none;
+  fill: currentColor;
+}
+
+/* The logo glows like the title. */
+.app-brand .app-logo,
+.app-welcome-logo .app-logo,
+.app-board-lockup .app-logo {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--signal) 70%, transparent));
 }

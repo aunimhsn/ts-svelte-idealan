@@ -1,16 +1,12 @@
-// The application, drawn from the address: ?screen=bag|welcome, as=friend|admin, panel=voters|remove,
-// theme, blue. The viewer (index.html) shows this page in a phone frame and a PC frame.
+// The application, drawn from its address: ?screen=bag|welcome|logo, as=friend|admin,
+// panel=voters|remove, logo. The viewer (index.html) shows this page in a phone frame and a PC frame.
 const params = new URLSearchParams(location.search);
 const view = {
   screen: params.get("screen") || "bag",
   as: params.get("as") || "friend",
   panel: params.get("panel") || "",
-  theme: params.get("theme") || "night",
-  blue: params.get("blue") || "electric",
-  logo: params.get("logo") || "bulb",
+  logo: params.get("logo") || "frame",
 };
-document.documentElement.dataset.theme = view.theme;
-document.documentElement.dataset.blue = view.blue;
 const viewer = view.as === "admin" ? "Sylent" : "Nova";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -30,15 +26,13 @@ const MARK = `<svg class="app-mark" viewBox="0 0 908 2000.3" fill="currentColor"
 // The proposals of logo, on a 32 px grid: lines in the color of the text, one detail in the blue
 // signal (class app-logo-accent).
 const LOGOS = {
-  bulb: { name: "Ampoule LAN", body: `<path d="M10.5 19.5C8 17.6 6.5 15 6.5 12a9.5 9.5 0 0 1 19 0c0 3-1.5 5.6-4 7.5" stroke-width="2.6"/><path d="M10.5 19.5h11v7h-11z" stroke-width="2.6"/><path d="M13.5 22v2M16 22v2M18.5 22v2" stroke-width="1.8"/><path class="app-logo-accent" d="M12 14.5l4-4 4 4" stroke-width="2.8"/>` },
-  bag: { name: "Sac", body: `<path d="M8.5 11.5h15l2.5 15.5H6z" stroke-width="2.6"/><path d="M11.5 11.5c0-4 2-6.5 4.5-6.5s4.5 2.5 4.5 6.5" stroke-width="2.6"/><path class="app-logo-accent" d="M11.5 22l4.5-4.5 4.5 4.5" stroke-width="3"/>` },
-  i: { name: "i qui vote", body: `<path d="M16 15v14" stroke-width="6"/><path class="app-logo-accent is-filled" d="M16 2.5l7.5 7.5h-15z"/>` },
-  port: { name: "Prise RJ45", body: `<path d="M4.5 4.5h23v23h-23z" stroke-width="2.4"/><path d="M9 10h14v9.5h-3.5V24h-7v-4.5H9z" stroke-width="2.4"/><path class="app-logo-accent" d="M12.5 10v4M15 10v4M17.5 10v4M20 10v4" stroke-width="1.8"/>` },
-  stripes: { name: "Galons", body: `<path d="M6 27l10-8 10 8" stroke-width="3.4"/><path d="M6 19.5l10-8 10 8" stroke-width="3.4"/><path class="app-logo-accent" d="M6 12l10-8 10 8" stroke-width="3.4"/>` },
-  network: { name: "Réseau", body: `<path d="M16 9.5L8 22.5M16 9.5l8 13M10.5 25h11" stroke-width="2.4"/><circle cx="7" cy="25" r="3.5" stroke-width="2.4"/><circle cx="25" cy="25" r="3.5" stroke-width="2.4"/><circle class="app-logo-accent is-filled" cx="16" cy="7" r="4.5"/>` },
+  frame: { name: "Cadre", body: `<path d="M4.5 4.5h23v23h-23z" stroke-width="2.4"/><path d="M9 10h14v9.5h-3.5V24h-7v-4.5H9z" stroke-width="2.4"/><path class="app-logo-accent" d="M12.5 10v4M15 10v4M17.5 10v4M20 10v4" stroke-width="1.8"/>` },
+  solid: { name: "Prise pleine", body: `<path class="is-filled" d="M3 6h26v15h-6v6H9v-6H3z"/><path class="app-logo-accent" d="M9 6v6M14 6v6M18 6v6M23 6v6" stroke-width="2.6"/>` },
+  tile: { name: "Bloc évidé", body: `<path class="is-filled" fill-rule="evenodd" d="M3 3h26v26H3zM8 9v11h4v4h8v-4h4V9z"/><path class="app-logo-accent" d="M11.5 9v4.5M14.5 9v4.5M17.5 9v4.5M20.5 9v4.5" stroke-width="1.8"/>` },
+  plug: { name: "Fiche", body: `<path d="M8 4h16v13l-3.5 3.5h-9L8 17z" stroke-width="2.6"/><path class="app-logo-accent" d="M12 4v5M16 4v5M20 4v5" stroke-width="2.2"/><path d="M16 20.5V30" stroke-width="4"/>` },
 };
 const logo = (size, key = view.logo) =>
-  `<svg class="app-logo" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${(LOGOS[key] || LOGOS.bulb).body}</svg>`;
+  `<svg class="app-logo" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${(LOGOS[key] || LOGOS.frame).body}</svg>`;
 
 const voteOf = game => (game.by === viewer ? "own" : game.up.includes(viewer) ? "up" : game.down.includes(viewer) ? "down" : null);
 const score = game => game.up.length - game.down.length;
@@ -93,7 +87,6 @@ function card(game, index) {
   return `<li class="app-card" style="--cover: url('${COVER(game.appid)}')" data-index="${index}">
     <div class="app-cover">
       <img src="${COVER(game.appid)}" alt="" loading="lazy" width="460" height="215">
-      <span class="app-rank" aria-hidden="true">${index + 1}</span>
     </div>
     <div class="app-card-body">
       <div class="app-card-info">
@@ -138,7 +131,6 @@ function welcome() {
     <div class="app-floor" aria-hidden="true"></div>
     <main class="app-welcome">
       <div class="app-welcome-head">
-        <span class="app-ghost" aria-hidden="true">LAN</span>
         <div class="app-welcome-logo">${logo(72)}</div>
         <h1 class="app-display">Idealan</h1>
         <p class="app-lead">Le sac à jeux de la LAN</p>
@@ -282,8 +274,8 @@ if (matchMedia("(hover: hover)").matches) {
   });
 }
 
-// D · Néon: the cards tilt under the pointer.
-if (view.theme === "neon" && !reducedMotion && matchMedia("(hover: hover)").matches) {
+// The cards tilt under the pointer.
+if (!reducedMotion && matchMedia("(hover: hover)").matches) {
   root.addEventListener("pointermove", event => {
     const cardElement = event.target.closest(".app-card");
     document.querySelectorAll(".app-card.is-tilted").forEach(c => {

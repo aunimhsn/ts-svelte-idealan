@@ -9,27 +9,47 @@ The application has no brand of its own yet: the covers of the Steam games are i
 | Asset | Format | File | Status |
 |---|---|---|---|
 | Name shown in the interface (« Idealan »?) | Text | `src/i18n/fr.json` | To confirm |
-| Square icon, readable at 16 px, for the favicon | SVG | | To draw in the mock-up |
+| Square icon, readable at 16 px, for the favicon | SVG | | An RJ45 jack (chosen on 2026-11-01); its drawing compared in the mock-up |
+| The mark of Sylent, beside « Fait par Sylent » in the footer | SVG | `docs/mockups/assets/sylent-mark.svg`, from sylent.art | Chosen on 2026-11-01 |
 | Fonts, with their license (self-hosting allowed) | Name, or files | | Chosen in the mock-up |
 
 ## Principles
 
 <!-- Three to five sentences: what the application must convey, for whom, and the main rule of the style. -->
 
+Chosen by the owner on 2026-11-01 among four styles of the family of sylent.art, with the blue instead of its orange: **D · Néon**, the style that « raises the temperature ».
+
+1. **The room of a LAN at night**: near-black backgrounds, a grid floor that runs to the horizon, scanlines, the title and the logo that glow.
+2. **The covers of the games are the material**: chamfered at their top right corner, they carry the colors; the interface around them stays in blue and white.
+3. **Blue is the light of the room**: unlike sylent.art, where the signal color is rare, the electric blue lights the main buttons, the borders and the glows; the friend's own vote and the active filters fill with it.
+4. **It moves, but never for a friend who asked to reduce motion**: the floor runs, the cards tilt under the pointer, the score jumps when voting; all of it stops with `prefers-reduced-motion`.
+
 ## Logo
 
 <!-- Which variant where (header, footer, favicon, card), the minimum size, the clear space. -->
+
+- The symbol: an RJ45 jack (the plug of a LAN), its contacts in the blue signal, chosen on 2026-11-01 among six symbols; the drawing of the jack is still compared in the mock-up (frame, solid jack, tile with the jack cut out, plug with its cable), for its legibility at 16 px.
+- Beside the name « Idealan » in Chakra Petch 700, uppercase, glowing in blue, in the header (28 px) and above the title of the welcome (72 px).
+- The footer carries the mark of Sylent beside « Fait par Sylent », linked to sylent.art.
 
 ## Colors
 
 <!-- One line per token: name, value, use, contrast checked against WCAG AA. -->
 
+The electric blue, chosen on 2026-11-01 among six blues (contrasts on #0a0a0a). The other tokens are settled in step 4.
+
 | Token | Value | Use |
 |---|---|---|
+| `--signal` | `#2e6bff` | The electric blue: main buttons, the friend's vote, active filters, borders and glows; white on it 4.5:1, on the background 4.4:1 |
+| `--on-signal` | `#ffffff` | Text on the blue |
+| `--signal-text` | `#86a8ff` | The same blue, lighter, for small text on the background, 8.5:1 |
 
 ## Typography
 
 <!-- The fonts and their license, one size per role (display, title, body, label), weights, line heights. -->
+
+- Titles, the name and the scores: Chakra Petch 500 and 700 (SIL Open Font License), with the style D · Néon.
+- Text and interface: Manrope 500 to 800 (SIL Open Font License), as on sylent.art.
 
 ## Spacing
 
@@ -62,3 +82,9 @@ The application has no brand of its own yet: the covers of the Steam games are i
 ## Set aside
 
 <!-- The options compared and not kept, with the reason, so that they are not proposed again. -->
+
+On 2026-11-01, in the mock-up:
+
+- **Styles**: A · Nuit (sylent.art as it is: white accent, glass cards, Anaheim, a large faded word), B · Écran de LAN (a blurred halo of its cover behind each card, soft corners), C · Tableau des scores (a large rank on each cover, Barlow Condensed). The owner chose D · Néon.
+- **Blues**: cobalt `#2a52e0`, ultramarine `#4338ff`, azure `#0a7cff`, sky `#1a9fff` (the blue of Steam, which would make the application look like a product of Valve), glacier `#56c6ff`.
+- **Symbols**: a light bulb on an RJ45 plug (the clearest for « idée + LAN », unreadable at 16 px), a bag with a vote, an « i » whose dot is a vote, three rising chevrons, three linked computers.
