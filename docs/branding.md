@@ -9,7 +9,7 @@ The application has no brand of its own yet: the covers of the Steam games are i
 | Asset | Format | File | Status |
 |---|---|---|---|
 | Name shown in the interface (« Idealan »?) | Text | `src/i18n/fr.json` | To confirm |
-| Square icon, readable at 16 px, for the favicon | SVG | | An RJ45 jack (chosen on 2026-11-01); its drawing compared in the mock-up |
+| Square icon, readable at 16 px, for the favicon | SVG | the « Bloc évidé » of the mock-up (`LOGOS.tile` in `docs/mockups/shared/app.js`) | Chosen on 2026-11-01 |
 | The signature of the footer: the mark of Sylent and its wordmark | SVG and PNG | `docs/mockups/assets/sylent-mark.svg` (from sylent.art), `docs/mockups/assets/sylent-wordmark.png` (from `assets/logo-text.png` of sylent-courses, cropped to its ink) | Chosen on 2026-11-01 |
 | Fonts, with their license (self-hosting allowed) | Name, or files | | Chosen in the mock-up |
 
@@ -28,7 +28,7 @@ Chosen by the owner on 2026-11-01 among four styles of the family of sylent.art,
 
 <!-- Which variant where (header, footer, favicon, card), the minimum size, the clear space. -->
 
-- The symbol: an RJ45 jack (the plug of a LAN), its contacts in the blue signal, chosen on 2026-11-01 among six symbols; the drawing of the jack is still compared in the mock-up (frame, solid jack, tile with the jack cut out, plug with its cable), for its legibility at 16 px.
+- The symbol: an RJ45 jack (the plug of a LAN) cut out of a white square, its four contacts in the blue signal (« Bloc évidé »), chosen on 2026-11-01 among six symbols, then among four drawings of the jack: a solid square reads best at 16 px.
 - Beside the name « Idealan » in Chakra Petch 700, uppercase, glowing in blue, in the header (28 px) and above the title of the welcome (72 px).
 - The footer carries the mark of Sylent beside the wordmark « SYLENT » of sylent-courses (its letters joined, not the one of sylent.art), both in the color of the text, linked to sylent.art; it replaced « Fait par Sylent » on 2026-11-01.
 - « Idealan » is tried in Montserrat 800 (the font of the wordmark of Sylent), its letter spacing compared from −5 to 0 px in the mock-up (first from −1 to +1 px).
@@ -89,3 +89,4 @@ On 2026-11-01, in the mock-up:
 - **Styles**: A · Nuit (sylent.art as it is: white accent, glass cards, Anaheim, a large faded word), B · Écran de LAN (a blurred halo of its cover behind each card, soft corners), C · Tableau des scores (a large rank on each cover, Barlow Condensed). The owner chose D · Néon.
 - **Blues**: cobalt `#2a52e0`, ultramarine `#4338ff`, azure `#0a7cff`, sky `#1a9fff` (the blue of Steam, which would make the application look like a product of Valve), glacier `#56c6ff`.
 - **Symbols**: a light bulb on an RJ45 plug (the clearest for « idée + LAN », unreadable at 16 px), a bag with a vote, an « i » whose dot is a vote, three rising chevrons, three linked computers.
+- **Drawings of the RJ45 jack**: in a frame of lines (too thin at 16 px), a solid jack without frame, a plug with its cable.

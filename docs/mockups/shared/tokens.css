@@ -54,6 +54,7 @@
   --accent: var(--signal);
   --on-accent: var(--on-signal);
   --error-text: #ff8f85;
+  --error-bg: rgb(214 40 57 / 78%); /* white on it, over the background: about 6.9:1 */
   --radius: 0;
   --radius-small: 0;
   --radius-chip: 0;

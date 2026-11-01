@@ -1304,6 +1304,72 @@ input {
   }
 }
 
+
+/* The errors of the bag: under the header, over the page, translucent red, closed with a cross. */
+.app-toast {
+  position: absolute;
+  z-index: 8;
+  top: 100%;
+  right: 0;
+  left: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 18%);
+  background: var(--error-bg);
+  color: #ffffff;
+  box-shadow: 0 8px 28px rgb(214 40 57 / 35%);
+  backdrop-filter: blur(10px);
+  animation: app-toast-in 0.2s ease-out;
+}
+
+.app-toast-in {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+}
+
+.app-toast p {
+  flex: 1;
+  margin: 0;
+  font: 600 var(--size-small) / 1.4 var(--font-text);
+}
+
+.app-toast-close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.app-toast-close:hover {
+  background: rgb(255 255 255 / 15%);
+}
+
+.app-toast-close:focus-visible {
+  outline-color: #ffffff;
+}
+
+@keyframes app-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (min-width: 900px) {
+  .app-toast-in {
+    padding-left: var(--space-8);
+    padding-right: var(--space-6);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

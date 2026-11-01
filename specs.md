@@ -75,7 +75,7 @@ Agreed with the owner on 2026-11-01 in [docs/wireframes/screens.excalidraw](docs
 - **The games**: one card per row on a phone (about two per screen), a grid of five per row on a PC (about ten in full view).
 - **Who voted**: a bubble under the score, on a tap on a phone, on hover or keyboard focus on a PC; the page is not dimmed.
 - **Panels**: on a phone, they rise from the bottom of the screen over the dimmed bag (a bottom sheet); on a PC, a window in the middle of the dimmed bag. « Fermer », « Annuler », « Échap » or a click on the dimmed bag closes them. The settings are blocks per player on a phone, a table on a PC; emptying the bag is a list with a box per game on a phone, a grid of covers to check on a PC, with « 9 gardés · 38 retirés » and « Vider (38 jeux) » in a bar that stays at the bottom.
-- **Messages**: the errors of adding (link refused, Steam not answering, bag full, « Joueurs max » wrong) appear under the adding block; « Lecture du jeu sur Steam… » too, with the fields locked and « Lecture… » on the button. The server not answering is a banner under the header, and the bag keeps what it showed. An empty bag shows « Le sac est vide. » without filters; filters with no game show « Aucun jeu ne correspond à ces filtres. » and « Retirer les filtres ».
+- **Messages**: the errors of the bag (link refused, Steam not answering, bag full, « Joueurs max » wrong, the server not answering) show in a strip of translucent red under the header, closed with its cross; the bag keeps what it showed. « Lecture du jeu sur Steam… » appears under the adding block, with the fields locked and « Lecture… » on the button. An empty bag shows « Le sac est vide. » without filters; filters with no game show « Aucun jeu ne correspond à ces filtres. » and « Retirer les filtres ».
 - **« Jouable à N »**: a small window under its chip, with − and +, « 9 joueurs dans le sac » and « Retirer ce filtre ».
 
 ## Steam links
@@ -120,7 +120,7 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 
 ## Error handling
 
-Each error is a short sentence, with « tu », next to what caused it.
+Each error is a short sentence, with « tu ». On the welcome, it sits under the field that caused it; in the bag, it shows in a strip of translucent red under the header, over the page, with white text and a cross to close it (asked by the owner on 2026-11-01); the field at fault keeps a red border.
 
 | Situation | Behavior |
 |---|---|

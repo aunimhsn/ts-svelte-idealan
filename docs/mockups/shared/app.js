@@ -5,7 +5,7 @@ const view = {
   screen: params.get("screen") || "bag",
   as: params.get("as") || "friend",
   panel: params.get("panel") || "",
-  logo: params.get("logo") || "frame",
+  logo: params.get("logo") || "tile",
   tracking: Number(params.get("tracking") || 0),
 };
 // The spacing of the letters of « Idealan », in px, compared with a tab of the viewer.
@@ -35,7 +35,7 @@ const LOGOS = {
   plug: { name: "Fiche", body: `<path d="M8 4h16v13l-3.5 3.5h-9L8 17z" stroke-width="2.6"/><path class="app-logo-accent" d="M12 4v5M16 4v5M20 4v5" stroke-width="2.2"/><path d="M16 20.5V30" stroke-width="4"/>` },
 };
 const logo = (size, key = view.logo) =>
-  `<svg class="app-logo" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${(LOGOS[key] || LOGOS.frame).body}</svg>`;
+  `<svg class="app-logo" width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${(LOGOS[key] || LOGOS.tile).body}</svg>`;
 
 const voteOf = game => (game.by === viewer ? "own" : game.up.includes(viewer) ? "up" : game.down.includes(viewer) ? "down" : null);
 const score = game => game.up.length - game.down.length;
@@ -51,10 +51,10 @@ const STATES = {
   "code-changed": { values: { nick: "Nova" }, banner: "Le code d’accès a changé&nbsp;: redemande-le dans la conversation." },
   empty: { games: [], count: 0 },
   reading: { add: { link: "https://store.steampowered.com/app/1966720/Lethal_Company/", players: "4", busy: true, note: "Lecture du jeu sur Steam…" } },
-  refused: { add: { link: "https://store.steampowered.com/bundle/232/", players: "4", error: "Ce lien est un pack&nbsp;: colle le lien d’un des jeux." } },
-  "steam-down": { add: { link: "https://store.steampowered.com/app/1966720/", players: "4", error: "Steam ne répond pas&nbsp;: réessaie dans une minute." } },
-  full: { count: 50, add: { link: "https://store.steampowered.com/app/1966720/", error: "Le sac est plein&nbsp;: vois avec l’admin." } },
-  "server-down": { banner: "Le serveur ne répond pas&nbsp;: le sac affiché date de 21&nbsp;h&nbsp;04. « Rafraîchir » réessaie." },
+  refused: { add: { link: "https://store.steampowered.com/bundle/232/", players: "4", invalid: true }, toast: "Ce lien est un pack&nbsp;: colle le lien d’un des jeux." },
+  "steam-down": { add: { link: "https://store.steampowered.com/app/1966720/", players: "4" }, toast: "Steam ne répond pas&nbsp;: réessaie dans une minute." },
+  full: { count: 50, add: { link: "https://store.steampowered.com/app/1966720/" }, toast: "Le sac est plein&nbsp;: vois avec l’admin." },
+  "server-down": { toast: "Le serveur ne répond pas&nbsp;: le sac affiché date de 21&nbsp;h&nbsp;04. « Rafraîchir » réessaie." },
   "no-cover": { noCover: true },
   "players-open": { playersOpen: true },
   "no-result": { games: [], count: 47, active: ["players", "Coop en LAN", "Écran partagé"], noResult: true },
@@ -68,6 +68,12 @@ function footer() {
   </footer>`;
 }
 
+// The errors of the bag: a red, translucent strip under the header, over the page, closed with its cross.
+function toast(text) {
+  return text ? `<div class="app-toast" role="alert"><div class="app-toast-in"><p>${text}</p>
+    <button type="button" class="app-toast-close" aria-label="Fermer le message">${icon('<path d="M6 6l12 12M18 6L6 18"/>', 18, 2.4)}</button></div></div>` : "";
+}
+
 function header() {
   const admin = view.as === "admin";
   return `<header class="app-header">
@@ -79,6 +85,7 @@ function header() {
         <button type="button" class="app-button is-ghost is-small">Se déconnecter</button>
       </div>
     </div>
+    ${toast(state.toast)}
   </header>`;
 }
 
@@ -89,8 +96,8 @@ function banner(text) {
 function addBlock(add = {}) {
   const message = add.error || add.note;
   return `<section class="app-add${add.busy ? " is-busy" : ""}" aria-label="Ajouter un jeu">
-    <label class="app-field app-field-link"><span>Lien Steam</span>
-      <input type="url" placeholder="https://store.steampowered.com/app/…" value="${add.link || ""}" ${add.busy ? "disabled" : ""}></label>
+    <label class="app-field app-field-link${add.invalid ? " is-invalid" : ""}"><span>Lien Steam</span>
+      <input type="url" placeholder="https://store.steampowered.com/app/…" value="${add.link || ""}" ${add.busy ? "disabled" : ""} ${add.invalid ? 'aria-invalid="true"' : ""}></label>
     <label class="app-field app-field-players"><span class="app-field-name">Joueurs max<small>facultatif</small></span>
       <input type="text" inputmode="numeric" placeholder="10" size="3" value="${add.players || ""}" ${add.busy ? "disabled" : ""}></label>
     <button type="button" class="app-button is-primary app-add-button" ${add.busy ? "disabled" : ""}>${add.busy ? `<span class="app-spinner" aria-hidden="true"></span>Lecture…` : "Ajouter"}</button>
@@ -425,6 +432,11 @@ root.addEventListener("click", event => {
   const opener = target.closest("[data-open]");
   if (opener) {
     openPanel(opener.dataset.open);
+    return;
+  }
+  if (target.closest(".app-toast-close")) {
+    target.closest(".app-toast").remove();
+    root.querySelector(".app-field.is-invalid")?.classList.remove("is-invalid");
     return;
   }
   if (target.closest('[aria-disabled="true"]')) return;
