@@ -15,11 +15,11 @@ What Idealan does, agreed with the owner on 2026-11-01 (step 1 of [roadmap.md](r
 
 - The covers of the games are the main material of the page.
 - The interface speaks to the friends with « tu », everywhere (« Tu veux vraiment retirer ce jeu ? »).
-- The layout is set by the wireframes of step 2 (see « Layout » below); the style is decided in the mock-up (step 3), which becomes the reference from then on: this section is completed then.
+- The style « Néon » of the mock-up (step 3): the room of a LAN at night, the covers as the material, the electric blue as the light of the room; its principles and decisions are in [docs/branding.md](docs/branding.md).
 
 ## Screens
 
-One page (a single-page application): a friend not known to the browser sees the welcome; otherwise, the bag, with panels (modals) that open over it. The layout of each screen, agreed with the owner on 2026-11-01, is drawn in [docs/wireframes/screens.excalidraw](docs/wireframes/screens.excalidraw) and summed up in « Layout ».
+One page (a single-page application): a friend not known to the browser sees the welcome; otherwise, the bag, with panels (modals) that open over it. The layout of each screen is summed up in « Layout »; the look of every screen and state is set by the mock-up, [docs/mockups/index.html](docs/mockups/index.html), the reference of the interface since step 3.
 
 ### Welcome
 
@@ -67,7 +67,7 @@ Before what can't be undone, with the numbers at stake, and « Annuler » or the
 
 ### Layout
 
-Agreed with the owner on 2026-11-01 in [docs/wireframes/screens.excalidraw](docs/wireframes/screens.excalidraw), phone first (390 px), then a Full HD PC (1920 px). From step 3, the mock-up is the reference; the wireframe only fixed the first layout.
+Agreed with the owner on 2026-11-01 in an Excalidraw wireframe, phone first (390 px), then a Full HD PC (1920 px); the wireframe only fixed the first layout and was removed with the mock-up (step 3, the Git history keeps it). **The mock-up is the reference**: [docs/mockups/index.html](docs/mockups/index.html), served with `python3 docs/mockups/serve.py 8742`; where this section and the mock-up disagree, the mock-up wins and this section is fixed.
 
 - **Welcome**: the name and a short line, the three fields one under the other, each with its help or its error below it, « Entrer » across the width; the Steam footer and the signature (the wordmark of Sylent, linked to sylent.art, over the mark of Sylent as a large faint watermark) at the bottom. Under « Code perso »: « Nouveau venu : choisis-le. Déjà venu : redonne-le. » The errors come one at a time: the access code, then the nickname, then the personal code.
 - **The bag, top to bottom**: the header (name, nickname, « Se déconnecter »; for the admin, « Réglages » and « Vider le sac », on a second row on a phone); the adding block (« Lien Steam » across the width, then « Joueurs max », « facultatif » and « Ajouter »; one row on a PC); the count with « triés par score » and « Rafraîchir »; the filters (« Jouable à N » first, then the kinds), one row that scrolls sideways on a phone and wraps on a PC; the games; the footer. Nothing stays fixed while the page scrolls.
