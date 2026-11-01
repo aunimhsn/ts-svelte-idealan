@@ -2,11 +2,12 @@
 // variables (specs.md, Access code and nicknames): MEMBER_CODE reads the bag, adds and votes;
 // ADMIN_CODE does as much and moderates. Every function checks it first.
 import { createHash, timingSafeEqual } from "node:crypto";
+import type { Role } from "../../src/lib/bag";
 
 // The header that carries the code: a query would leave it in the logs of Netlify.
 export const ACCESS_CODE_HEADER = "x-access-code";
 
-export type Role = "member" | "admin";
+export type { Role };
 
 export type Access =
   | { ok: true; role: Role }

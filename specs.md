@@ -101,12 +101,12 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 | Key | Holds | Written by |
 |---|---|---|
 | `bag` | Up to 50 games, each with its `appid`, name, cover, categories, genres, the maximum number of players when given, the id of the player who added it, the date, and the votes (player id → up or down). About 50 KB. | Adding, voting, removing, emptying, deleting a player. |
-| `players` | Each player: a fixed id (`j1`), the nickname as typed, the personal code hashed (never readable), the date of creation. A nickname exists once, without case. | Entering with a new nickname; the admin's settings. |
+| `players` | Each player: a fixed id (`j1`), the nickname as typed, the personal code hashed with a salt of its own (never readable), the wrong personal codes given in a row, the date of creation; and the number of the next id, never reused. A nickname exists once, without case. At most 50 players. | Entering with a new nickname, a wrong personal code; the admin's settings. |
 | `steam/<appid>` | The Steam page of a game: type, name, cover, categories, genres. Asked to Steam once, kept even when the game leaves the bag. | Adding a game not asked before. |
 
 - The votes point to the id of the player, not to their nickname: renaming changes only `players`.
 - The two codes (member, admin) live in the environment variables of Netlify, never in Blobs nor in the repository.
-- The browser of each friend keeps the access code, their nickname and the proof of their personal code (the detail at step 5), until « Se déconnecter ».
+- The browser of each friend keeps the access code, their id and nickname, and their personal code itself, sent with each action and checked again by the server, until « Se déconnecter » (chosen by the owner on 2026-11-01, over a token signed by the server that would need one more secret in Netlify, accepting that whoever uses the browser next can read it there).
 - Nothing is deleted on its own: the bag lives until the admin empties it.
 
 ## Access code and nicknames
@@ -116,6 +116,7 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 - The admin code moderates the games and the players, not the votes: the owner votes once per game, like every friend.
 - The identity is the player's nickname (« Sylent »), not their first name: 3 to 16 letters without accents and digits, no space or special character; the first letter is capitalized automatically; compared without case (« SYLENT » is « Sylent »), shown as typed.
 - The personal code (4 digits) protects a nickname: taking it on another device (the phone before the LAN, the PC on the day) asks for it. A friend who forgot it asks the admin to reset it.
+- 5 wrong personal codes in a row lock the nickname, even for the right code, until the admin resets its code (step 7); a right code clears the count. 4 digits are 10,000 codes, which a script would otherwise try in minutes. Accepted by the owner on 2026-11-01: a friend can lock another's nickname on purpose by typing 5 wrong codes, and only the admin unlocks it.
 - « Se déconnecter » forgets the friend in this browser (a PC lent at the LAN). Coming back under another nickname makes a new player: their former games and votes stay with the former nickname; only the admin renames a player.
 
 ## Error handling
@@ -130,6 +131,8 @@ Each error is a short sentence, with « tu ». On the welcome, it sits under the
 | The bag holds 50 games | Refused: « Le sac est plein : vois avec l’admin. » |
 | Wrong access code | The welcome says the code is wrong; nothing is shown of the bag. |
 | Wrong personal code | The welcome says the personal code is wrong for this nickname, and to ask the admin if forgotten. |
+| 5 wrong personal codes in a row | The welcome says the nickname is locked, and to ask the admin to reset its code. |
+| The bag has 50 players | A new nickname is refused: « vois avec l’admin ». |
 | A nickname refused (length, characters) | The welcome says what is allowed: 3 to 16 letters without accents and digits. |
 | Steam doesn't answer, or limits the calls | The game is not added: « Steam ne répond pas : réessaie dans une minute. » The bag is not affected. |
 | The game has no cover | A neutral placeholder with the name of the game. |

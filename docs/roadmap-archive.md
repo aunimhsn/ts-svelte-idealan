@@ -2,6 +2,19 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 5. Read a Steam game
+
+Merged on 2026-11-01 in [#10](https://github.com/aunimhsn/ts-svelte-idealan/pull/10). Tools: build.
+
+- `src/lib/steam-link.ts`: reads the `appid` of a link (the table of `specs.md`), with its tests.
+- `netlify/lib/steam-game.ts`: asks the Steam Store, keeps only the checked fields (type, name, cover on the Steam CDN, categories, genres) and caches the page in Blobs (`steam/<appid>`).
+- `netlify/lib/access.ts`: checks `MEMBER_CODE` and `ADMIN_CODE`, set by the owner as secret values; the same value for both makes nobody admin.
+- `netlify/lib/store.ts`: production uses the site-wide store, every other deploy a store of its own.
+- A temporary function `GET /api/steam-game?appid=`, to try it on the deploy preview: Steam answers the servers of Netlify (tried by the owner with a script of `outputs/`).
+- `build.ignore` in `netlify.toml`: skips a deploy when nothing that ends up in the site changed (an allowlist), and builds without a previous commit or without cache; the owner turned the Netlify builds back on.
+- The review applied: a `Map` for the hosts of the links, a test of the store.
+- The first preview failed on the secrets scanning of Netlify: the first member code was a word of a drawing of the repository; the owner changed it. A code must never appear in the repository.
+
 ## 4. Design system
 
 Merged on 2026-11-01 in [#9](https://github.com/aunimhsn/ts-svelte-idealan/pull/9). Tools: design system.

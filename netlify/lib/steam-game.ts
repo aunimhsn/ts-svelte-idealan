@@ -10,6 +10,8 @@ export interface SteamCategory {
 
 // What the cache keeps of a Steam page, a game or not, so that Steam is asked once per appid.
 export interface SteamPage {
+  // The appid Steam gives in its answer (`steam_appid`), the id of the game in the bag: it may
+  // differ from the appid of the link, which Steam sometimes redirects to another one.
   appid: number;
   type: string;
   name: string;
@@ -39,6 +41,13 @@ export const steamDetailsUrl = (appid: number) =>
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
+
+// An appid as Steam writes it: a whole number from 1 to 4,294,967,295.
+const isAppid = (value: unknown): value is number =>
+  typeof value === "number" &&
+  Number.isInteger(value) &&
+  value >= 1 &&
+  value <= 4_294_967_295;
 
 const readText = (value: unknown): string | null => {
   if (typeof value !== "string") return null;
@@ -90,7 +99,7 @@ export const readSteamAnswer = (
   const name = readText(data.name);
   if (type === null || name === null) return null;
   return {
-    appid,
+    appid: isAppid(data.steam_appid) ? data.steam_appid : appid,
     type,
     name,
     cover: readCover(data.header_image),
@@ -100,9 +109,9 @@ export const readSteamAnswer = (
 };
 
 // A page read back from the cache: written by this code, checked anyway in case its shape changed.
-const isSteamPage = (value: unknown, appid: number): value is SteamPage =>
+const isSteamPage = (value: unknown): value is SteamPage =>
   isRecord(value) &&
-  value.appid === appid &&
+  isAppid(value.appid) &&
   typeof value.type === "string" &&
   typeof value.name === "string" &&
   (value.cover === null || typeof value.cover === "string") &&
@@ -143,7 +152,7 @@ export const readSteamGame = async (
   let page: SteamPage | null = null;
   try {
     const cached = await store.getJSON(key);
-    if (isSteamPage(cached, appid)) page = cached;
+    if (isSteamPage(cached)) page = cached;
   } catch (error) {
     console.error(`Reading ${key} failed.`, error);
   }
