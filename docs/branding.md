@@ -120,7 +120,7 @@ One size per role:
 
 <!-- Content width, gutters, corner radius, the breakpoints (written as numbers in the media queries). -->
 
-- One page, phone first; from 900 px, the PC layout: the adding on one row, a grid of five covers, panels as windows in the middle instead of sheets from the bottom.
+- One page, phone first; from 900 px, the PC layout: the adding as on a phone, « Joueurs max » and « Ajouter » under the link, in a block as wide as the link field (`--width-link`, chosen by the owner on 2026-11-01), a grid of five covers, panels as windows in the middle instead of sheets from the bottom.
 - `--content` 1600 px: the width of the header and of the bag; the welcome is a column of `--width-welcome` 420 px.
 - Panels: `--width-dialog` 520 px, the tall ones (settings, emptying) `--width-dialog-tall` 1080 px (at most 90 % of the screen); the bubbles (who voted, « Jouable à ») `--width-bubble` 260 px.
 - Touch targets: `--tap` 44 px (fields, buttons, votes on a phone, the cross of the strip), `--tap-small` 36 px (chips, small buttons, votes on a PC).
@@ -191,3 +191,4 @@ On 2026-11-01, in the design system:
 
 - **Reds of the strip of the errors**: the first red `#d62839` at 78 % (too bright, « il pique les yeux »), carmine `#b01e30`, garnet `#6e1220`: the owner chose the bordeaux `#8c1626`.
 - **Borders at 80 %** of the blue, for the fields alone or for everything, to reach the 3:1 of WCAG 1.4.11: the owner kept 55 % (see [Accessibility](#accessibility)).
+- **The adding on one row on a PC** (the link, « Joueurs max » and « Ajouter » side by side): replaced on 2026-11-01 by the layout of the phone, at the owner's request.

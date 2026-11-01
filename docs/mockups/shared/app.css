@@ -1252,15 +1252,10 @@ input {
     padding: var(--space-6) var(--space-8);
   }
 
+  /* On a PC as on a phone, « Joueurs max » and « Ajouter » under the link (asked by the owner on
+     2026-11-01), the block as wide as the link field. */
   .app-add {
-    grid-template-columns: minmax(0, var(--width-link)) auto auto;
-    justify-content: start;
-    gap: var(--space-4);
-  }
-
-  .app-field-link,
-  .app-field-players {
-    grid-column: auto;
+    max-width: var(--width-link);
   }
 
   .app-bar {
