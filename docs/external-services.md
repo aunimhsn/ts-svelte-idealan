@@ -74,3 +74,4 @@ Checked on 2026-11-01: the [Steam Web API Terms of Use](https://steamcommunity.c
 - The covers and descriptions of Steam are shown without an explicit license, in a private page between friends. (Accepted on 2026-11-01.)
 - The free plan of Netlify pauses every project of the account when its 300 credits are used up, until the next month. (Accepted on 2026-11-01.)
 - The data of the bag lives in the United States (`us-east-2`). (Accepted on 2026-11-01.)
+- The « Powered by Netlify » badge, locked on the free plan, stays blocked by the Content Security Policy, with an error in the console of the browser: the owner refuses to weaken the policy to show an advertisement. (Accepted on 2026-11-01.)
