@@ -27,6 +27,8 @@ export interface JsonStore {
     value: unknown,
     condition?: WriteCondition,
   ): Promise<boolean>;
+  // Removes the key; nothing happens when it doesn't exist.
+  delete(key: string): Promise<void>;
 }
 
 const STORE_NAME = "idealan";
@@ -69,6 +71,7 @@ export const openStore = (context: Pick<Context, "deploy">): JsonStore => {
       );
       return result.modified;
     },
+    delete: (key) => store.delete(key),
   };
 };
 

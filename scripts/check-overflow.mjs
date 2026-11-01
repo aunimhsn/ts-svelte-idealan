@@ -6,8 +6,8 @@
 // on a script error, on a file that doesn't load and on what the Content Security Policy of
 // netlify.toml blocks.
 // The functions don't run here: the bag answers the test data of check-overflow-bag.json, for a
-// friend kept in the storage of the browser, or doesn't answer at all; any other call to /api/
-// answers 404.
+// friend kept in the storage of the browser, or doesn't answer at all; the settings answer the
+// same data; any other call to /api/ answers 404.
 // Run after `npm run build`: `node scripts/check-overflow.mjs [dist]`. Install the browser once
 // with `npx playwright install --only-shell chromium`.
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
@@ -38,6 +38,15 @@ const screens = [
     bag: "answers",
     click: "[aria-controls$='-players']",
     opens: "[aria-labelledby$='-players-title']",
+  },
+  // The settings of the admin, opened from the header.
+  {
+    name: "the settings",
+    path: "/",
+    kept,
+    bag: "answers",
+    click: "header button[aria-haspopup='dialog']",
+    opens: "dialog[open]",
   },
   { name: "the bag without the server", path: "/", kept, bag: "down" },
 ];
@@ -148,7 +157,7 @@ const check = async (width, screen) => {
       (url) => url.origin !== origin,
       (route) => route.abort(),
     );
-    await context.route("**/api/get-bag", (route) =>
+    await context.route("**/api/get-{bag,settings}", (route) =>
       screen.bag === "answers"
         ? route.fulfill({ contentType: "application/json", body: bag })
         : route.abort(),

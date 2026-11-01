@@ -37,12 +37,22 @@ export interface PlayerView {
   nickname: string;
 }
 
-// What every function of the bag answers: the bag, its players, and who asks.
+// Where a player stands, as the settings of the admin show it: `locked` after 5 wrong personal
+// codes in a row, `reset` once the admin reset their code and until they choose a new one.
+export type AccountState = "active" | "locked" | "reset";
+
+export interface PlayerAccount extends PlayerView {
+  state: AccountState;
+}
+
+// What every function of the bag answers: the bag, its players, and who asks. The functions of
+// the settings answer the accounts too, for the admin only.
 export interface BagView {
   role: Role;
   me: PlayerView;
   players: PlayerView[];
   games: BagGame[];
+  accounts?: PlayerAccount[];
 }
 
 // The score of a game: its upvotes minus its downvotes.

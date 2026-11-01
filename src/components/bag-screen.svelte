@@ -23,6 +23,7 @@
   import ConfirmPanel from "./confirm-panel.svelte";
   import GameCard from "./game-card.svelte";
   import Icon from "./icon.svelte";
+  import SettingsPanel from "./settings-panel.svelte";
 
   let { app }: { app: AppState } = $props();
 
@@ -60,6 +61,8 @@
   let openVoters = $state<number | null>(null);
   // The game whose removal waits for its confirmation.
   let removal = $state<BagGame | null>(null);
+  // The settings of the admin, open or not.
+  let settingsOpen = $state(false);
 
   const votesText = (game: BagGame) => {
     const count = Object.keys(game.votes).length;
@@ -112,7 +115,7 @@
 
 <svelte:window onclick={onWindowClick} onkeydown={onWindowKey} />
 
-<AppHeader {app} />
+<AppHeader {app} onsettings={() => (settingsOpen = true)} />
 <main class="main">
   <AddGame {app} />
   <div class="bar">
@@ -202,6 +205,10 @@
     onconfirm={() => void remove(game.appid)}
     onclose={() => (removal = null)}
   />
+{/if}
+
+{#if settingsOpen && app.view?.role === "admin"}
+  <SettingsPanel {app} onclose={() => (settingsOpen = false)} />
 {/if}
 
 <style>

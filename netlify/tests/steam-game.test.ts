@@ -239,6 +239,9 @@ describe("readSteamGame", () => {
       setJSON: async () => {
         throw new Error("Blobs is down");
       },
+      delete: async () => {
+        throw new Error("Blobs is down");
+      },
     };
     expect(
       await readSteamGame(730, {
