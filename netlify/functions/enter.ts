@@ -10,17 +10,12 @@ import {
   checkRequest,
   errorResponse,
   readBody,
-  STATUS_OF_PLAYER_ERROR,
+  playerRefusalResponse,
   viewResponse,
   withServerErrors,
 } from "../lib/http";
 import { enterPlayer } from "../lib/players";
 import { openStore, type JsonStore } from "../lib/store";
-
-const STATUS_OF_ERROR = {
-  ...STATUS_OF_PLAYER_ERROR,
-  "too-many-players": 409,
-} as const;
 
 export const handleEnter = async (
   request: Request,
@@ -40,7 +35,9 @@ export const handleEnter = async (
   }
   const entered = await enterPlayer(store, nickname, body.code, now);
   if (!entered.ok) {
-    return errorResponse(entered.error, STATUS_OF_ERROR[entered.error]);
+    return entered.error === "too-many-players"
+      ? errorResponse(entered.error, 409)
+      : playerRefusalResponse(entered.error);
   }
   return viewResponse(
     viewOfBag(

@@ -15,7 +15,7 @@ import {
   PLAYER_ID_HEADER,
   withServerErrors,
 } from "../lib/http";
-import { MAX_FAILURES } from "../lib/players";
+import { attemptsKey, MAX_FAILURES } from "../lib/players";
 import { memoryStore } from "./memory-store";
 
 const env = { MEMBER_CODE: "member-test-code", ADMIN_CODE: "admin-test-code" };
@@ -252,6 +252,22 @@ describe("get-bag", () => {
   ])("refuses %j", async (as, status, error) => {
     const { getBag } = await setUp();
     expect(await getBag(as)).toEqual({ status, body: { error } });
+  });
+
+  it("says when to try again while the player's other calls hold the last tries", async () => {
+    const { store, write, sylent } = await setUp();
+    write(attemptsKey("j1"), {
+      failures: MAX_FAILURES - 1,
+      pending: [{ id: "other-call", at: Date.now() }],
+    });
+    const response = await handleGetBag(
+      request("get-bag", "GET", undefined, sylent),
+      env,
+      store,
+    );
+    expect(response.status).toBe(429);
+    expect(response.headers.get("retry-after")).toBe("2");
+    expect(await response.json()).toEqual({ error: "player-busy" });
   });
 
   it("refuses a POST", async () => {

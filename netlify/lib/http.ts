@@ -15,13 +15,24 @@ export const PLAYER_CODE_HEADER = "x-player-code";
 // A body of the bag is a few fields: anything larger is refused before being read as JSON.
 const MAX_BODY_LENGTH = 2048;
 
-// The status of each refusal of a player, shared with `enter`.
-export const STATUS_OF_PLAYER_ERROR = {
+const STATUS_OF_PLAYER_ERROR = {
   "unknown-player": 401,
   "personal-code-reset": 401,
   "wrong-personal-code": 401,
   "player-locked": 423,
+  "player-busy": 429,
 } as const;
+
+// The answer to a refusal of a player, shared with `enter`. `player-busy` says when to try again:
+// the other calls of the player are settled within seconds.
+export const playerRefusalResponse = (
+  error: keyof typeof STATUS_OF_PLAYER_ERROR,
+) =>
+  errorResponse(
+    error,
+    STATUS_OF_PLAYER_ERROR[error],
+    error === "player-busy" ? { "retry-after": "2" } : undefined,
+  );
 
 export const errorResponse = (
   error: string,
@@ -74,10 +85,7 @@ export const openSession = async (
   if (!result.ok) {
     return {
       ok: false,
-      response: errorResponse(
-        result.error,
-        STATUS_OF_PLAYER_ERROR[result.error],
-      ),
+      response: playerRefusalResponse(result.error),
     };
   }
   return {
