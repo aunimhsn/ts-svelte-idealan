@@ -31,7 +31,7 @@ Chosen by the owner on 2026-11-01 among four styles of the family of sylent.art,
 - The symbol: an RJ45 jack (the plug of a LAN), its contacts in the blue signal, chosen on 2026-11-01 among six symbols; the drawing of the jack is still compared in the mock-up (frame, solid jack, tile with the jack cut out, plug with its cable), for its legibility at 16 px.
 - Beside the name « Idealan » in Chakra Petch 700, uppercase, glowing in blue, in the header (28 px) and above the title of the welcome (72 px).
 - The footer carries the mark of Sylent beside the wordmark « SYLENT » of sylent-courses (its letters joined, not the one of sylent.art), both in the color of the text, linked to sylent.art; it replaced « Fait par Sylent » on 2026-11-01.
-- « Idealan » is tried in Montserrat 800 (the font of the wordmark of Sylent), its letter spacing compared from −1 to +1 px in the mock-up.
+- « Idealan » is tried in Montserrat 800 (the font of the wordmark of Sylent), its letter spacing compared from −5 to 0 px in the mock-up (first from −1 to +1 px).
 
 ## Colors
 

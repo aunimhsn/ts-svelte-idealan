@@ -4,7 +4,7 @@
 const LOGO_NAMES = { frame: "Cadre", solid: "Prise pleine", tile: "Bloc évidé", plug: "Fiche" };
 const VARIANTS = {
   logo: { label: "Logo RJ45", options: LOGO_NAMES, fallback: "frame" },
-  tracking: { label: "Lettres (px)", options: Object.fromEntries(["-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1"].map(v => [v, v])), fallback: "0" },
+  tracking: { label: "Lettres (px)", options: Object.fromEntries(["-5", "-4.5", "-4", "-3.5", "-3", "-2.5", "-2", "-1.5", "-1", "-0.5", "0"].map(v => [v, v])), fallback: "0" },
 };
 const params = new URLSearchParams(location.search);
 const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, v]) => [key, params.get(key) in v.options ? params.get(key) : v.fallback]));
