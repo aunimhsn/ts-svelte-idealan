@@ -20,7 +20,7 @@
     toRemove,
   } from "../lib/empty-bag";
   import { inOrder, signed } from "../lib/games";
-  import { adminMessage } from "../lib/messages";
+  import { panelMessage } from "../lib/messages";
   import ConfirmPanel from "./confirm-panel.svelte";
   import TallPanel from "./tall-panel.svelte";
 
@@ -101,7 +101,7 @@
     {/each}
   </ul>
   {#if app.emptyError !== null}
-    <p class="error-block error" role="alert">{adminMessage(app.emptyError)}</p>
+    <p class="error-block error" role="alert">{panelMessage(app.emptyError)}</p>
   {/if}
   <div class="bar">
     <p aria-live="polite" aria-atomic="true">

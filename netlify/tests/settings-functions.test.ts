@@ -15,9 +15,17 @@ import {
   handleGetSettings,
 } from "../functions/get-settings";
 import {
+  config as giveBackRenamesConfig,
+  handleGiveBackRenames,
+} from "../functions/give-back-renames";
+import {
   config as renamePlayerConfig,
   handleRenamePlayer,
 } from "../functions/rename-player";
+import {
+  config as renameSelfConfig,
+  handleRenameSelf,
+} from "../functions/rename-self";
 import {
   config as resetPlayerCodeConfig,
   handleResetPlayerCode,
@@ -27,6 +35,7 @@ import { ACCESS_CODE_HEADER } from "../lib/access";
 import { BAG_KEY } from "../lib/bag";
 import { PLAYER_CODE_HEADER, PLAYER_ID_HEADER } from "../lib/http";
 import { attemptsKey, MAX_FAILURES, PLAYERS_KEY } from "../lib/players";
+import { renameSelf } from "../lib/renames";
 import type { JsonStore } from "../lib/store";
 import { memoryStore } from "./memory-store";
 
@@ -122,7 +131,13 @@ const setUp = async () => {
     admin,
     member,
     getSettings: call("get-settings", handleGetSettings),
-    rename: call("rename-player", handleRenamePlayer),
+    rename: call("rename-player", (request, env, store) =>
+      handleRenamePlayer(request, env, store, NOW),
+    ),
+    renameSelf: call("rename-self", (request, env, store) =>
+      handleRenameSelf(request, env, store, NOW),
+    ),
+    giveBack: call("give-back-renames", handleGiveBackRenames),
     reset: call("reset-player-code", handleResetPlayerCode),
     remove: call("delete-player", handleDeletePlayer),
     empty: call("empty-bag", handleEmptyBag),
@@ -140,6 +155,8 @@ describe("the addresses", () => {
   it.each([
     [getSettingsConfig, "/api/get-settings"],
     [renamePlayerConfig, "/api/rename-player"],
+    [renameSelfConfig, "/api/rename-self"],
+    [giveBackRenamesConfig, "/api/give-back-renames"],
     [resetPlayerCodeConfig, "/api/reset-player-code"],
     [deletePlayerConfig, "/api/delete-player"],
     [emptyBagConfig, "/api/empty-bag"],
@@ -156,6 +173,7 @@ describe("the admin only", () => {
     for (const [run, body] of [
       [bag.getSettings, undefined],
       [bag.rename, { id: "j3", nickname: "Zed" }],
+      [bag.giveBack, { id: "j3" }],
       [bag.reset, { id: "j3" }],
       [bag.remove, { id: "j3" }],
       [bag.empty, { appids: [10, 20] }],
@@ -198,9 +216,9 @@ describe("get-settings", () => {
     expect(status).toBe(200);
     expect(body.games).toHaveLength(2);
     expect(body.accounts).toEqual([
-      { id: "j1", nickname: "Sylent", state: "active" },
-      { id: "j2", nickname: "Nova", state: "reset" },
-      { id: "j3", nickname: "Krak", state: "locked" },
+      { id: "j1", nickname: "Sylent", state: "active", renames: 0 },
+      { id: "j2", nickname: "Nova", state: "reset", renames: 0 },
+      { id: "j3", nickname: "Krak", state: "locked", renames: 0 },
     ]);
   });
 
@@ -224,6 +242,7 @@ describe("rename-player", () => {
       id: "j2",
       nickname: "Nova2",
       state: "active",
+      renames: 0,
     });
     expect(body.games[0]?.addedBy).toBe("j2");
     // The friend renamed keeps their session: their id and code are unchanged.
@@ -284,6 +303,7 @@ describe("reset-player-code", () => {
       id: "j3",
       nickname: "Krak",
       state: "reset",
+      renames: 0,
     });
     expect(bag.data.has(attemptsKey("j3"))).toBe(false);
     // The old code no longer opens the bag: the friend is sent back to the welcome.
@@ -297,6 +317,7 @@ describe("reset-player-code", () => {
       id: "j3",
       nickname: "Krak",
       state: "active",
+      renames: 0,
     });
   });
 
@@ -446,5 +467,171 @@ describe("empty-bag", () => {
         body: { error: "invalid-request" },
       });
     }
+  });
+});
+
+describe("rename-self", () => {
+  const krak = { player: "j3", personalCode: "5555" };
+
+  it("renames the friend, counts it and logs it; they keep their session", async () => {
+    const bag = await setUp();
+    const { status, body } = await bag.renameSelf(bag.member, {
+      nickname: "pixel",
+    });
+    expect(status).toBe(200);
+    expect(body.me).toEqual({ id: "j2", nickname: "Pixel" });
+    expect(body.renames).toBe(1);
+    expect(body.accounts).toBeUndefined();
+    expect(body.journal).toBeUndefined();
+    expect(body.games[0]?.addedBy).toBe("j2");
+    expect((await bag.getBag(bag.member)).body).toMatchObject({
+      me: { id: "j2", nickname: "Pixel" },
+      renames: 1,
+    });
+    expect((await bag.getSettings(bag.admin)).body.journal).toEqual([
+      { id: "j2", from: "Nova", to: "Pixel", at: NOW.toISOString(), used: 1 },
+    ]);
+  });
+
+  it("refuses a fourth rename, until the admin gives the 3 back", async () => {
+    const bag = await setUp();
+    for (const nickname of ["Nova1", "Nova2", "Nova3"]) {
+      expect((await bag.renameSelf(bag.member, { nickname })).status).toBe(200);
+    }
+    expect(await bag.renameSelf(bag.member, { nickname: "Nova4" })).toEqual({
+      status: 409,
+      body: { error: "no-renames-left" },
+    });
+    const given = await bag.giveBack(bag.admin, { id: "j2" });
+    expect(given.status).toBe(200);
+    expect(given.body.accounts).toContainEqual({
+      id: "j2",
+      nickname: "Nova3",
+      state: "active",
+      renames: 0,
+    });
+    const { body } = await bag.renameSelf(bag.member, { nickname: "Nova4" });
+    expect(body).toMatchObject({ me: { nickname: "Nova4" }, renames: 1 });
+    expect(
+      (await bag.getSettings(bag.admin)).body.journal?.map(
+        (entry) => entry.used,
+      ),
+    ).toEqual([1, 3, 2, 1]);
+  });
+
+  it("counts other capitals as a rename, the same nickname exactly as nothing", async () => {
+    const bag = await setUp();
+    expect(
+      (await bag.renameSelf(bag.member, { nickname: "Nova" })).body,
+    ).toMatchObject({ renames: 0 });
+    expect(
+      (await bag.renameSelf(bag.member, { nickname: "NOVA" })).body,
+    ).toMatchObject({ me: { nickname: "NOVA" }, renames: 1 });
+  });
+
+  it("refuses a nickname taken by another player, without case", async () => {
+    const bag = await setUp();
+    expect(await bag.renameSelf(krak, { nickname: "nova" })).toEqual({
+      status: 409,
+      body: { error: "nickname-taken" },
+    });
+    expect((await bag.getBag(krak)).body.renames).toBe(0);
+  });
+
+  it("refuses a nickname against the rules", async () => {
+    const bag = await setUp();
+    for (const body of [{}, { nickname: "No" }, { nickname: "Éric" }]) {
+      expect(await bag.renameSelf(bag.member, body)).toEqual({
+        status: 400,
+        body: { error: "invalid-nickname" },
+      });
+    }
+  });
+
+  it("doesn't count a rename of the admin by this function", async () => {
+    const bag = await setUp();
+    const { body } = await bag.renameSelf(bag.admin, { nickname: "Sylent2" });
+    expect(body).toMatchObject({ me: { nickname: "Sylent2" }, renames: 0 });
+    expect(body.journal).toBeUndefined();
+    expect(
+      (await bag.getSettings(bag.admin)).body.journal?.[0]?.used,
+    ).toBeNull();
+  });
+
+  it("answers unknown-player for a friend deleted meanwhile", async () => {
+    const bag = await setUp();
+    expect(await renameSelf(bag.store, "j9", "Pixel", NOW)).toBe(
+      "unknown-player",
+    );
+  });
+
+  it("checks the friend's personal code first", async () => {
+    const bag = await setUp();
+    expect(
+      await bag.renameSelf(
+        { ...bag.member, personalCode: "9999" },
+        { nickname: "Pixel" },
+      ),
+    ).toMatchObject({ status: 401, body: { error: "wrong-personal-code" } });
+  });
+});
+
+describe("the renames by the admin", () => {
+  it("logs a rename by the admin without counting it", async () => {
+    const bag = await setUp();
+    const { body } = await bag.rename(bag.admin, { id: "j2", nickname: "Zed" });
+    expect(body.journal).toEqual([
+      { id: "j2", from: "Nova", to: "Zed", at: NOW.toISOString(), used: null },
+    ]);
+    expect(body.accounts).toContainEqual({
+      id: "j2",
+      nickname: "Zed",
+      state: "active",
+      renames: 0,
+    });
+  });
+
+  it("keeps the journal through a reset of a code and the next entry", async () => {
+    const bag = await setUp();
+    await bag.rename(bag.admin, { id: "j2", nickname: "Zed" });
+    await bag.reset(bag.admin, { id: "j2" });
+    expect((await bag.enter("Zed", "4321")).status).toBe(200);
+    expect((await bag.getSettings(bag.admin)).body.journal).toHaveLength(1);
+  });
+
+  it("keeps the journal when a new friend enters", async () => {
+    const bag = await setUp();
+    await bag.rename(bag.admin, { id: "j2", nickname: "Zed" });
+    await bag.enter("Mira", "2222");
+    expect((await bag.getSettings(bag.admin)).body.journal).toHaveLength(1);
+  });
+
+  it("keeps the last 100 renames, the newest first", async () => {
+    const bag = await setUp();
+    for (let index = 0; index < 101; index++) {
+      await bag.rename(bag.admin, {
+        id: "j3",
+        nickname: index % 2 === 0 ? "Krak2" : "Krak",
+      });
+    }
+    const { journal } = (await bag.getSettings(bag.admin)).body;
+    expect(journal).toHaveLength(100);
+    expect(journal?.[0]).toMatchObject({ from: "Krak", to: "Krak2" });
+  });
+
+  it("removes the lines of a player deleted from the journal", async () => {
+    const bag = await setUp();
+    await bag.rename(bag.admin, { id: "j2", nickname: "Zed" });
+    await bag.rename(bag.admin, { id: "j3", nickname: "Krak2" });
+    const { body } = await bag.remove(bag.admin, { id: "j2" });
+    expect(body.journal?.map((entry) => entry.id)).toEqual(["j3"]);
+  });
+
+  it("refuses to give back the renames of a player who is not there", async () => {
+    const bag = await setUp();
+    expect(await bag.giveBack(bag.admin, { id: "j9" })).toEqual({
+      status: 404,
+      body: { error: "player-not-found" },
+    });
   });
 });

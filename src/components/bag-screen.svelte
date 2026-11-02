@@ -26,6 +26,7 @@
   import EmptyPanel from "./empty-panel.svelte";
   import GameCard from "./game-card.svelte";
   import Icon from "./icon.svelte";
+  import FriendSettingsPanel from "./friend-settings-panel.svelte";
   import SettingsPanel from "./settings-panel.svelte";
 
   let { app }: { app: AppState } = $props();
@@ -64,7 +65,7 @@
   let openVoters = $state<number | null>(null);
   // The game whose removal waits for its confirmation.
   let removal = $state<BagGame | null>(null);
-  // The panels of the admin, open or not.
+  // The settings (the friend's own, or the admin's) and emptying the bag, open or not.
   let settingsOpen = $state(false);
   let emptyOpen = $state(false);
 
@@ -232,6 +233,8 @@
 
 {#if settingsOpen && app.view?.role === "admin"}
   <SettingsPanel {app} onclose={() => (settingsOpen = false)} />
+{:else if settingsOpen && app.view !== null}
+  <FriendSettingsPanel {app} onclose={() => (settingsOpen = false)} />
 {/if}
 
 {#if emptyOpen && app.view?.role === "admin"}

@@ -8,8 +8,8 @@
 // on a card: a tap that closes a bubble or the menu doesn't open the Steam page, and the menu of
 // the nickname stays over the strip of the errors.
 // The functions don't run here: the bag answers the test data of check-overflow-bag.json, for a
-// friend kept in the storage of the browser, or doesn't answer at all; the settings answer the
-// same data; any other call to /api/ answers 404.
+// friend kept in the storage of the browser, as the admin or as a friend with no rename left, or
+// doesn't answer at all; the settings answer the same data; any other call to /api/ answers 404.
 // Run after `npm run build`: `node scripts/check-overflow.mjs [dist]`. Install the browser once
 // with `npx playwright install --only-shell chromium`.
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
@@ -23,6 +23,15 @@ const dist = resolve(folder);
 // The screens of the application: a single page, the welcome or the bag, by what the browser
 // keeps of the friend (src/lib/session.ts, under the key `idealan`) and what the bag answers.
 const bag = readFileSync(new URL("check-overflow-bag.json", import.meta.url));
+// The same bag for a friend: no accounts nor journal, and their 3 renames used, the longest
+// settings of a friend.
+const memberBag = JSON.stringify({
+  ...JSON.parse(bag),
+  role: "member",
+  renames: 3,
+  accounts: undefined,
+  journal: undefined,
+});
 const kept = JSON.stringify({
   accessCode: "code",
   nickname: "Abcdefghijklmnop",
@@ -58,6 +67,28 @@ const screens = [
     bag: "answers",
     clicks: ["header [aria-controls$='-menu']", "header .open-settings"],
     opens: "dialog[open]",
+  },
+  // The journal of the renames, unfolded under the list of the settings.
+  {
+    name: "the journal of the renames",
+    path: "/",
+    kept,
+    bag: "answers",
+    clicks: [
+      "header [aria-controls$='-menu']",
+      "header .open-settings",
+      "dialog[open] summary",
+    ],
+    opens: "dialog[open] details[open] ol",
+  },
+  // The settings of a friend, opened from the menu of the nickname.
+  {
+    name: "the settings of a friend",
+    path: "/",
+    kept,
+    bag: "member",
+    clicks: ["header [aria-controls$='-menu']", "header .open-settings"],
+    opens: "dialog[open] input:disabled",
   },
   // Emptying the bag, opened from the menu of the nickname.
   {
@@ -178,8 +209,11 @@ const check = async (width, screen) => {
       (route) => route.abort(),
     );
     await context.route("**/api/get-{bag,settings}", (route) =>
-      screen.bag === "answers"
-        ? route.fulfill({ contentType: "application/json", body: bag })
+      screen.bag === "answers" || screen.bag === "member"
+        ? route.fulfill({
+            contentType: "application/json",
+            body: screen.bag === "member" ? memberBag : bag,
+          })
         : route.abort(),
     );
     // What the browser keeps of the friend, written before the application starts.

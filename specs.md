@@ -74,6 +74,7 @@ Asked by the owner on 2026-11-02 (step 9a): a friend renames themself, 3 times a
 - « Réglages » in the menu of the nickname opens it: « Ton pseudo » pre-filled, the renames left as three diamonds with « 2 restants », the rules under the field (« 3 à 16 lettres ou chiffres, sans accents »), « Tes jeux et tes votes suivent ton nouveau pseudo. », « Annuler » and « Renommer ».
 - The rules of the welcome, and a nickname taken by another player, without case, is refused, under the field (« Lou existe déjà : choisis un autre pseudo. »). Renaming to the same nickname with another case (« nova » → « Nova ») counts as a rename.
 - Each rename spends one of the 3; with none left, the field and « Renommer » are disabled: « Tu as utilisé tes 3 renommages : pour changer encore, demande à l’admin. » The admin renames them, or gives their 3 back.
+- Once renamed, the panel closes and the header shows the new nickname; « Renommer » with the nickname unchanged closes it without spending a rename (step 9c).
 - The friend keeps their session and their personal code; their next entry by the welcome takes the new nickname (the former one would make a new player).
 - The admin has no « Ton pseudo » panel: their « Réglages » are the settings of every player, their own line included.
 

@@ -4,6 +4,10 @@
 // The most games the bag holds (specs.md, Error handling).
 export const MAX_GAMES = 50;
 
+// The renames of a friend, by themself (specs.md, Settings (friend panel)); the admin gives them
+// back.
+export const MAX_RENAMES = 3;
+
 export type Vote = "up" | "down";
 
 export type Role = "member" | "admin";
@@ -43,16 +47,32 @@ export type AccountState = "active" | "locked" | "reset";
 
 export interface PlayerAccount extends PlayerView {
   state: AccountState;
+  // The renames the player made themself, 0 to 3, until the admin gives them back.
+  renames: number;
 }
 
-// What every function of the bag answers: the bag, its players, and who asks. The functions of
-// the settings answer the accounts too, for the admin only.
+// A line of the journal of the renames, for the admin: who, from which nickname to which, when
+// (ISO 8601), and the count of the friend once renamed (« 2/3 »), or null for a rename by the
+// admin, which doesn't count.
+export interface RenameEntry {
+  id: string;
+  from: string;
+  to: string;
+  at: string;
+  used: number | null;
+}
+
+// What every function of the bag answers: the bag, its players, who asks and the renames they
+// made themself. The functions of the settings answer the accounts and the journal of the renames
+// too, for the admin only.
 export interface BagView {
   role: Role;
   me: PlayerView;
+  renames: number;
   players: PlayerView[];
   games: BagGame[];
   accounts?: PlayerAccount[];
+  journal?: RenameEntry[];
 }
 
 // The score of a game: its upvotes minus its downvotes.

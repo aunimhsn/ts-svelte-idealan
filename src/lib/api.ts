@@ -54,9 +54,11 @@ const isBagView = (value: unknown): value is BagView => {
     me !== null &&
     typeof me.id === "string" &&
     typeof me.nickname === "string" &&
+    Number.isSafeInteger(view.renames) &&
     Array.isArray(view.players) &&
     Array.isArray(view.games) &&
-    (view.accounts === undefined || Array.isArray(view.accounts))
+    (view.accounts === undefined || Array.isArray(view.accounts)) &&
+    (view.journal === undefined || Array.isArray(view.journal))
   );
 };
 
@@ -246,7 +248,12 @@ export const createApi = ({
       enqueue(sessionCall(credentials, "/api/vote", "POST", { appid, vote })),
     removeGame: (credentials: CredentialsOf, appid: number) =>
       enqueue(sessionCall(credentials, "/api/remove-game", "POST", { appid })),
-    // The settings of the admin: each answers the bag with the accounts.
+    // A friend renames themself, one of their 3.
+    renameSelf: (credentials: CredentialsOf, nickname: string) =>
+      enqueue(
+        sessionCall(credentials, "/api/rename-self", "POST", { nickname }),
+      ),
+    // The settings of the admin: each answers the bag with the accounts and the journal.
     getSettings: (credentials: CredentialsOf) =>
       enqueue(sessionCall(credentials, "/api/get-settings", "GET")),
     renamePlayer: (credentials: CredentialsOf, id: string, nickname: string) =>
@@ -255,6 +262,10 @@ export const createApi = ({
           id,
           nickname,
         }),
+      ),
+    giveBackRenames: (credentials: CredentialsOf, id: string) =>
+      enqueue(
+        sessionCall(credentials, "/api/give-back-renames", "POST", { id }),
       ),
     resetPlayerCode: (credentials: CredentialsOf, id: string) =>
       enqueue(

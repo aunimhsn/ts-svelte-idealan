@@ -1,5 +1,6 @@
-<!-- A tall panel of the admin (specs.md, Layout): the settings and emptying the bag. A sheet from
-     the bottom on a phone, a window as wide as `--width-dialog-tall` on a PC, over the dimmed bag;
+<!-- A tall panel (specs.md, Layout): the settings and emptying the bag. A sheet from the bottom on
+     a phone, a window as wide as `--width-dialog-tall` on a PC (`--width-dialog` when `narrow`, the
+     friend's settings), over the dimmed bag;
      its title with « Fermer », then its content, whose list scrolls. A native <dialog>, closed with
      « Fermer », « Échap » or a click on the dimmed bag: it keeps the keyboard focus inside it, and
      gives it back to the button that opened it. `close()` closes it from its content. -->
@@ -10,10 +11,12 @@
   let {
     title,
     describedby,
+    narrow = false,
     onclose,
     children,
   }: {
     title: string;
+    narrow?: boolean;
     // The id of the instructions of the panel, read with its title when it opens.
     describedby?: string;
     onclose: () => void;
@@ -35,6 +38,7 @@
 <dialog
   bind:this={dialog}
   class="panel"
+  class:is-narrow={narrow}
   aria-labelledby={titleId}
   aria-describedby={describedby}
   {onclose}
@@ -111,6 +115,10 @@
       margin: auto;
       border: var(--hairline) solid var(--line-strong);
       border-radius: var(--radius);
+    }
+
+    .panel.is-narrow {
+      width: var(--width-dialog);
     }
 
     .content {

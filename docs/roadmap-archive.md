@@ -2,6 +2,15 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 9b. The polish of the bag
+
+Merged on 2026-11-02 in [#20](https://github.com/aunimhsn/ts-svelte-idealan/pull/20). Tools: build.
+
+- The cards without their categories nor their cut corner, « Ajouté par » and the nickname in a blue lightened by 10 % (`--signal-label`, WCAG AA on a card), the cross of « Retirer » on the cover, the whole card opening the Steam page in a new tab.
+- The count with the free places, « 5/47 jeux » with a filter on; « Joueurs max » and « Jouable à » up to 25 for new input, a game stored with more keeping its number.
+- The menu of the nickname: « Réglages » and « Vider le sac » in red for the admin, « Se déconnecter »; emptying the bag red all the way.
+- The review applied: a tap that closes a bubble or the menu doesn't open the Steam page under it, the menu over the strip of the errors, the taps on a card checked by `check-overflow` on a phone.
+
 ## 9a. Mock-up and specifications of the polish
 
 Merged on 2026-11-02 in [#19](https://github.com/aunimhsn/ts-svelte-idealan/pull/19). Tools: mock-up, specifications, structure.

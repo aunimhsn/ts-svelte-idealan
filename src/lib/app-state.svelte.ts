@@ -5,7 +5,7 @@
 // - a kept session resumes with `get-bag`, never with `enter`, which would clear the failures;
 // - one call at a time, and `player-busy` tried again after its `retry-after` (src/lib/api.ts).
 import { PLAYER_REFUSALS, type Api, type ApiResult } from "./api";
-import type { BagGame, BagView, PlayerAccount, Vote } from "./bag";
+import type { BagGame, BagView, PlayerAccount, RenameEntry, Vote } from "./bag";
 import { byScore, inOrder, nextVote } from "./games";
 import { readMaxPlayers, readNickname } from "./field-rules";
 import { isNotice, welcomeErrorOf, type Notice } from "./messages";
@@ -93,9 +93,11 @@ export class AppState {
   adding = $state(false);
   // The appid of the game being removed, or null.
   removing = $state<number | null>(null);
-  // The settings of the admin: the accounts as last read, the error to show, and the player
-  // being changed ("" while the players are read).
+  // The settings: for the admin, the accounts and the journal of the renames as last read; the
+  // error to show, and the player being changed ("" while the players are read), for the friend's
+  // settings too.
   accounts = $state<PlayerAccount[] | null>(null);
+  journal = $state<RenameEntry[]>([]);
   settingsError = $state<SettingsError | null>(null);
   settingsBusy = $state<string | null>(null);
   // The emptying of the bag: running or not, and its error, shown in its panel.
@@ -143,6 +145,7 @@ export class AppState {
     if (!keepOrder) this.#order = byScore(view.games).map((game) => game.appid);
     this.loadedAt = Date.now();
     if (view.accounts !== undefined) this.accounts = view.accounts;
+    if (view.journal !== undefined) this.journal = view.journal;
     // The admin may have renamed the friend.
     if (this.kept.nickname !== view.me.nickname) {
       this.#keep({ ...this.kept, nickname: view.me.nickname });
@@ -162,6 +165,7 @@ export class AppState {
     this.adding = false;
     this.removing = null;
     this.accounts = null;
+    this.journal = [];
     this.settingsError = null;
     this.settingsBusy = null;
     this.emptying = false;
@@ -406,6 +410,38 @@ export class AppState {
       id,
       () => this.#api.renamePlayer(this.#credentials, id, nickname),
       nickname,
+    );
+  }
+
+  // A friend renames themself, the nickname checked first with the rules of the welcome. Answers
+  // whether the nickname changed; the same one exactly is left as it is, without a call. Refused
+  // for want of renames (used meanwhile on another device), the bag is read again, so that the
+  // panel shows none left.
+  async renameSelf(text: string) {
+    const me = this.view?.me;
+    if (me === undefined) return false;
+    const nickname = readNickname(text);
+    if (nickname === null) {
+      this.settingsError = { id: me.id, code: "invalid-nickname" };
+      return false;
+    }
+    if (nickname === me.nickname) {
+      this.settingsError = null;
+      return true;
+    }
+    const renamed = await this.#settings(
+      me.id,
+      () => this.#api.renameSelf(this.#credentials, nickname),
+      nickname,
+    );
+    if (this.settingsError?.code === "no-renames-left") void this.refresh();
+    return renamed;
+  }
+
+  // Gives a friend their 3 renames back.
+  giveBackRenames(id: string) {
+    return this.#settings(id, () =>
+      this.#api.giveBackRenames(this.#credentials, id),
     );
   }
 

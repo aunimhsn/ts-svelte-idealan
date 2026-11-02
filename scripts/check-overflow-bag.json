@@ -1,14 +1,34 @@
 {
-  "$comment": "The bag served to scripts/check-overflow.mjs: the longest names and texts a card meets (a nickname of 16 letters, a long game name, many tags, no cover), and the accounts of the settings with their longest labels.",
+  "$comment": "The bag served to scripts/check-overflow.mjs: the longest names and texts a card meets (a nickname of 16 letters, a long game name, many tags, no cover), the accounts of the settings with their longest labels and « Redonner les 3 », and the journal of the renames with the longest nicknames.",
   "role": "admin",
-  "me": { "id": "j1", "nickname": "Abcdefghijklmnop" },
+  "me": {
+    "id": "j1",
+    "nickname": "Abcdefghijklmnop"
+  },
+  "renames": 0,
   "players": [
-    { "id": "j1", "nickname": "Abcdefghijklmnop" },
-    { "id": "j2", "nickname": "Wwwwwwwwwwwwwwww" }
+    {
+      "id": "j1",
+      "nickname": "Abcdefghijklmnop"
+    },
+    {
+      "id": "j2",
+      "nickname": "Wwwwwwwwwwwwwwww"
+    }
   ],
   "accounts": [
-    { "id": "j1", "nickname": "Abcdefghijklmnop", "state": "reset" },
-    { "id": "j2", "nickname": "Wwwwwwwwwwwwwwww", "state": "locked" }
+    {
+      "id": "j1",
+      "nickname": "Abcdefghijklmnop",
+      "state": "reset",
+      "renames": 2
+    },
+    {
+      "id": "j2",
+      "nickname": "Wwwwwwwwwwwwwwww",
+      "state": "locked",
+      "renames": 3
+    }
   ],
   "games": [
     {
@@ -16,28 +36,69 @@
       "name": "Age of Empires II: Definitive Edition — The Last Chieftains Supercalifragilistic",
       "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/813780/header.jpg",
       "categories": [
-        { "id": 9, "name": "Coopération" },
-        { "id": 48, "name": "Coop. en réseau local" },
-        { "id": 49, "name": "JcJ" },
-        { "id": 47, "name": "JcJ en réseau local" },
-        { "id": 24, "name": "Écran partagé/divisé" }
+        {
+          "id": 9,
+          "name": "Coopération"
+        },
+        {
+          "id": 48,
+          "name": "Coop. en réseau local"
+        },
+        {
+          "id": 49,
+          "name": "JcJ"
+        },
+        {
+          "id": 47,
+          "name": "JcJ en réseau local"
+        },
+        {
+          "id": 24,
+          "name": "Écran partagé/divisé"
+        }
       ],
       "genres": ["Stratégie", "Massivement multijoueur", "Accès anticipé"],
       "maxPlayers": 99,
       "addedBy": "j2",
       "addedAt": "2026-11-01T20:00:00.000Z",
-      "votes": { "j2": "up", "j1": "down" }
+      "votes": {
+        "j2": "up",
+        "j1": "down"
+      }
     },
     {
       "appid": 730,
       "name": "Counter-Strike 2",
       "cover": null,
-      "categories": [{ "id": 47, "name": "JcJ en réseau local" }],
+      "categories": [
+        {
+          "id": 47,
+          "name": "JcJ en réseau local"
+        }
+      ],
       "genres": ["Action", "Free-to-play"],
       "maxPlayers": null,
       "addedBy": "j1",
       "addedAt": "2026-11-01T20:01:00.000Z",
-      "votes": { "j1": "up" }
+      "votes": {
+        "j1": "up"
+      }
+    }
+  ],
+  "journal": [
+    {
+      "id": "j2",
+      "from": "Mmmmmmmmmmmmmmmm",
+      "to": "Wwwwwwwwwwwwwwww",
+      "at": "2026-11-01T20:00:00.000Z",
+      "used": 3
+    },
+    {
+      "id": "j1",
+      "from": "Wwwwwwwwwwwwwww1",
+      "to": "Abcdefghijklmnop",
+      "at": "2026-10-28T09:05:00.000Z",
+      "used": null
     }
   ]
 }

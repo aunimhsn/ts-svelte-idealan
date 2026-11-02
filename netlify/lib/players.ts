@@ -11,7 +11,11 @@
 // the failures, so that the reloads of the bag never make room for more tries.
 import { randomBytes, randomUUID, scrypt, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
-import type { PlayerView } from "../../src/lib/bag";
+import {
+  MAX_RENAMES,
+  type PlayerView,
+  type RenameEntry,
+} from "../../src/lib/bag";
 import { isPersonalCode, sameNickname } from "../../src/lib/field-rules";
 import { isRecord } from "./is-record";
 import { updateJSON, type JsonStore } from "./store";
@@ -38,37 +42,66 @@ export interface Player {
   // chooses a new one at their next entry.
   codeHash: string | null;
   createdAt: string;
+  // The renames the player made themself, 0 to 3; missing for none (step 9c, without a
+  // migration: the players written before have none).
+  renames?: number;
 }
 
 export interface Players {
   // The number of the next id, never reused, even after a player is deleted.
   nextId: number;
   list: Player[];
+  // The renames, the newest first, the last 100 (step 9c); missing from a `players` written
+  // before, read as empty.
+  journal: RenameEntry[];
 }
+
+// The renames the player made themself.
+export const renamesOf = (player: Player) => player.renames ?? 0;
 
 const PLAYER_ID_PATTERN = /^j[1-9]\d{0,5}$/;
 
 export const isPlayerId = (value: unknown): value is string =>
   typeof value === "string" && PLAYER_ID_PATTERN.test(value);
 
+const isRenameCount = (value: unknown): value is number =>
+  Number.isSafeInteger(value) &&
+  (value as number) >= 0 &&
+  (value as number) <= MAX_RENAMES;
+
+const isRenameEntry = (value: unknown): value is RenameEntry =>
+  isRecord(value) &&
+  isPlayerId(value.id) &&
+  typeof value.from === "string" &&
+  typeof value.to === "string" &&
+  typeof value.at === "string" &&
+  (value.used === null || isRenameCount(value.used));
+
 const isPlayer = (value: unknown): value is Player =>
   isRecord(value) &&
   isPlayerId(value.id) &&
   typeof value.nickname === "string" &&
   (value.codeHash === null || typeof value.codeHash === "string") &&
-  typeof value.createdAt === "string";
+  typeof value.createdAt === "string" &&
+  (value.renames === undefined || isRenameCount(value.renames));
 
 // The players kept in Blobs, or none yet. A shape this code didn't write fails loudly rather
 // than being overwritten with an empty list, which would lose every player.
 export const readPlayers = (value: unknown): Players => {
-  if (value === null) return { nextId: 1, list: [] };
+  if (value === null) return { nextId: 1, list: [], journal: [] };
   if (
     isRecord(value) &&
     Number.isSafeInteger(value.nextId) &&
     Array.isArray(value.list) &&
-    value.list.every(isPlayer)
+    value.list.every(isPlayer) &&
+    (value.journal === undefined ||
+      (Array.isArray(value.journal) && value.journal.every(isRenameEntry)))
   ) {
-    return { nextId: value.nextId as number, list: value.list };
+    return {
+      nextId: value.nextId as number,
+      list: value.list,
+      journal: (value.journal as RenameEntry[] | undefined) ?? [],
+    };
   }
   throw new Error("The players key has an unexpected shape.");
 };
@@ -326,6 +359,7 @@ export const enterPlayer = async (
       createdAt: now.toISOString(),
     };
     const next = {
+      ...players,
       nextId: players.nextId + 1,
       list: [...players.list, player],
     };

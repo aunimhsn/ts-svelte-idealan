@@ -4,7 +4,13 @@
 import type { BagView, Role } from "../../src/lib/bag";
 import { checkAccess, type Environment } from "./access";
 import { BAG_KEY, readBag, viewOfBag } from "./bag";
-import { checkPlayer, type Player, type Players } from "./players";
+import {
+  checkPlayer,
+  PLAYERS_KEY,
+  readPlayers,
+  type Player,
+  type Players,
+} from "./players";
 import type { JsonStore } from "./store";
 
 // The headers that carry who acts, after the welcome: the id of the player and their personal
@@ -126,6 +132,22 @@ export const currentView = async (store: JsonStore, session: Session) =>
     session.player,
     session.role,
   );
+
+// The bag as it stands, the players read again after a change: the player who acts may have been
+// renamed. With the players read, for the settings.
+export const freshView = async (
+  store: JsonStore,
+  session: Session,
+): Promise<{ view: BagView; players: Players }> => {
+  const [bag, players] = await Promise.all([
+    store.getJSON(BAG_KEY).then(readBag),
+    store.getJSON(PLAYERS_KEY).then(readPlayers),
+  ]);
+  const me =
+    players.list.find((player) => player.id === session.player.id) ??
+    session.player;
+  return { view: viewOfBag(bag, players, me, session.role), players };
+};
 
 // Runs a function and turns what it didn't expect (Blobs down, a store too busy, a bug) into
 // `server-error`, logged for the owner, rather than a page of Netlify.

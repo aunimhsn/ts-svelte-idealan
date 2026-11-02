@@ -113,7 +113,27 @@
     "codeToChoose": "code à choisir",
     "reset": "Réinitialiser le code perso",
     "delete": "Supprimer",
-    "self": "toi"
+    "self": "toi",
+    "giveBack": "Redonner les 3",
+    "giveBackLabel": "Redonner les 3 renommages à {nickname}"
+  },
+  "me": {
+    "title": "Réglages",
+    "nickname": "Ton pseudo",
+    "renames": "Renommages : ",
+    "left": "{count} restants",
+    "leftOne": "1 restant",
+    "noneLeft": "plus de renommage",
+    "follow": "Tes jeux et tes votes suivent ton nouveau pseudo.",
+    "rename": "Renommer"
+  },
+  "journal": {
+    "title": "Renommages",
+    "today": "aujourd’hui à {time}",
+    "yesterday": "hier à {time}",
+    "day": "le {day}/{month} à {time}",
+    "count": "{used}/{max}",
+    "byAdmin": "par toi, non compté"
   },
   "empty": {
     "title": "Vider le sac",
@@ -164,8 +184,9 @@
     "wrong-personal-code": "Ton code perso a changé : redonne-le pour revenir.",
     "player-locked": "Ton pseudo est verrouillé après 5 codes perso faux : demande à l’admin de réinitialiser ton code."
   },
-  "adminErrors": {
+  "panelErrors": {
     "nickname-taken": "{nickname} existe déjà : choisis un autre pseudo.",
+    "no-renames-left": "Tu as utilisé tes 3 renommages : pour changer encore, demande à l’admin.",
     "cannot-reset-self": "Tu ne peux pas réinitialiser ton propre code perso.",
     "cannot-delete-self": "Tu ne peux pas te supprimer toi-même.",
     "admin-only": "Seul l’admin peut faire ça : entre avec le code admin.",

@@ -73,14 +73,14 @@ export const bagMessage = (code: string, loadedAt: number | null) => {
   return has(fr.bagErrors, code) ? fr.bagErrors[code] : fr.bagErrors.unexpected;
 };
 
-// The message of an error of a panel of the admin (the settings, emptying the bag), in the panel
-// itself, since the strip of the bag is under it. `nickname` is the one the admin typed, for « …
-// existe déjà ». The errors the welcome knows too (a nickname against the rules, the server not
+// The message of an error of a panel (the settings of the admin or of a friend, emptying the bag),
+// in the panel itself, since the strip of the bag is under it. `nickname` is the one typed, for
+// « … existe déjà ». The errors the welcome knows too (a nickname against the rules, the server not
 // answering) take its texts, kept in one place.
-export const adminMessage = (code: string, nickname = "") =>
+export const panelMessage = (code: string, nickname = "") =>
   format(
-    has(fr.adminErrors, code)
-      ? fr.adminErrors[code]
+    has(fr.panelErrors, code)
+      ? fr.panelErrors[code]
       : has(fr.welcomeErrors, code)
         ? fr.welcomeErrors[code]
         : fr.welcomeErrors.unexpected,

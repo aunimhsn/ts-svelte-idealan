@@ -1,12 +1,11 @@
-// The settings of the admin (specs.md, Settings): rename a player, reset their personal code,
-// delete them. The admin code only: a member is refused before anything is read. Each answers
-// the bag with the accounts, where the admin sees which nickname is locked or waits for its new
-// code.
+// The settings of the admin (specs.md, Settings): reset a personal code, delete a player (the
+// renames are in renames.ts). The admin code only: a member is refused before anything is read.
+// Each answers the bag with the accounts, where the admin sees which nickname is locked or waits
+// for its new code and how many renames each friend used, and with the journal of the renames.
 import type { AccountState, BagView, PlayerAccount } from "../../src/lib/bag";
-import { sameNickname } from "../../src/lib/field-rules";
 import type { Environment } from "./access";
-import { BAG_KEY, readBag, viewOfBag, type Bag } from "./bag";
-import { errorResponse, openSession, type Session } from "./http";
+import { BAG_KEY, readBag, type Bag } from "./bag";
+import { errorResponse, freshView, openSession, type Session } from "./http";
 import {
   attemptsKey,
   isPlayerId,
@@ -14,8 +13,8 @@ import {
   PLAYERS_KEY,
   readAttempts,
   readPlayers,
+  renamesOf,
   type Player,
-  type Players,
 } from "./players";
 import { updateJSON, type JsonStore } from "./store";
 
@@ -47,32 +46,28 @@ const stateOf = async (
   return failures >= MAX_FAILURES ? "locked" : "active";
 };
 
-// The bag as it stands, read again after a change, with the accounts. `me` is read again too:
-// the admin may have renamed themself.
+// The bag as it stands, read again after a change (the admin may have renamed themself), with
+// the accounts and the journal.
 export const settingsView = async (
   store: JsonStore,
   session: Session,
 ): Promise<BagView> => {
-  const [bag, players] = await Promise.all([
-    store.getJSON(BAG_KEY).then(readBag),
-    store.getJSON(PLAYERS_KEY).then(readPlayers),
-  ]);
-  const me =
-    players.list.find((player) => player.id === session.player.id) ??
-    session.player;
+  const { view, players } = await freshView(store, session);
   const accounts: PlayerAccount[] = await Promise.all(
     players.list.map(async (player) => ({
       id: player.id,
       nickname: player.nickname,
       state: await stateOf(store, player),
+      renames: renamesOf(player),
     })),
   );
-  return { ...viewOfBag(bag, players, me, session.role), accounts };
+  return { ...view, accounts, journal: players.journal };
 };
 
 export type SettingsRefusal =
   | "player-not-found"
   | "nickname-taken"
+  | "no-renames-left"
   | "cannot-reset-self"
   | "cannot-delete-self";
 
@@ -80,13 +75,13 @@ export type SettingsRefusal =
 const updatePlayer = (
   store: JsonStore,
   id: string,
-  change: (player: Player, players: Players) => Player | SettingsRefusal,
+  change: (player: Player) => Player | SettingsRefusal,
 ) =>
   updateJSON<SettingsRefusal | null>(store, PLAYERS_KEY, (current) => {
     const players = readPlayers(current);
     const player = players.list.find((candidate) => candidate.id === id);
     if (player === undefined) return { result: "player-not-found" };
-    const changed = change(player, players);
+    const changed = change(player);
     if (typeof changed === "string") return { result: changed };
     if (changed === player) return { result: null };
     return {
@@ -98,18 +93,6 @@ const updatePlayer = (
       },
       result: null,
     };
-  });
-
-// Renames a player; the games and the votes point to their id, so only `players` changes. A
-// nickname taken by another player is refused, without case; the same one in other capitals is
-// a rename.
-export const renamePlayer = (store: JsonStore, id: string, nickname: string) =>
-  updatePlayer(store, id, (player, players) => {
-    if (player.nickname === nickname) return player;
-    const taken = players.list.some(
-      (other) => other.id !== id && sameNickname(other.nickname, nickname),
-    );
-    return taken ? "nickname-taken" : { ...player, nickname };
   });
 
 // Resets a personal code: the first one to enter with the nickname chooses the new one. The
@@ -145,11 +128,11 @@ const onlyPlayers = (bag: Bag, known: Set<string>): Bag => ({
     }),
 });
 
-// Deletes a player, their games, their votes and their tries. The player goes first, so that
-// their calls are refused from then on (the writes of the bag check it again: `isStillPlayer`);
-// then the bag, then the tries. The bag keeps only the games and votes of the players still
-// there, read again at each try: a player already gone is cleaned all the same, so that a
-// deletion that failed halfway is done again by the next one.
+// Deletes a player, their games, their votes, their lines of the journal and their tries. The
+// player goes first, so that their calls are refused from then on (the writes of the bag check it
+// again: `isStillPlayer`); then the bag, then the tries. The bag keeps only the games and votes of
+// the players still there, read again at each try: a player already gone is cleaned all the same,
+// so that a deletion that failed halfway is done again by the next one.
 export const deletePlayer = async (
   store: JsonStore,
   id: string,
@@ -159,9 +142,11 @@ export const deletePlayer = async (
   await updateJSON<null>(store, PLAYERS_KEY, (current) => {
     const players = readPlayers(current);
     const list = players.list.filter((player) => player.id !== id);
-    return list.length === players.list.length
+    const journal = players.journal.filter((entry) => entry.id !== id);
+    return list.length === players.list.length &&
+      journal.length === players.journal.length
       ? { result: null }
-      : { write: { ...players, list }, result: null };
+      : { write: { ...players, list, journal }, result: null };
   });
   await updateJSON<null>(store, BAG_KEY, async (current) => {
     const bag = readBag(current);
@@ -179,6 +164,7 @@ export const deletePlayer = async (
 export const STATUS_OF_SETTINGS_ERROR = {
   "player-not-found": 404,
   "nickname-taken": 409,
+  "no-renames-left": 409,
   "cannot-reset-self": 409,
   "cannot-delete-self": 409,
 } as const satisfies Record<SettingsRefusal, number>;

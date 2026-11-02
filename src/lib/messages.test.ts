@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fr from "../i18n/fr.json";
 import { MAX_PLAYERS } from "./field-rules";
 import {
-  adminMessage,
+  panelMessage,
   bagMessage,
   format,
   formatTime,
@@ -114,19 +114,19 @@ describe("format", () => {
   });
 });
 
-describe("adminMessage", () => {
+describe("panelMessage", () => {
   it("names the nickname taken, and falls back on an unknown code", () => {
-    expect(adminMessage("nickname-taken", "Lou")).toBe(
+    expect(panelMessage("nickname-taken", "Lou")).toBe(
       "Lou existe déjà : choisis un autre pseudo.",
     );
-    expect(adminMessage("no-such-code")).toContain("recharge la page");
+    expect(panelMessage("no-such-code")).toContain("recharge la page");
   });
 
   it("takes the texts the welcome shares, kept in one place", () => {
-    expect(adminMessage("invalid-nickname")).toBe(
+    expect(panelMessage("invalid-nickname")).toBe(
       "3 à 16 lettres ou chiffres, sans accents ni espace.",
     );
-    expect(adminMessage("server-unreachable")).toContain(
+    expect(panelMessage("server-unreachable")).toContain(
       "Le serveur ne répond pas",
     );
   });
