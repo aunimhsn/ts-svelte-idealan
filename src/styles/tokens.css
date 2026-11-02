@@ -59,6 +59,7 @@
   --signal: #2e6bff; /* white on it 4.5:1; on --bg 4.5:1 */
   --on-signal: #ffffff;
   --signal-text: #86a8ff; /* small blue text: 8.8:1 on --bg */
+  --signal-label: #437aff; /* the electric blue of « Ajouté par » on a card, lightened by 10 % to pass AA: 5.1:1 on --surface, 4.8:1 under the pointer */
   --signal-tint: color-mix(
     in srgb,
     var(--signal) 14%,
@@ -135,11 +136,10 @@
   --shadow-pop: 0 12px 32px rgb(0 0 0 / 60%); /* bubbles and small windows */
   --glass-blur: 8px;
 
-  /* Shapes: sharp corners, the covers chamfered at their top right corner. */
+  /* Shapes: sharp corners. */
   --radius: 0;
   --radius-pill: 999px; /* the handle of a sheet */
   --radius-icon: 20%; /* the square of the favicon */
-  --chamfer: 18px;
   --hairline: 1px; /* every border */
   --stroke: 2px; /* the focus ring, the spinner, the lines of the floor */
   --edge: 3px; /* the blue edge of the banner */
@@ -189,6 +189,7 @@
   --layer-bubble: 5;
   --layer-popover: 6;
   --layer-toast: 8;
+  --layer-menu: 9; /* the menu of the nickname, over the strip of the errors */
   --layer-raised: 10; /* the card whose bubble is open */
   --layer-overlay: 20;
   --layer-scanlines: 30;

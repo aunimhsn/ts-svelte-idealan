@@ -23,7 +23,7 @@ const KINDS = [
   [24, "splitScreen"],
 ] as const;
 
-// The tags of a card: its kinds, then its genres as Steam names them.
+// The tags of a game, offered as filters: its kinds, then its genres as Steam names them.
 export const tagsOf = (game: Pick<BagGame, "categories" | "genres">) => [
   ...KINDS.filter(([id]) =>
     game.categories.some((category) => category.id === id),

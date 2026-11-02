@@ -1,15 +1,17 @@
-<!-- A game of the bag (specs.md, Layout): the cover chamfered at its top right corner, the name,
-     the tags, « Jusqu’à N joueurs » when known, who added it, « Retirer » when allowed, and the
-     votes in a column on the right: upvote, score, downvote. The score jumps when it changes, and
-     shows who voted in a bubble under it: on a tap, or on hover and keyboard focus on a computer.
-     A cover missing or that doesn't load becomes a striped block with the name. On a computer, the
-     card sinks a little on the side of the pointer. -->
+<!-- A game of the bag (specs.md, Layout): the cover, with the cross of « Retirer » at its top
+     right when allowed, the name, who added it, « Jusqu’à N joueurs » when known, and the votes in
+     a column on the right: upvote, score, downvote. The whole card opens the Steam page of the
+     game in a new tab: the link of the name stretched over it, under the cross and the votes. The
+     score jumps when it changes, and shows who voted in a bubble under it: on a tap, or on hover
+     and keyboard focus on a computer. A cover missing or that doesn't load becomes a striped block
+     with the name. On a computer, the card sinks a little on the side of the pointer. -->
 <script lang="ts">
   import { onMount } from "svelte";
   import fr from "../i18n/fr.json";
   import { scoreOf, type BagGame, type Vote } from "../lib/bag";
-  import { signed, tagsOf, voteOf, votersOf } from "../lib/games";
+  import { signed, voteOf, votersOf } from "../lib/games";
   import { format } from "../lib/messages";
+  import { steamPage } from "../lib/steam-link";
   import Icon from "./icon.svelte";
 
   let {
@@ -46,7 +48,6 @@
   let tilt = $state<{ x: number; y: number } | null>(null);
 
   const vote = $derived(voteOf(game, me));
-  const tags = $derived(tagsOf(game));
   const score = $derived(scoreOf(game));
   const voters = $derived(votersOpen ? votersOf(game, nicknames) : null);
   const adder = $derived(nicknames.get(game.addedBy) ?? fr.card.formerPlayer);
@@ -104,36 +105,44 @@
       <span aria-hidden="true">{game.name}</span>
     </div>
   {/if}
+  {#if canRemove}
+    <button
+      type="button"
+      class="remove"
+      aria-label={removing ? fr.card.removing : fr.card.remove}
+      aria-disabled={removeLocked}
+      aria-describedby={titleId}
+      onclick={() => {
+        if (!removeLocked) onremove();
+      }}
+    >
+      {#if removing}
+        <span class="spinner" aria-hidden="true"></span>
+      {:else}
+        <Icon name="close" size={18} />
+      {/if}
+    </button>
+  {/if}
   <div class="body">
     <div class="info">
-      <h3 class="title" id={titleId}>{game.name}</h3>
-      {#if tags.length > 0}
-        <p class="tags">{tags.join(" · ")}</p>
-      {/if}
+      <h3 class="title">
+        <a
+          class="link"
+          href={steamPage(game.appid)}
+          target="_blank"
+          rel="noopener noreferrer"
+          ><span id={titleId}>{game.name}</span>
+          <span class="visually-hidden">{fr.card.steamPage}</span></a
+        >
+      </h3>
+      <!-- The nickname on one's own games too: « toi » is ambiguous with a friend named Toi. -->
+      <p class="by">{format(fr.card.addedBy, { nickname: adder })}</p>
       {#if game.maxPlayers !== null}
         <p class="players">
           <Icon name="people" size={15} />{game.maxPlayers === 1
             ? fr.card.maxPlayersOne
             : format(fr.card.maxPlayers, { count: game.maxPlayers })}
         </p>
-      {/if}
-      <p class="by">
-        {vote === "own"
-          ? fr.card.addedByMe
-          : format(fr.card.addedBy, { nickname: adder })}
-      </p>
-      {#if canRemove}
-        <button
-          type="button"
-          class="button is-small remove"
-          aria-disabled={removeLocked}
-          aria-describedby={titleId}
-          onclick={() => {
-            if (!removeLocked) onremove();
-          }}
-        >
-          {removing ? fr.card.removing : fr.card.remove}
-        </button>
       {/if}
     </div>
     <div
@@ -250,13 +259,6 @@
     border-radius: var(--radius) var(--radius) 0 0;
     aspect-ratio: 460 / 215;
     background: var(--surface-solid);
-    clip-path: polygon(
-      0 0,
-      calc(100% - var(--chamfer)) 0,
-      100% var(--chamfer),
-      100% 100%,
-      0 100%
-    );
   }
 
   .cover img {
@@ -306,7 +308,28 @@
     letter-spacing: var(--tracking-title);
   }
 
-  .tags,
+  /* The link of the name, stretched over the whole card; the focus ring goes around the card. */
+  .link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .link::after {
+    content: "";
+    position: absolute;
+    z-index: var(--layer-above);
+    inset: 0;
+  }
+
+  .link:focus-visible {
+    outline: none;
+  }
+
+  .card:has(.link:focus-visible) {
+    outline: var(--stroke) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
+
   .by,
   .players {
     max-width: 100%;
@@ -316,10 +339,6 @@
     line-height: var(--leading-snug);
   }
 
-  .tags {
-    color: var(--dim);
-  }
-
   .players {
     display: inline-flex;
     align-items: center;
@@ -327,18 +346,49 @@
     color: var(--text);
   }
 
+  /* « Ajouté par » in electric blue, right under the name (step 9a). */
   .by {
-    color: var(--secondary);
+    color: var(--signal-label);
+    font-weight: var(--weight-bold);
   }
 
+  /* « Retirer »: a square with a cross at the top right of the cover, above the link. */
   .remove {
-    margin-top: auto;
-    transform: translateY(var(--space-2));
+    position: absolute;
+    z-index: var(--layer-bubble);
+    top: var(--space-2);
+    right: var(--space-2);
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    padding: 0;
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--surface-solid) 78%, transparent);
+    backdrop-filter: blur(var(--glass-blur));
+    color: var(--text);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background var(--duration-fast),
+      border-color var(--duration-fast);
+  }
+
+  .remove:hover {
+    border-color: var(--error-text);
+    background: var(--error);
+  }
+
+  .remove[aria-disabled="true"] {
+    cursor: progress;
+    opacity: 0.75;
   }
 
   /* The votes: upvote, score, downvote; the friend's vote fills with the blue and glows. */
   .votes {
     position: relative;
+    z-index: var(--layer-bubble);
     align-self: start;
     display: flex;
     flex-direction: column;
@@ -492,7 +542,11 @@
       height: var(--tap-small);
     }
 
-    .tags,
+    .remove {
+      width: var(--tap-small);
+      height: var(--tap-small);
+    }
+
     .by,
     .players {
       font-size: var(--size-caption);

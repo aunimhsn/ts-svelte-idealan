@@ -8,6 +8,10 @@ const chosen = Object.fromEntries(Object.entries(VARIANTS).map(([key, v]) => [ke
 
 // The newest section first. Each slot: [label, device, address of app.html].
 const SECTIONS = [
+  ["9b · « Ajouté par »", "The electric blue lightened by 10 % to pass WCAG AA (5.1:1 on a card, 4.35:1 before), and the friend's own nickname on their games rather than « toi » (Nova here, Sylent for the admin).", [
+    ["Phone · a friend (Nova)", "phone", "screen=bag"],
+    ["PC · the admin", "pc", "screen=bag&as=admin"],
+  ]],
   ["9a · Renaming oneself", "A friend opens « Réglages » from the menu of their nickname: 3 renames at most, those made by the admin don’t count. « Renommer » works: it spends one.", [
     ["Phone · 3 renames left", "phone", "screen=bag&panel=me"],
     ["Phone · a nickname taken", "phone", "screen=bag&panel=me&state=rename-me-taken"],

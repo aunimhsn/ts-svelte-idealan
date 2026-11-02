@@ -60,7 +60,7 @@ export const passes = (
 export const isFiltering = (filters: Filters) =>
   filters.players !== null || filters.tags.length > 0;
 
-// N kept between 1 and 99, as « Joueurs max ».
+// N kept between 1 and 25, as « Joueurs max ».
 export const clampPlayers = (count: number) =>
   Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, count));
 
@@ -69,7 +69,17 @@ export const clampPlayers = (count: number) =>
 export const playersOf = (chosen: number | null, bagPlayers: number) =>
   chosen ?? clampPlayers(bagPlayers);
 
-// What follows the number of games shown when a filter is on: « jeu sur 47 » for 0 and 1 (French
-// keeps the singular), « jeux sur 47 » from 2.
-export const shownOf = (shown: number, total: number) =>
-  format(shown > 1 ? fr.bag.filtered : fr.bag.filteredOne, { count: total });
+// « jeu » for 0 and 1 (French keeps the singular), « jeux » from 2.
+export const gamesWord = (count: number) =>
+  count > 1 ? fr.bag.games : fr.bag.gamesOne;
+
+// What follows the number of games of the bag when no filter is on: its free places, out of
+// `max`, or « sac plein ».
+export const freeOf = (total: number, max: number) => {
+  const free = max - total;
+  return free > 1
+    ? format(fr.bag.free, { count: free })
+    : free === 1
+      ? fr.bag.freeOne
+      : fr.bag.full;
+};

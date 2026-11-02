@@ -112,7 +112,7 @@
     </p>
     <button
       type="button"
-      class="button is-primary"
+      class="button is-primary is-danger"
       aria-disabled={locked}
       onclick={() => {
         if (!locked) confirming = removed;
@@ -129,6 +129,7 @@
     title={fr.confirm.emptyTitle}
     text={emptyText(appids.length)}
     action={fr.confirm.emptyAction}
+    danger
     onconfirm={() => void empty(appids)}
     onclose={() => (confirming = null)}
   />

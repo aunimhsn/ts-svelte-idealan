@@ -691,7 +691,7 @@ input {
 
 /* « Ajouté par » in electric blue, right under the title (step 9a). */
 .app-by {
-  color: var(--signal);
+  color: var(--signal-label);
   font-weight: var(--weight-bold);
 }
 

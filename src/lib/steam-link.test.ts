@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseAppid, readSteamLink } from "./steam-link";
+import { parseAppid, readSteamLink, steamPage } from "./steam-link";
 
 describe("readSteamLink", () => {
   it.each([
@@ -65,4 +65,11 @@ describe("parseAppid", () => {
       expect(parseAppid(text)).toBeNull();
     },
   );
+});
+
+describe("steamPage", () => {
+  it("leads to the Steam page that the link of a game is read from", () => {
+    expect(steamPage(730)).toBe("https://store.steampowered.com/app/730/");
+    expect(readSteamLink(steamPage(730))).toEqual({ ok: true, appid: 730 });
+  });
 });

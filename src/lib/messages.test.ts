@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fr from "../i18n/fr.json";
+import { MAX_PLAYERS } from "./field-rules";
 import {
   adminMessage,
   bagMessage,
@@ -87,6 +88,12 @@ describe("bag messages", () => {
       expect(Object.keys(fr.bagErrors), code).toContain(code);
     }
     expect(bagMessage("constructor", null)).toBe(fr.bagErrors.unexpected);
+  });
+
+  it("gives the limit of « Joueurs max » the functions enforce", () => {
+    expect(fr.bagErrors["invalid-max-players"]).toContain(
+      `entre 1 et ${MAX_PLAYERS},`,
+    );
   });
 
   it("says when the bag shown was read, when the server doesn't answer", () => {

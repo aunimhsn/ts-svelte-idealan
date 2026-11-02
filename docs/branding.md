@@ -124,9 +124,9 @@ One size per role:
 - `--content` 1600 px: the width of the header and of the bag; the welcome is a column of `--width-welcome` 420 px.
 - Panels: `--width-dialog` 520 px, the tall ones (settings, emptying) `--width-dialog-tall` 1080 px (at most 90 % of the screen); the bubbles (who voted, « Jouable à ») `--width-bubble` 260 px.
 - Touch targets: `--tap` 44 px (fields, buttons, votes on a phone, the cross of the strip), `--tap-small` 36 px (chips, small buttons, votes on a PC).
-- Sharp corners everywhere (`--radius` 0). Since step 9a (2026-11-02), the covers lose their chamfer, the cut corner at their top right, where the cross of « Retirer » now sits; `--chamfer` goes with it in step 9b. Exceptions: the handle of a sheet (`--radius-pill`), the square of the favicon rounded by 20 % (`--radius-icon`).
+- Sharp corners everywhere (`--radius` 0). Since step 9a (2026-11-02), the covers lose their chamfer, the cut corner at their top right, where the cross of « Retirer » now sits; `--chamfer` went with it in step 9b. Exceptions: the handle of a sheet (`--radius-pill`), the square of the favicon rounded by 20 % (`--radius-icon`).
 - Borders of `--hairline` 1 px; `--stroke` 2 px for the focus ring, the spinner and the lines of the floor; `--edge` 3 px for the blue edge of the banner.
-- Layers, from the back: the floor, the content, the header, the bubble of the votes, « Jouable à », the strip of the errors, the card whose bubble is open, the panels, the scanlines over everything (`--layer-*`).
+- Layers, from the back: the floor, the content, the header, the bubble of the votes, « Jouable à », the strip of the errors, the menu of the nickname (over the strip, since step 9b), the card whose bubble is open, the panels, the scanlines over everything (`--layer-*`).
 
 ## Components
 
@@ -138,10 +138,10 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 - **Fields**: `--field-bg`, a border `--line-strong`, its label above in Chakra Petch 600, a hint or an error below; at fault, a border `--error-text`.
 - **Chips** (filters): pressed, the border in `--signal`, a background `--signal-tint`, the text in `--signal-text`. The window of « Jouable à N » opens `--space-1` (4 px) under its chip, on a phone and on a PC: a small gap the owner liked (2026-11-01).
 - **Cards**: glass (`--surface` blurred by `--glass-blur` 8 px); under the pointer, a blue border and `--glow-card`, a slight tilt and press. Since step 9a (chosen by the owner on 2026-11-02):
-  - The whole card opens the Steam page of the game in a new tab (the link of the title stretched over the card, a focus outline around the card); the cross and the votes stay above it. The friends are precise players: no icon ↗.
+  - The whole card opens the Steam page of the game in a new tab (the link of the title stretched over the card, a focus outline around the card); the cross and the votes stay above it. The friends are precise players: no icon ↗. A tap that closes a bubble or the menu doesn't open the Steam page (step 9b).
   - « Retirer » is a square with a cross at the top right of the cover (`--tap` on a phone, `--tap-small` on a PC), `--surface-solid` at 78 % blurred, filled with `--error` under the pointer; only where the friend may remove the game.
   - No categories on the card: the filters keep them, and the Steam page shows them.
-  - « Ajouté par Krak » (« Ajouté par toi ») in `--signal` bold, right under the title, then « Jusqu’à 10 joueurs ».
+  - « Ajouté par Krak » in bold, right under the title, then « Jusqu’à 10 joueurs ». Since step 9b (chosen by the owner on 2026-11-02), the friend's own nickname on their games rather than « toi », which a friend named « Toi » would make ambiguous; and the electric blue lightened by 10 %, `--signal-label` (5.1:1 on a card, 4.8:1 under the pointer), since `--signal` reached only 4.35:1, under AA.
 - **Votes**: square buttons of `--tap`; the friend's vote fills with `--signal` and glows (`--glow-vote`); the score in `--signal-text` when the friend voted for it; their own game can't be voted against (a dashed border, 40 % opacity).
 - **Bubbles and panels**: `--surface-solid`, a border `--line-strong`, `--shadow-pop`; behind a panel, `--overlay`.
 - **The strip of the errors**: under the header, over the page, `--error-bg` blurred, white text, a cross of `--tap`.
@@ -210,7 +210,7 @@ On 2026-11-02, in the polish of the bag (step 9a):
 
 - **The cross of « Retirer »**: beside the cut corner kept, or carrying the cut corner itself, flush with the corner of the cover. The owner chose the cover without its cut corner.
 - **The link to Steam**: the cover and the title only, with or without an icon ↗ (safer on a phone, where a finger may miss a vote). The owner chose the whole card: their friends are precise players.
-- **« Ajouté par »**: in `--signal-text`, the light blue. The owner chose the electric blue.
+- **« Ajouté par »**: in `--signal-text`, the light blue. The owner chose the electric blue. In step 9b, `--signal` itself (4.35:1, under AA) gave way to `--signal-label`, lightened by 10 %; « Ajouté par toi » on one's own games gave way to the nickname.
 - **The count**: « 5/47 » with « 47 / 50 jeux » (the two slashes would mean two things), « 5 jeux sur 47 » as before. « 5/47 jeux » with the free places was kept by default.
 - **The menu on a phone**: a sheet from the bottom, as the panels. The owner chose the list under the nickname.
 - **The renames left**: in words (« Encore 2 renommages sur 3 »). The owner chose the diamonds.

@@ -191,7 +191,7 @@ function card(game, index) {
     <div class="app-card-body">
       <div class="app-card-info">
         <h3 class="app-card-title"><a class="app-card-link" href="${steamPage(game)}" target="_blank" rel="noopener noreferrer">${escape(game.name)}<span class="app-visually-hidden"> (Steam, nouvel onglet)</span></a></h3>
-        <p class="app-by">Ajouté par ${vote === "own" ? "toi" : game.by}</p>
+        <p class="app-by">Ajouté par ${game.by}</p>
         ${game.players ? `<p class="app-players-line">${ICON.people(15)}Jusqu’à ${game.players} joueurs</p>` : ""}
       </div>
       <div class="app-votes" data-vote="${vote || ""}">

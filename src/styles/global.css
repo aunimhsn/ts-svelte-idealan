@@ -117,6 +117,13 @@ input {
   filter: brightness(0.9);
 }
 
+/* Emptying the bag is red all the way (step 9a): its button and its confirmation. */
+.button.is-primary.is-danger {
+  border-color: var(--error-text);
+  background: var(--error);
+  color: var(--on-error);
+}
+
 .button.is-small {
   min-height: var(--tap-small);
   padding: 0 var(--space-3);

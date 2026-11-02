@@ -52,7 +52,7 @@
     if (refocus) chip?.focus();
   };
 
-  // At 1 or 99, a tap changes nothing, and N keeps following the bag.
+  // At 1 or 25, a tap changes nothing, and N keeps following the bag.
   const step = (by: number) => {
     const next = clampPlayers(players + by);
     if (next !== players) onplayers(next);
@@ -142,8 +142,8 @@
     </div>
     <p class="popover-note">
       {bagPlayers === 1
-        ? fr.filters.inBagOne
-        : format(fr.filters.inBag, { count: bagPlayers })}
+        ? format(fr.filters.inBagOne, { max: MAX_PLAYERS })
+        : format(fr.filters.inBag, { count: bagPlayers, max: MAX_PLAYERS })}
     </p>
     <button
       type="button"
@@ -262,7 +262,7 @@
     font-size: var(--size-title);
   }
 
-  /* At 1 or 99: nothing to wait for, unlike a busy button. */
+  /* At 1 or 25: nothing to wait for, unlike a busy button. */
   .stepper .button[aria-disabled="true"] {
     cursor: default;
   }

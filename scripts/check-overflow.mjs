@@ -2,9 +2,11 @@
 // on a computer. A block that runs past the right edge (a long game name, a wide cover) lets
 // Chrome on Android widen the page to show it, which the build can't see: only a browser that
 // lays the page out does. Each screen is loaded in the Chromium of Playwright, then scrolled to
-// the bottom. It also fails on an element marked `data-one-line` that takes more than one line,
-// on a script error, on a file that doesn't load and on what the Content Security Policy of
-// netlify.toml blocks.
+// the bottom. It also fails on an element marked `data-one-line` that takes more than one line
+// (none since step 9b, kept for the next ones), on a script error, on a file that doesn't load and
+// on what the Content Security Policy of netlify.toml blocks. On a phone, it then checks the taps
+// on a card: a tap that closes a bubble or the menu doesn't open the Steam page, and the menu of
+// the nickname stays over the strip of the errors.
 // The functions don't run here: the bag answers the test data of check-overflow-bag.json, for a
 // friend kept in the storage of the browser, or doesn't answer at all; the settings answer the
 // same data; any other call to /api/ answers 404.
@@ -36,25 +38,34 @@ const screens = [
     path: "/",
     kept,
     bag: "answers",
-    click: "[aria-controls$='-players']",
+    clicks: ["[aria-controls$='-players']"],
     opens: "[aria-labelledby$='-players-title']",
   },
-  // The settings of the admin, opened from the header.
+  // The menu of the nickname, a list under it.
+  {
+    name: "the menu of the nickname",
+    path: "/",
+    kept,
+    bag: "answers",
+    clicks: ["header [aria-controls$='-menu']"],
+    opens: "header [id$='-menu']",
+  },
+  // The settings of the admin, opened from the menu of the nickname.
   {
     name: "the settings",
     path: "/",
     kept,
     bag: "answers",
-    click: "header .open-settings",
+    clicks: ["header [aria-controls$='-menu']", "header .open-settings"],
     opens: "dialog[open]",
   },
-  // Emptying the bag, opened from the header.
+  // Emptying the bag, opened from the menu of the nickname.
   {
     name: "emptying the bag",
     path: "/",
     kept,
     bag: "answers",
-    click: "header .open-empty",
+    clicks: ["header [aria-controls$='-menu']", "header .open-empty"],
     opens: "dialog[open]",
   },
   { name: "the bag without the server", path: "/", kept, bag: "down" },
@@ -216,8 +227,8 @@ const check = async (width, screen) => {
       errors.push(`${where}: the screen expected didn't show`);
       return;
     }
-    if (screen.click) {
-      await page.locator(screen.click).click();
+    if (screen.clicks) {
+      for (const click of screen.clicks) await page.locator(click).click();
       if (!(await page.locator(screen.opens).isVisible())) {
         errors.push(`${where}: the click didn't open what it should`);
         return;
@@ -237,10 +248,81 @@ const check = async (width, screen) => {
   }
 };
 
+// The taps on a card, on a phone: the card opens the Steam page in a new tab, but not when the tap
+// closes the bubble of the votes or the menu of the nickname; the menu stays over the strip of the
+// errors, so that « Se déconnecter » can be tapped when the server doesn't answer.
+const checkTaps = async () => {
+  const context = await browser.newContext({
+    viewport: { width: 360, height: 800 },
+    isMobile: true,
+    hasTouch: true,
+  });
+  const where = "the taps at 360 px";
+  try {
+    await context.route(
+      (url) => url.origin !== origin,
+      (route) => route.abort(),
+    );
+    let answers = true;
+    await context.route("**/api/get-{bag,settings}", (route) =>
+      answers
+        ? route.fulfill({ contentType: "application/json", body: bag })
+        : route.abort(),
+    );
+    await context.addInitScript((value) => {
+      localStorage.setItem("idealan", value);
+    }, kept);
+    const page = await context.newPage();
+    await page.goto(origin, { waitUntil: "networkidle" });
+    const tabs = () => context.pages().length;
+    const name = page.locator(".games a").first();
+    const menu = "header [aria-controls$='-menu']";
+
+    await page.locator(".games .score").first().tap();
+    await name.tap();
+    await page.locator(menu).tap();
+    await name.tap();
+    if (tabs() > 1) {
+      errors.push(`${where}: a tap that closes a layer opened the Steam page`);
+    }
+    await name.tap();
+    await page.waitForTimeout(200);
+    if (tabs() < 2) {
+      errors.push(`${where}: a tap on a card didn't open the Steam page`);
+    }
+
+    // The strip of the errors, when « Rafraîchir » doesn't reach the server.
+    answers = false;
+    await page.locator(".refresh").tap();
+    await page.locator("header [role='alert']").waitFor();
+    await page.locator(menu).tap();
+    const hidden = await page.evaluate(() =>
+      [...document.querySelectorAll("header [id$='-menu'] button")]
+        .filter((item) => {
+          const box = item.getBoundingClientRect();
+          const top = document.elementFromPoint(
+            box.left + box.width / 2,
+            box.top + box.height / 2,
+          );
+          return !item.contains(top);
+        })
+        .map((item) => item.textContent.trim()),
+    );
+    for (const item of hidden) {
+      errors.push(`${where}: « ${item} » is under the strip of the errors`);
+    }
+  } catch (error) {
+    errors.push(`${where}: not checked, ${error.message}`);
+  } finally {
+    await context.close();
+  }
+};
+
 try {
   for (const width of [...phones, ...desktops]) {
     for (const screen of screens) await check(width, screen);
   }
+  await checkTaps();
 } finally {
   await browser.close();
   server.close();
@@ -249,10 +331,10 @@ try {
 if (errors.length > 0) {
   const report = errors.sort().join("\n- ");
   console.error(
-    `Screens wider than the screen, elements on several lines, or screens not checked:\n- ${report}`,
+    `Screens wider than the screen, elements on several lines, taps gone wrong, or screens not checked:\n- ${report}`,
   );
   process.exit(1);
 }
 console.log(
-  `${screens.length} screens fit a screen of ${[...phones, ...desktops].join(", ")} px.`,
+  `${screens.length} screens fit a screen of ${[...phones, ...desktops].join(", ")} px; the taps on a card are right.`,
 );
