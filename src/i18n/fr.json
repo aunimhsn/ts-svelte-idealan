@@ -115,7 +115,7 @@
     "delete": "Supprimer",
     "self": "toi",
     "giveBack": "Redonner les 3",
-    "giveBackLabel": "Redonner ses 3 renommages à {nickname}"
+    "giveBackLabel": "Redonner les 3 renommages à {nickname}"
   },
   "me": {
     "title": "Réglages",

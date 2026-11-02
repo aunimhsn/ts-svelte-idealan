@@ -1744,6 +1744,16 @@ input {
   .app-player-self {
     margin-left: auto;
   }
+
+  /* With « Redonner les 3 », the nickname takes a row of its own, the buttons under it on the
+     right (step 9c). */
+  .app-player:has(.app-player-give) .app-player-name {
+    flex-basis: 100%;
+  }
+
+  .app-player:has(.app-player-give) .app-player-actions {
+    margin-left: auto;
+  }
 }
 
 @media (width >= 900px) {

@@ -414,24 +414,28 @@ export class AppState {
   }
 
   // A friend renames themself, the nickname checked first with the rules of the welcome. Answers
-  // whether the nickname changed; the same one exactly is left as it is, without a call.
-  renameSelf(text: string) {
+  // whether the nickname changed; the same one exactly is left as it is, without a call. Refused
+  // for want of renames (used meanwhile on another device), the bag is read again, so that the
+  // panel shows none left.
+  async renameSelf(text: string) {
     const me = this.view?.me;
-    if (me === undefined) return Promise.resolve(false);
+    if (me === undefined) return false;
     const nickname = readNickname(text);
     if (nickname === null) {
       this.settingsError = { id: me.id, code: "invalid-nickname" };
-      return Promise.resolve(false);
+      return false;
     }
     if (nickname === me.nickname) {
       this.settingsError = null;
-      return Promise.resolve(true);
+      return true;
     }
-    return this.#settings(
+    const renamed = await this.#settings(
       me.id,
       () => this.#api.renameSelf(this.#credentials, nickname),
       nickname,
     );
+    if (this.settingsError?.code === "no-renames-left") void this.refresh();
+    return renamed;
   }
 
   // Gives a friend their 3 renames back.

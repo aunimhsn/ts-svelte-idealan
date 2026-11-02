@@ -128,11 +128,11 @@ const onlyPlayers = (bag: Bag, known: Set<string>): Bag => ({
     }),
 });
 
-// Deletes a player, their games, their votes, their lines of the journal and their tries. The player goes first, so that
-// their calls are refused from then on (the writes of the bag check it again: `isStillPlayer`);
-// then the bag, then the tries. The bag keeps only the games and votes of the players still
-// there, read again at each try: a player already gone is cleaned all the same, so that a
-// deletion that failed halfway is done again by the next one.
+// Deletes a player, their games, their votes, their lines of the journal and their tries. The
+// player goes first, so that their calls are refused from then on (the writes of the bag check it
+// again: `isStillPlayer`); then the bag, then the tries. The bag keeps only the games and votes of
+// the players still there, read again at each try: a player already gone is cleaned all the same,
+// so that a deletion that failed halfway is done again by the next one.
 export const deletePlayer = async (
   store: JsonStore,
   id: string,

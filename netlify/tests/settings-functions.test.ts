@@ -35,6 +35,7 @@ import { ACCESS_CODE_HEADER } from "../lib/access";
 import { BAG_KEY } from "../lib/bag";
 import { PLAYER_CODE_HEADER, PLAYER_ID_HEADER } from "../lib/http";
 import { attemptsKey, MAX_FAILURES, PLAYERS_KEY } from "../lib/players";
+import { renameSelf } from "../lib/renames";
 import type { JsonStore } from "../lib/store";
 import { memoryStore } from "./memory-store";
 
@@ -547,6 +548,23 @@ describe("rename-self", () => {
     }
   });
 
+  it("doesn't count a rename of the admin by this function", async () => {
+    const bag = await setUp();
+    const { body } = await bag.renameSelf(bag.admin, { nickname: "Sylent2" });
+    expect(body).toMatchObject({ me: { nickname: "Sylent2" }, renames: 0 });
+    expect(body.journal).toBeUndefined();
+    expect(
+      (await bag.getSettings(bag.admin)).body.journal?.[0]?.used,
+    ).toBeNull();
+  });
+
+  it("answers unknown-player for a friend deleted meanwhile", async () => {
+    const bag = await setUp();
+    expect(await renameSelf(bag.store, "j9", "Pixel", NOW)).toBe(
+      "unknown-player",
+    );
+  });
+
   it("checks the friend's personal code first", async () => {
     const bag = await setUp();
     expect(
@@ -571,6 +589,14 @@ describe("the renames by the admin", () => {
       state: "active",
       renames: 0,
     });
+  });
+
+  it("keeps the journal through a reset of a code and the next entry", async () => {
+    const bag = await setUp();
+    await bag.rename(bag.admin, { id: "j2", nickname: "Zed" });
+    await bag.reset(bag.admin, { id: "j2" });
+    expect((await bag.enter("Zed", "4321")).status).toBe(200);
+    expect((await bag.getSettings(bag.admin)).body.journal).toHaveLength(1);
   });
 
   it("keeps the journal when a new friend enters", async () => {

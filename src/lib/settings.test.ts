@@ -82,6 +82,10 @@ describe("the renames", () => {
     expect(formatWhen(new Date(2026, 10, 6, 23, 41), now)).toBe(
       "hier à 23\u00a0h\u00a041",
     );
+    // A browser clock a little behind, just after midnight.
+    expect(
+      formatWhen(new Date(2026, 10, 8, 0, 3), new Date(2026, 10, 7, 23, 59)),
+    ).toBe("aujourd’hui à 0\u00a0h\u00a003");
     expect(formatWhen(new Date(2026, 10, 3, 9, 5), now)).toBe(
       "le 3/11 à 9\u00a0h\u00a005",
     );

@@ -55,7 +55,8 @@ const dayOf = (date: Date) =>
 export const formatWhen = (date: Date, now = new Date()) => {
   const time = formatTime(date);
   const days = Math.round((dayOf(now) - dayOf(date)) / 86_400_000);
-  if (days === 0) return format(fr.journal.today, { time });
+  // A browser clock a little behind the server's, just after midnight, still says « aujourd’hui ».
+  if (days <= 0) return format(fr.journal.today, { time });
   if (days === 1) return format(fr.journal.yesterday, { time });
   return format(fr.journal.day, {
     day: date.getDate(),

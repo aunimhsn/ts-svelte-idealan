@@ -288,7 +288,7 @@
     color: var(--secondary);
   }
 
-  /* The state of a nickname: a label next to its counts, red when locked. */
+  /* « code à choisir »: a label next to the counts. */
   .status {
     margin-left: var(--space-2);
     padding: calc(var(--space-1) / 2) var(--space-2);
@@ -306,7 +306,7 @@
     display: inline-flex;
     margin-left: var(--space-2);
     color: var(--error-text);
-    vertical-align: -3px;
+    vertical-align: text-bottom;
   }
 
   /* The journal of the renames, folded under the list. */

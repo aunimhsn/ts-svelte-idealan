@@ -489,7 +489,7 @@ describe("AppState", () => {
     });
 
     it("shows a refusal under the field, not in the strip", async () => {
-      const { api } = fakeServer({
+      const { api, calls } = fakeServer({
         "/api/get-bag": () => Response.json(viewOf()),
         "/api/rename-self": refuse("no-renames-left", 409),
       });
@@ -502,6 +502,9 @@ describe("AppState", () => {
         nickname: "Pixel",
       });
       expect(app.toast).toBeNull();
+      // The bag is read again, so that the panel shows none left.
+      await vi.waitFor(() => expect(calls).toHaveLength(3));
+      expect(calls.at(-1)?.path).toBe("/api/get-bag");
     });
   });
 

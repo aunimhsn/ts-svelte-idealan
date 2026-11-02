@@ -19,6 +19,7 @@
   const fieldId = `${id}-nickname`;
   const renamesId = `${id}-renames`;
   const noteId = `${id}-note`;
+  const noneId = `${id}-none`;
 
   const me = $derived(app.view?.me);
   const left = $derived(renamesLeftOf(app.view?.renames ?? 0));
@@ -46,6 +47,7 @@
   bind:this={panel}
   title={fr.me.title}
   narrow
+  describedby={none ? noneId : undefined}
   onclose={() => {
     app.closeSettings();
     onclose();
@@ -85,7 +87,9 @@
       </small>
     </div>
     {#if none}
-      <p class="panel-note">{fr.panelErrors["no-renames-left"]}</p>
+      <p class="panel-note" id={noneId}>
+        {fr.panelErrors["no-renames-left"]}
+      </p>
     {/if}
     <p class="panel-note">{fr.me.follow}</p>
     <div class="actions">
@@ -159,6 +163,11 @@
   .field input:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+  }
+
+  /* No rename left: « Renommer » is off for good, not busy. */
+  .actions .button:disabled {
+    cursor: not-allowed;
   }
 
   .actions {
