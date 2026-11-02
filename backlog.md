@@ -24,6 +24,7 @@ One entry per item, in the section of its kind: what it is in one sentence, what
 
 <!-- New screens, actions or behaviors for a later cycle. -->
 
+- The address `idealan.sylent.art` instead of `ts-svelte-idealan-sylent.netlify.app`: the domain added in Netlify, a CNAME `idealan` at the DNS of `sylent.art` (Squarespace, ex-Google Domains), no deploy needed; the friends' sessions are kept per address, so they enter again once on the new one. Then update the address in `CLAUDE.md`, `specs.md` and the README. Set aside by the owner on 2026-11-02 for after the launch. Noted on 2026-11-02.
 - A « random draw » button on the day of the LAN, weighted or not by the votes. Noted on 2026-11-01.
 - Vertical covers (`library_600x900.jpg` of the Steam CDN), with the horizontal one (`header_image`) as fallback when a game has none. Needs an exploration: does the vertical cover exist for most of the games of the bag? Noted on 2026-11-01.
 - Change the maximum number of players of a game after adding it (by the friend who added it, or the admin), when it was left empty or is wrong. Depends on: step 6. Noted on 2026-11-01.
