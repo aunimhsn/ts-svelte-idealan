@@ -2,6 +2,16 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 8. Launch
+
+Merged on 2026-11-02 in [#17](https://github.com/aunimhsn/ts-svelte-idealan/pull/17). Tools: launch.
+
+- The production site checked: the member code is set (a call without code answers `wrong-access-code`, not `server-not-configured`), and the owner keeps the two codes of Netlify as final.
+- No separate rehearsal: the friends' first real use serves as one, and the owner empties the bag (« Vider le sac ») and deletes the nicknames in « Réglages » if needed.
+- The page is opened on the friends' PCs, Full HD at least, and on their phones.
+- The link and the member code sent by the owner in the group conversation, never in the repository.
+- Netlify's email of 50 % of the credits: until the LAN, only an urgent fix is merged ([external services](external-services.md)).
+
 ## 7b. Emptying the bag
 
 Merged on 2026-11-02 in [#16](https://github.com/aunimhsn/ts-svelte-idealan/pull/16). Tools: build.

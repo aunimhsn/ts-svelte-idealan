@@ -32,7 +32,7 @@ The usual steps of the first cycle of a small application; adapt them at the set
 - [x] **5. Read a Steam game** ([#10](https://github.com/aunimhsn/ts-svelte-idealan/pull/10)).
 - [x] **6. The bag** ([#11](https://github.com/aunimhsn/ts-svelte-idealan/pull/11), [#12](https://github.com/aunimhsn/ts-svelte-idealan/pull/12), [#13](https://github.com/aunimhsn/ts-svelte-idealan/pull/13), [#14](https://github.com/aunimhsn/ts-svelte-idealan/pull/14)).
 - [x] **7. Moderation** ([#15](https://github.com/aunimhsn/ts-svelte-idealan/pull/15), [#16](https://github.com/aunimhsn/ts-svelte-idealan/pull/16)).
-- [ ] **8. Launch**: the application checked on the `netlify.app` address, the two codes set, the link and the member code sent to the friends.
+- [x] **8. Launch** ([#17](https://github.com/aunimhsn/ts-svelte-idealan/pull/17)).
 - [ ] **9. Retrospective**: after the LAN, the friends' feedback in the backlog, the lessons in `process.md`, the memory moved to the files, and the template `ts-svelte-dynamic-website-template` made from this project.
 
 The steps may be split into sub-steps when a pull request grows too large. When no step is left, Claude Code proposes the next items of the backlog to the owner.
