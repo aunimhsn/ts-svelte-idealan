@@ -1,10 +1,10 @@
 <!-- The confirmation before what can't be undone (specs.md, Confirmation): a question, the name on
      one line, the numbers at stake, « Annuler » or the action. The action fills in blue (in red
      for emptying the bag) for 2 seconds before it can be clicked, so that a quick double tap never
-     confirms. A sheet from the
-     bottom of the screen on a phone, a window in the middle on a PC, over the dimmed bag; « Annuler »,
-     « Échap » or a click on the dimmed bag closes it. A native <dialog>: it keeps the keyboard focus
-     inside it, and gives it back to the button that opened it. -->
+     confirms. A sheet from the bottom of the screen on a phone, a window in the middle on a PC,
+     over the dimmed bag; « Annuler », « Échap » or a click on the dimmed bag closes it. A native
+     <dialog>: it keeps the keyboard focus inside it, and gives it back to the button that opened
+     it. -->
 <script lang="ts">
   import fr from "../i18n/fr.json";
 

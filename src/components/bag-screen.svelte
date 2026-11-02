@@ -1,9 +1,9 @@
 <!-- The bag (specs.md, The bag): the header, the adding, the count and the free places with
      « Rafraîchir », the filters, and the games sorted by score, with their votes, who voted, and
-     « Retirer » with its confirmation; for the admin, the settings and emptying the bag. The filters are all off when
-     the bag shows, and after a reload of the page. It reloads every 30 seconds while the tab is
-     shown, and at once when the tab comes back after a longer time; the reload stops with the
-     screen, when the friend leaves. -->
+     « Retirer » with its confirmation; for the admin, the settings and emptying the bag. The
+     filters are all off when the bag shows, and after a reload of the page. It reloads every 30
+     seconds while the tab is shown, and at once when the tab comes back after a longer time; the
+     reload stops with the screen, when the friend leaves. -->
 <script lang="ts">
   import fr from "../i18n/fr.json";
   import { RELOAD_MS, type AppState } from "../lib/app-state.svelte";
@@ -77,6 +77,17 @@
         : format(fr.confirm.removeVotes, { count });
   };
 
+  // A tap that closes a bubble, the menu of the nickname or « Jouable à » doesn't also open the
+  // Steam page of the card under the finger: it runs before the layers close, while the button that
+  // opened one still says so.
+  const onLinkCapture = (event: MouseEvent) => {
+    const target = event.target;
+    if (!(target instanceof Element) || !target.closest(".games a")) return;
+    if (document.querySelector("[aria-expanded='true']")) {
+      event.preventDefault();
+    }
+  };
+
   // A tap outside the score and its bubble closes the bubble.
   const onWindowClick = (event: MouseEvent) => {
     const target = event.target;
@@ -117,7 +128,11 @@
   });
 </script>
 
-<svelte:window onclick={onWindowClick} onkeydown={onWindowKey} />
+<svelte:window
+  onclickcapture={onLinkCapture}
+  onclick={onWindowClick}
+  onkeydown={onWindowKey}
+/>
 
 <AppHeader
   {app}

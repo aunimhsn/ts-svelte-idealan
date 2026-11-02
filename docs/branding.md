@@ -126,7 +126,7 @@ One size per role:
 - Touch targets: `--tap` 44 px (fields, buttons, votes on a phone, the cross of the strip), `--tap-small` 36 px (chips, small buttons, votes on a PC).
 - Sharp corners everywhere (`--radius` 0). Since step 9a (2026-11-02), the covers lose their chamfer, the cut corner at their top right, where the cross of « Retirer » now sits; `--chamfer` went with it in step 9b. Exceptions: the handle of a sheet (`--radius-pill`), the square of the favicon rounded by 20 % (`--radius-icon`).
 - Borders of `--hairline` 1 px; `--stroke` 2 px for the focus ring, the spinner and the lines of the floor; `--edge` 3 px for the blue edge of the banner.
-- Layers, from the back: the floor, the content, the header, the bubble of the votes, « Jouable à », the strip of the errors, the card whose bubble is open, the panels, the scanlines over everything (`--layer-*`).
+- Layers, from the back: the floor, the content, the header, the bubble of the votes, « Jouable à », the strip of the errors, the menu of the nickname (over the strip, since step 9b), the card whose bubble is open, the panels, the scanlines over everything (`--layer-*`).
 
 ## Components
 
@@ -138,7 +138,7 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 - **Fields**: `--field-bg`, a border `--line-strong`, its label above in Chakra Petch 600, a hint or an error below; at fault, a border `--error-text`.
 - **Chips** (filters): pressed, the border in `--signal`, a background `--signal-tint`, the text in `--signal-text`. The window of « Jouable à N » opens `--space-1` (4 px) under its chip, on a phone and on a PC: a small gap the owner liked (2026-11-01).
 - **Cards**: glass (`--surface` blurred by `--glass-blur` 8 px); under the pointer, a blue border and `--glow-card`, a slight tilt and press. Since step 9a (chosen by the owner on 2026-11-02):
-  - The whole card opens the Steam page of the game in a new tab (the link of the title stretched over the card, a focus outline around the card); the cross and the votes stay above it. The friends are precise players: no icon ↗.
+  - The whole card opens the Steam page of the game in a new tab (the link of the title stretched over the card, a focus outline around the card); the cross and the votes stay above it. The friends are precise players: no icon ↗. A tap that closes a bubble or the menu doesn't open the Steam page (step 9b).
   - « Retirer » is a square with a cross at the top right of the cover (`--tap` on a phone, `--tap-small` on a PC), `--surface-solid` at 78 % blurred, filled with `--error` under the pointer; only where the friend may remove the game.
   - No categories on the card: the filters keep them, and the Steam page shows them.
   - « Ajouté par Krak » (« Ajouté par toi ») in `--signal` bold, right under the title, then « Jusqu’à 10 joueurs ».

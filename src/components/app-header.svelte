@@ -222,7 +222,7 @@
 
   .menu {
     position: absolute;
-    z-index: var(--layer-popover);
+    z-index: var(--layer-menu);
     top: calc(100% + var(--space-1));
     right: 0;
     display: grid;

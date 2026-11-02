@@ -64,6 +64,8 @@ describe("passes", () => {
     expect(passes(game, { tags: [], players: 4 })).toBe(true);
     expect(passes(game, { tags: [], players: 5 })).toBe(false);
     expect(passes(gameOf([], [], null), { tags: [], players: 99 })).toBe(true);
+    // A game stored before the limit of 25 keeps its number, and passes « Jouable à 25 ».
+    expect(passes(gameOf([], [], 40), { tags: [], players: 25 })).toBe(true);
   });
 });
 

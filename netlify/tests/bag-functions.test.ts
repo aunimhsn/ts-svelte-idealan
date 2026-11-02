@@ -281,6 +281,16 @@ describe("get-bag", () => {
     expect(response.headers.get("allow")).toBe("GET");
   });
 
+  it("still reads a game stored with more players than « Joueurs max » now accepts", async () => {
+    const { add, getBag, data, sylent } = await setUp();
+    await add(sylent, CS_LINK, "25");
+    const stored = data.get(BAG_KEY) as { games: BagGame[] };
+    data.set(BAG_KEY, {
+      games: stored.games.map((game) => ({ ...game, maxPlayers: 40 })),
+    });
+    expect((await getBag(sylent)).body.games[0]?.maxPlayers).toBe(40);
+  });
+
   it("answers server-error, never the bag, when the bag can't be read", async () => {
     const { store, data, sylent } = await setUp();
     data.set(BAG_KEY, { games: "broken" });
@@ -331,7 +341,7 @@ describe("add-game", () => {
     expect(steam).not.toHaveBeenCalled();
   });
 
-  it.each(["0", "100", "huit", 2.5])(
+  it.each(["0", "26", "100", "huit", 2.5])(
     "refuses the maximum number of players %j",
     async (maxPlayers) => {
       const { add, sylent } = await setUp();

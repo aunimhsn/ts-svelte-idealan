@@ -1,10 +1,10 @@
-<!-- A game of the bag (specs.md, Layout): the cover, with the cross of « Retirer » at its top right
-     when allowed, the name, who added it, « Jusqu’à N joueurs » when known, and the votes in a
-     column on the right: upvote, score, downvote. The whole card opens the Steam page of the game in
-     a new tab: the link of the name stretched over it, under the cross and the votes. The score jumps when it changes, and
-     shows who voted in a bubble under it: on a tap, or on hover and keyboard focus on a computer.
-     A cover missing or that doesn't load becomes a striped block with the name. On a computer, the
-     card sinks a little on the side of the pointer. -->
+<!-- A game of the bag (specs.md, Layout): the cover, with the cross of « Retirer » at its top
+     right when allowed, the name, who added it, « Jusqu’à N joueurs » when known, and the votes in
+     a column on the right: upvote, score, downvote. The whole card opens the Steam page of the
+     game in a new tab: the link of the name stretched over it, under the cross and the votes. The
+     score jumps when it changes, and shows who voted in a bubble under it: on a tap, or on hover
+     and keyboard focus on a computer. A cover missing or that doesn't load becomes a striped block
+     with the name. On a computer, the card sinks a little on the side of the pointer. -->
 <script lang="ts">
   import { onMount } from "svelte";
   import fr from "../i18n/fr.json";
@@ -131,9 +131,8 @@
           href={steamPage(game.appid)}
           target="_blank"
           rel="noopener noreferrer"
-          ><span id={titleId}>{game.name}</span><span class="visually-hidden"
-            >{fr.card.steamPage}</span
-          ></a
+          ><span id={titleId}>{game.name}</span>
+          <span class="visually-hidden">{fr.card.steamPage}</span></a
         >
       </h3>
       <p class="by">
@@ -386,6 +385,7 @@
 
   .remove[aria-disabled="true"] {
     cursor: progress;
+    opacity: 0.75;
   }
 
   /* The votes: upvote, score, downvote; the friend's vote fills with the blue and glows. */

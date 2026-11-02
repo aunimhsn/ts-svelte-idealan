@@ -62,7 +62,7 @@
   "card": {
     "addedBy": "Ajouté par {nickname}",
     "addedByMe": "Ajouté par toi",
-    "steamPage": " (page Steam, nouvel onglet)",
+    "steamPage": "(page Steam, nouvel onglet)",
     "formerPlayer": "un ancien joueur",
     "maxPlayers": "Jusqu’à {count} joueurs",
     "maxPlayersOne": "Jusqu’à 1 joueur",

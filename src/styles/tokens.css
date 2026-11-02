@@ -188,6 +188,7 @@
   --layer-bubble: 5;
   --layer-popover: 6;
   --layer-toast: 8;
+  --layer-menu: 9; /* the menu of the nickname, over the strip of the errors */
   --layer-raised: 10; /* the card whose bubble is open */
   --layer-overlay: 20;
   --layer-scanlines: 30;
