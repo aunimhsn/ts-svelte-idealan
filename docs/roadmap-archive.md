@@ -2,6 +2,26 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 8. Launch
+
+Merged on 2026-11-02 in [#17](https://github.com/aunimhsn/ts-svelte-idealan/pull/17). Tools: launch.
+
+- The production site checked: the member code is set (a call without code answers `wrong-access-code`, not `server-not-configured`), and the owner keeps the two codes of Netlify as final.
+- No separate rehearsal: the friends' first real use serves as one, and the owner empties the bag (« Vider le sac ») and deletes the nicknames in « Réglages » if needed.
+- The page is opened on the friends' PCs, Full HD at least, and on their phones.
+- The link and the member code sent by the owner in the group conversation, never in the repository.
+- Netlify's email of 50 % of the credits: until the LAN, only an urgent fix is merged ([external services](external-services.md)).
+
+## 7b. Emptying the bag
+
+Merged on 2026-11-02 in [#16](https://github.com/aunimhsn/ts-svelte-idealan/pull/16). Tools: build.
+
+- « Vider le sac » in the admin's header: the whole bag, filters aside, its order frozen at opening, no box checked; the games to keep checked, « 9 gardés · 38 retirés », then the confirmation.
+- `POST /api/empty-bag` receives the games to remove, 1 to 50 distinct appids, in one conditional write: a game added meanwhile stays.
+- The error in a red block in the panel.
+- `tall-panel.svelte` shared with the settings, with `.panel-note`, `.error-block`, `--stripes` and `adminMessage`.
+- The review applied in full (6 points, the refactor included at the owner's request).
+
 ## 7a. Settings
 
 Merged on 2026-11-02 in [#15](https://github.com/aunimhsn/ts-svelte-idealan/pull/15). Tools: mock-up, build.
