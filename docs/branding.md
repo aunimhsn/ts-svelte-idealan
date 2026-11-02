@@ -20,7 +20,7 @@ The application has no brand of its own yet: the covers of the Steam games are i
 Chosen by the owner on 2026-11-01 among four styles of the family of sylent.art, with the blue instead of its orange: **D · Néon**, the style that « raises the temperature ».
 
 1. **The room of a LAN at night**: near-black backgrounds, a grid floor that runs to the horizon, scanlines, the title and the logo that glow.
-2. **The covers of the games are the material**: chamfered at their top right corner, they carry the colors; the interface around them stays in blue and white.
+2. **The covers of the games are the material**: they carry the colors; the interface around them stays in blue and white.
 3. **Blue is the light of the room**: unlike sylent.art, where the signal color is rare, the electric blue lights the main buttons, the borders and the glows; the friend's own vote and the active filters fill with it.
 4. **It moves, but never for a friend who asked to reduce motion**: the floor runs, the cards tilt under the pointer, the score jumps when voting; all of it stops with `prefers-reduced-motion`.
 
@@ -124,7 +124,7 @@ One size per role:
 - `--content` 1600 px: the width of the header and of the bag; the welcome is a column of `--width-welcome` 420 px.
 - Panels: `--width-dialog` 520 px, the tall ones (settings, emptying) `--width-dialog-tall` 1080 px (at most 90 % of the screen); the bubbles (who voted, « Jouable à ») `--width-bubble` 260 px.
 - Touch targets: `--tap` 44 px (fields, buttons, votes on a phone, the cross of the strip), `--tap-small` 36 px (chips, small buttons, votes on a PC).
-- Sharp corners everywhere (`--radius` 0): the shape of the style is the chamfer of the covers, `--chamfer` 18 px cut at their top right corner. Exceptions: the handle of a sheet (`--radius-pill`), the square of the favicon rounded by 20 % (`--radius-icon`).
+- Sharp corners everywhere (`--radius` 0). Since step 9a (2026-11-02), the covers lose their chamfer, the cut corner at their top right, where the cross of « Retirer » now sits; `--chamfer` goes with it in step 9b. Exceptions: the handle of a sheet (`--radius-pill`), the square of the favicon rounded by 20 % (`--radius-icon`).
 - Borders of `--hairline` 1 px; `--stroke` 2 px for the focus ring, the spinner and the lines of the floor; `--edge` 3 px for the blue edge of the banner.
 - Layers, from the back: the floor, the content, the header, the bubble of the votes, « Jouable à », the strip of the errors, the card whose bubble is open, the panels, the scanlines over everything (`--layer-*`).
 
@@ -134,14 +134,21 @@ One size per role:
 
 The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css)) is copied into the components of the application.
 
-- **Buttons**: a border `--line-strong`, transparent; under the pointer `--surface-hover`. The main one (« Entrer », « Ajouter ») fills with `--signal`, darker by 10 % under the pointer. « Rafraîchir » fills with `--signal` on a PC only, at the end of the row of the filters; on a phone it keeps its border, so that it doesn't compete with « Ajouter » just above it (chosen by the owner on 2026-11-01). Disabled: 75 % opacity, the cursor « progress ». The action of a confirmation (« Retirer », « Vider ») fills with the blue from the left for `--duration-arm` (2 s) before it can be clicked.
+- **Buttons**: a border `--line-strong`, transparent; under the pointer `--surface-hover`. The main one (« Entrer », « Ajouter ») fills with `--signal`, darker by 10 % under the pointer. « Rafraîchir » fills with `--signal` on a PC only, at the end of the row of the filters; on a phone it keeps its border, so that it doesn't compete with « Ajouter » just above it (chosen by the owner on 2026-11-01). Disabled: 75 % opacity, the cursor « progress ». The action of a confirmation (« Retirer », « Supprimer ») fills with the blue from the left for `--duration-arm` (2 s) before it can be clicked. **Emptying the bag is red all the way** (step 9a, asked by the owner on 2026-11-02): its item of the menu in `--error-text`, « Vider (38 jeux) » filled with `--error`, and its confirmation filling with `--error` instead of the blue. « Supprimer » of the settings has a border and a text in `--error-text`, filled with `--error` under the pointer.
 - **Fields**: `--field-bg`, a border `--line-strong`, its label above in Chakra Petch 600, a hint or an error below; at fault, a border `--error-text`.
 - **Chips** (filters): pressed, the border in `--signal`, a background `--signal-tint`, the text in `--signal-text`. The window of « Jouable à N » opens `--space-1` (4 px) under its chip, on a phone and on a PC: a small gap the owner liked (2026-11-01).
-- **Cards**: glass (`--surface` blurred by `--glass-blur` 8 px), the cover chamfered on top; under the pointer, a blue border and `--glow-card`, a slight tilt and press.
+- **Cards**: glass (`--surface` blurred by `--glass-blur` 8 px); under the pointer, a blue border and `--glow-card`, a slight tilt and press. Since step 9a (chosen by the owner on 2026-11-02):
+  - The whole card opens the Steam page of the game in a new tab (the link of the title stretched over the card, a focus outline around the card); the cross and the votes stay above it. The friends are precise players: no icon ↗.
+  - « Retirer » is a square with a cross at the top right of the cover (`--tap` on a phone, `--tap-small` on a PC), `--surface-solid` at 78 % blurred, filled with `--error` under the pointer; only where the friend may remove the game.
+  - No categories on the card: the filters keep them, and the Steam page shows them.
+  - « Ajouté par Krak » (« Ajouté par toi ») in `--signal` bold, right under the title, then « Jusqu’à 10 joueurs ».
 - **Votes**: square buttons of `--tap`; the friend's vote fills with `--signal` and glows (`--glow-vote`); the score in `--signal-text` when the friend voted for it; their own game can't be voted against (a dashed border, 40 % opacity).
 - **Bubbles and panels**: `--surface-solid`, a border `--line-strong`, `--shadow-pop`; behind a panel, `--overlay`.
 - **The strip of the errors**: under the header, over the page, `--error-bg` blurred, white text, a cross of `--tap`.
-- **The settings of the admin** (chosen by the owner on 2026-11-02): a rename refused shows in a bubble of `--error-bg` under its line, its point (`--arrow`) toward the field, white text, the field bordered in `--error-text`, so that the error sits next to its player in a long list, inside the panel that makes the strip of the bag unreachable. The state of a nickname is a label in capitals next to its counts, framed by its own color: « verrouillé » in `--error-text` (5 wrong personal codes), « code à choisir » in `--secondary` (a code reset, not chosen yet). The admin's own line has no action, only « toi » in the column of « Supprimer » (2026-11-02).
+- **The settings of the admin** (chosen by the owner on 2026-11-02): a rename refused shows in a bubble of `--error-bg` under its line, its point (`--arrow`) toward the field, white text, the field bordered in `--error-text`, so that the error sits next to its player in a long list, inside the panel that makes the strip of the bag unreachable. The state of a nickname next to its counts: a red padlock (`--error-text`, read « verrouillé ») after 5 wrong personal codes, since step 9a (asked by the owner on 2026-11-02, to save room); « code à choisir », a label in capitals framed in `--secondary`, for a code reset and not chosen yet. « Redonner les 3 » sits right next to « Renommer », once the friend used one of their renames; on a phone, the field of the nickname narrows to make room. The renames are in a journal under the list, « PixL → Pixel », its date and « 2/3 » (« par toi, non compté » for a rename by the admin), folded by default in the application (« ▸ Renommages 4 »). The admin's own line has no action, only « toi » in the column of « Supprimer » (2026-11-02).
+- **The header** (step 9a, chosen by the owner on 2026-11-02): the nickname on the right, « admin » under it in Manrope `--size-label` `--dim`, as « facultatif » under « Joueurs max », and a chevron; a tap opens a list under it, on a phone as on a PC: « Réglages », « Vider le sac » in `--error-text` (the admin only), then « Se déconnecter » in `--secondary` after a line.
+- **The count of the bar** (step 9a): « 47 jeux · 3 places libres », then « 5/47 jeux · filtres actifs » once a filter is on.
+- **The settings of a friend** (step 9a): « Ton pseudo », with the renames left on the right as three diamonds, filled with `--signal` and glowing (`--glow-vote`) for each one left, and « 2 restants »; with none left, the field and « Renommer » disabled (40 % opacity), and « Tu as utilisé tes 3 renommages : pour changer encore, demande à l’admin. »
 - **The banner** (the welcome, a code changed): a border with a blue edge of 3 px, `--signal-tint`.
 
 ## Motion
@@ -198,3 +205,14 @@ On 2026-11-02, in the settings of the admin (step 7a):
 
 - **A rename refused**: a red text under the line as on the welcome (A), the whole line tinted red with a bar on its left (C), a strip at the top of the panel as in the bag (D, far from its line in a list of 9 on a phone). The owner chose the bubble (B).
 - **A locked nickname**: a lock in the field of the nickname with a red word, « Réinitialiser le code perso » filled blue on the locked line. The owner chose the label.
+
+On 2026-11-02, in the polish of the bag (step 9a):
+
+- **The cross of « Retirer »**: beside the cut corner kept, or carrying the cut corner itself, flush with the corner of the cover. The owner chose the cover without its cut corner.
+- **The link to Steam**: the cover and the title only, with or without an icon ↗ (safer on a phone, where a finger may miss a vote). The owner chose the whole card: their friends are precise players.
+- **« Ajouté par »**: in `--signal-text`, the light blue. The owner chose the electric blue.
+- **The count**: « 5/47 » with « 47 / 50 jeux » (the two slashes would mean two things), « 5 jeux sur 47 » as before. « 5/47 jeux » with the free places was kept by default.
+- **The menu on a phone**: a sheet from the bottom, as the panels. The owner chose the list under the nickname.
+- **The renames left**: in words (« Encore 2 renommages sur 3 »). The owner chose the diamonds.
+- **The renames for the admin**: under each player (« ex-Mirabelle · 1 renommage sur 3 »). The owner chose the journal under the list.
+- **A reminder** that the next entry takes the new nickname: not needed, says the owner.

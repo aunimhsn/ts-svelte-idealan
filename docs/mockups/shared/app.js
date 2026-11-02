@@ -9,6 +9,14 @@ const view = {
 const viewer = view.as === "admin" ? "Sylent" : "Nova";
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Step 9a (polish), decided by the owner on 2026-11-02 (docs/branding.md): the cross of
+// « Retirer » on a cover without its cut corner, the whole card opens the Steam page, « Ajouté
+// par » in electric blue, « 5/47 » and the free places, the menu as a list under the nickname,
+// the renames left in words, the renames in a journal under the list of the admin's settings.
+const MAX_PLAYERS = 25;
+const RENAMES = 3;
+const steamPage = game => `https://store.steampowered.com/app/${game.appid}/`;
+
 // Icons as SVG lines in the color of the text.
 const icon = (body, size = 20, width = 2) =>
   `<svg class="app-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
@@ -18,6 +26,8 @@ const ICON = {
   refresh: size => icon('<path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/>', size),
   chevron: size => icon('<path d="M7 10l5 5 5-5"/>', size),
   people: size => icon('<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.3c2.2.2 3.7 1.8 4.1 4.2"/>', size, 1.8),
+  close: size => icon('<path d="M6 6l12 12M18 6L6 18"/>', size, 2.4),
+  lock: size => icon('<rect x="5" y="11" width="14" height="9" rx="1"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', size, 2.2),
 };
 // The mark of Sylent (sylent.art), filled with the color of the text.
 const MARK = `<svg class="app-mark" viewBox="0 0 908 2000.3" fill="currentColor" aria-hidden="true"><rect x="8.8" y="218.2" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -171.45 428.7256)" width="742.3" height="364.9"/><rect x="156.9" y="1417.3" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -1030.6389 960.5798)" width="742.3" height="364.9"/><rect x="82.9" y="818.4" transform="matrix(0.6503 -0.7597 0.7597 0.6503 -601.5629 694.9067)" width="742.3" height="364.9"/></svg>`;
@@ -53,6 +63,12 @@ const STATES = {
   "players-open": { playersOpen: true },
   "rename-taken": { renameError: { index: 2, value: "Lou", text: "Lou existe déjà&nbsp;: choisis un autre pseudo." } },
   "no-result": { games: [], count: 47, active: ["players", "Coop en LAN", "Écran partagé"], noResult: true },
+  // Step 9a.
+  filtered: { active: ["Coop", "Action"] },
+  "menu-open": { menuOpen: true },
+  "renames-one": { renames: 1 },
+  "renames-none": { renames: 0 },
+  "rename-me-taken": { renames: 2, renameMe: { value: "Lou", text: "Lou existe déjà&nbsp;: choisis un autre pseudo." } },
 };
 const state = STATES[params.get("state")] || {};
 
@@ -70,15 +86,25 @@ function toast(text) {
     <button type="button" class="app-toast-close" aria-label="Fermer le message">${icon('<path d="M6 6l12 12M18 6L6 18"/>', 18, 2.4)}</button></div></div>` : "";
 }
 
+// Step 9a: the nickname on the right, « admin » under it as « facultatif » under « Joueurs max »;
+// a tap opens the menu: « Réglages », « Vider le sac » in red for the admin, « Se déconnecter ».
+function menuItems() {
+  const admin = view.as === "admin";
+  return `<button type="button" class="app-menu-item" role="menuitem" data-open="${admin ? "settings" : "me"}">Réglages</button>
+    ${admin ? `<button type="button" class="app-menu-item is-danger" role="menuitem" data-open="empty">Vider le sac</button>` : ""}
+    <button type="button" class="app-menu-item is-quiet" role="menuitem" data-close-menu>Se déconnecter</button>`;
+}
+
 function header() {
   const admin = view.as === "admin";
   return `<header class="app-header">
     <div class="app-header-in">
       <span class="app-brand">${logo(28)}<span>Idealan</span></span>
-      <div class="app-header-actions">
-        ${admin ? `<button type="button" class="app-button is-ghost" data-open="settings">Réglages</button><button type="button" class="app-button is-ghost" data-open="empty">Vider le sac</button>` : ""}
-        <span class="app-nick">${viewer}${admin ? ` <span class="app-role">admin</span>` : ""}</span>
-        <button type="button" class="app-button is-ghost is-small">Se déconnecter</button>
+      <div class="app-user">
+        <button type="button" class="app-user-button" aria-haspopup="menu" aria-expanded="false" aria-controls="user-menu" data-menu>
+          <span class="app-user-text"><span class="app-nick">${viewer}</span>${admin ? `<small class="app-role">admin</small>` : ""}</span>${ICON.chevron(16)}
+        </button>
+        <div class="app-menu" id="user-menu" role="menu" hidden>${menuItems()}</div>
       </div>
     </div>
     ${toast(state.toast)}
@@ -109,20 +135,35 @@ function playersPopover() {
       <output class="app-stepper-value">9</output>
       <button type="button" class="app-button is-ghost" data-step="1" aria-label="Un joueur de plus">+</button>
     </div>
-    <p class="app-popover-note">9 joueurs dans le sac. Les jeux sans nombre restent affichés.</p>
+    <p class="app-popover-note">9 joueurs dans le sac, ${MAX_PLAYERS} au plus. Les jeux sans nombre restent affichés.</p>
     <button type="button" class="app-button is-ghost is-small" data-clear-players>Retirer ce filtre</button>
   </div>`;
+}
+
+// Step 9a: « 47 jeux · 3 places libres », then « 5/47 jeux » once a filter is on.
+function countText(shown, total, filtered) {
+  const games = n => (n > 1 ? "jeux" : "jeu");
+  const free = 50 - total;
+  return filtered
+    ? `<strong>${shown}</strong>/${total} jeux <span>· filtres actifs</span>`
+    : `<strong>${total}</strong> ${games(total)} <span>· ${free > 1 ? `${free} places libres` : free === 1 ? "1 place libre" : "sac plein"}</span>`;
+}
+
+// Whether a game passes the filters pressed: every tag, and « Jouable à N ».
+function passes(game, active, players) {
+  return [...active].every(tag => tag === "players" ? game.players === null || game.players >= players : game.categories.includes(tag));
 }
 
 function bar() {
   const active = new Set(state.active || (state.playersOpen ? ["players"] : []));
   const count = state.count ?? BAG_COUNT;
+  const shown = (state.games || GAMES).filter(game => passes(game, active, 9)).length;
   const text = state.noResult
-    ? `<strong>0</strong> jeu sur ${count} <span>· filtres actifs</span>`
-    : `<strong>${count}</strong> / 50 jeux <span>· triés par score</span>`;
+    ? countText(0, count, true)
+    : countText(shown, count, active.size > 0);
   const chips = count === 0 ? "" : `<div class="app-chips" role="group" aria-label="Filtres">
       <button type="button" class="app-chip is-players" aria-pressed="${active.has("players")}" aria-expanded="${!!state.playersOpen}">${ICON.people(16)}Jouable à <span class="app-players-n">9</span>${ICON.chevron(14)}</button>
-      ${FILTERS.map(f => `<button type="button" class="app-chip" aria-pressed="${active.has(f)}">${f}</button>`).join("")}
+      ${FILTERS.map(f => `<button type="button" class="app-chip" data-tag="${f}" aria-pressed="${active.has(f)}">${f}</button>`).join("")}
     </div>`;
   return `<div class="app-bar">
     <p class="app-count">${text}</p>
@@ -138,18 +179,20 @@ function cover(game, missing) {
     : `<div class="app-cover"><img src="${COVER(game.appid)}" alt="" loading="lazy" width="460" height="215" onerror="this.parentElement.classList.add('is-missing');this.parentElement.innerHTML='<span>${escape(game.name).replace(/'/g, "\\'")}</span>'"></div>`;
 }
 
+// Step 9a: the Steam page opens in a new tab from the whole card (the link of the title stretched
+// over it, the buttons above it); « Retirer » becomes a cross on the cover; the
+// categories leave the card (the filters keep them); « Ajouté par » in blue under the title.
 function card(game, index) {
   const vote = voteOf(game);
   const canRemove = vote === "own" || view.as === "admin";
   return `<li class="app-card" data-index="${index}">
     ${cover(game, state.noCover && index === 0)}
+    ${canRemove ? `<button type="button" class="app-remove-x" aria-label="Retirer ${escape(game.name)}">${ICON.close(18)}</button>` : ""}
     <div class="app-card-body">
       <div class="app-card-info">
-        <h3 class="app-card-title">${escape(game.name)}</h3>
-        <p class="app-tags">${game.categories.join(" · ")}</p>
+        <h3 class="app-card-title"><a class="app-card-link" href="${steamPage(game)}" target="_blank" rel="noopener noreferrer">${escape(game.name)}<span class="app-visually-hidden"> (Steam, nouvel onglet)</span></a></h3>
+        <p class="app-by">Ajouté par ${vote === "own" ? "toi" : game.by}</p>
         ${game.players ? `<p class="app-players-line">${ICON.people(15)}Jusqu’à ${game.players} joueurs</p>` : ""}
-        <p class="app-by">ajouté par ${vote === "own" ? "toi" : game.by}</p>
-        ${canRemove ? `<button type="button" class="app-button is-ghost is-small app-remove">Retirer</button>` : ""}
       </div>
       <div class="app-votes" data-vote="${vote || ""}">
         <button type="button" class="app-vote is-up" aria-label="Pour" aria-pressed="${vote === "up" || vote === "own"}" ${vote === "own" ? "disabled" : ""}>${ICON.up(22)}</button>
@@ -188,6 +231,7 @@ function bag() {
       ${bar()}
       ${games.length ? `<ul class="app-games">${games.map(card).join("")}</ul>
       <p class="app-more">… et ${BAG_COUNT - GAMES.length} autres jeux dans le vrai sac</p>` : emptyBox()}
+      <p class="app-empty-filtered" hidden>Aucun jeu ne correspond à ces filtres.</p>
     </main>
     ${footer()}
   </div>`;
@@ -234,13 +278,13 @@ function dialog(content, tall) {
 
 // arm: the action button fills in blue before it can be clicked (asked by the owner for removing a game,
 // kept for deleting a player and emptying the bag).
-function confirmDialog(title, name, text, action, arm) {
+function confirmDialog(title, name, text, action, arm, danger) {
   return dialog(`<h2 id="dialog-title" class="app-dialog-title">${title}</h2>
     ${name ? `<p class="app-dialog-name">${escape(name)}</p>` : ""}
     <p class="app-dialog-text">${text}</p>
     <div class="app-dialog-actions">
       <button type="button" class="app-button is-ghost" data-close>Annuler</button>
-      <button type="button" class="app-button is-primary${arm ? " is-arming" : ""}" data-close ${arm ? 'data-arm aria-disabled="true"' : ""}>${action}</button>
+      <button type="button" class="app-button is-primary${danger ? " is-danger" : ""}${arm ? " is-arming" : ""}" data-close ${arm ? 'data-arm aria-disabled="true"' : ""}>${action}</button>
     </div>`);
 }
 
@@ -249,7 +293,51 @@ function confirmDialog(title, name, text, action, arm) {
 // counts (chosen by the owner on 2026-11-02, docs/branding.md).
 function playerStatus(status) {
   if (!status) return "";
-  return `<span class="app-player-status is-${status}">${status === "locked" ? "verrouillé" : "code à choisir"}</span>`;
+  // Step 9a: a red padlock for a locked nickname (asked by the owner on 2026-11-02).
+  if (status === "locked") return `<span class="app-player-lock" role="img" aria-label="verrouillé" title="verrouillé">${ICON.lock(16)}</span>`;
+  return `<span class="app-player-status is-${status}">code à choisir</span>`;
+}
+
+// Step 9a: the renames, newest first. A rename by the admin is logged but doesn't count among the
+// friend's 3.
+const RENAME_LOG = [
+  { nick: "Pixel", from: "PixL", at: "aujourd’hui à 18&nbsp;h&nbsp;02", by: "Pixel" },
+  { nick: "Zed", from: "Zedd", at: "aujourd’hui à 14&nbsp;h&nbsp;30", by: "Sylent" },
+  { nick: "Mira", from: "Mirabelle", at: "hier à 22&nbsp;h&nbsp;41", by: "Mira" },
+  { nick: "Pixel", from: "Pix", at: "hier à 21&nbsp;h&nbsp;15", by: "Pixel" },
+];
+const renamesOf = nick => RENAME_LOG.filter(entry => entry.nick === nick);
+
+// « Redonner les 3 » next to « Renommer », once the friend used one of their renames (asked by
+// the owner on 2026-11-02).
+const usedRenames = nick => renamesOf(nick).filter(entry => entry.by === nick).length;
+function renameJournal() {
+  return `<details class="app-journal" open><summary>Renommages <span>${RENAME_LOG.length}</span></summary>
+    <ol>${RENAME_LOG.map((entry, index) => `<li><span class="app-journal-names">${entry.from} → <strong>${entry.nick}</strong></span>
+      <span class="app-journal-when">${entry.at} · ${entry.by === entry.nick ? `${RENAME_LOG.slice(index).filter(e => e.nick === entry.nick && e.by === entry.nick).length}/${RENAMES}` : "par toi, non compté"}</span></li>`).join("")}</ol>
+  </details>`;
+}
+
+// Step 9a: the settings of a friend: their nickname, renamed 3 times at most.
+function meDialog() {
+  const left = state.renames ?? RENAMES;
+  const failed = state.renameMe;
+  const none = left === 0;
+  // Three diamonds, one per rename left (chosen by the owner on 2026-11-02).
+  const remaining = `<span class="app-renames" role="img" aria-label="${left} renommage${left > 1 ? "s" : ""} sur ${RENAMES}">${Array.from({ length: RENAMES }, (_, i) => `<span class="app-pip${i < left ? " is-on" : ""}"></span>`).join("")}<span aria-hidden="true">${none ? "plus de renommage" : `${left} restant${left > 1 ? "s" : ""}`}</span></span>`;
+  return dialog(`<div class="app-dialog-head"><h2 id="dialog-title" class="app-dialog-title">Réglages</h2>
+      <button type="button" class="app-button is-ghost is-small" data-close>Fermer</button></div>
+    <div class="app-me">
+      <label class="app-field${failed ? " is-invalid" : ""}"><span class="app-me-label">Ton pseudo ${remaining}</span>
+        <input type="text" value="${failed ? failed.value : viewer}" ${none ? "disabled" : ""} ${failed ? 'aria-invalid="true"' : ""}>
+        ${failed ? `<small class="app-message is-error">${failed.text}</small>` : `<small>3 à 16 lettres ou chiffres, sans accents</small>`}</label>
+      ${none ? `<p class="app-dialog-note">Tu as utilisé tes ${RENAMES} renommages&nbsp;: pour changer encore, demande à l’admin.</p>` : ""}
+      <p class="app-dialog-note">Tes jeux et tes votes suivent ton nouveau pseudo.</p>
+    </div>
+    <div class="app-dialog-actions">
+      <button type="button" class="app-button is-ghost" data-close>Annuler</button>
+      <button type="button" class="app-button is-primary" ${none ? "disabled" : ""} data-rename-me>Renommer</button>
+    </div>`);
 }
 
 function settingsDialog() {
@@ -261,12 +349,13 @@ function settingsDialog() {
       const error = failed && failed.index === i;
       return `<li class="app-player${error ? " is-invalid" : ""}">
       <input class="app-player-name" value="${error ? failed.value : nick}" aria-label="Pseudo de ${nick}"${error ? ' aria-invalid="true" aria-describedby="rename-error"' : ""}>
-      <button type="button" class="app-button is-ghost is-small app-player-rename">Renommer</button>
+      <div class="app-player-actions"><button type="button" class="app-button is-ghost is-small app-player-rename">Renommer</button>${usedRenames(nick) ? `<button type="button" class="app-button is-ghost is-small app-player-give" data-give aria-label="Redonner ses ${RENAMES} renommages à ${nick}">Redonner les ${RENAMES}</button>` : ""}</div>
       <span class="app-player-stats"><strong>${votes}</strong> votes · <strong>${games}</strong> jeux${playerStatus(status)}</span>
       ${nick === viewer ? `<span class="app-player-self">toi</span>` : `<button type="button" class="app-button is-ghost is-small app-player-reset">Réinitialiser le code perso</button><button type="button" class="app-button is-ghost is-small app-player-delete" data-delete="${nick}" data-games="${games}" data-votes="${votes}">Supprimer</button>`}
       ${error ? `<p class="app-player-error" id="rename-error">${failed.text}</p>` : ""}
     </li>`;
-    }).join("")}</ul>`, true);
+    }).join("")}</ul>
+    ${renameJournal()}`, true);
 }
 
 const KEPT = new Set([0, 1, 2, 4, 7]);
@@ -284,16 +373,17 @@ function emptyDialog() {
     <p class="app-more">… et ${BAG_COUNT - GAMES.length} autres jeux</p>
     <div class="app-dialog-bar">
       <p><strong class="app-kept">${KEPT.size}</strong> gardés · <span class="app-removed">${removed}</span> retirés</p>
-      <button type="button" class="app-button is-primary" data-open="confirm-empty"><span>Vider (<span class="app-removed">${removed}</span> jeux)</span></button>
+      <button type="button" class="app-button is-primary is-danger" data-open="confirm-empty"><span>Vider (<span class="app-removed">${removed}</span> jeux)</span></button>
     </div>`, true);
 }
 
 const PANELS = {
   remove: () => confirmDialog("Retirer ce jeu du sac&nbsp;?", GAMES[1].name, `Il a ${GAMES[1].up.length + GAMES[1].down.length} votes.`, "Retirer", true),
   settings: settingsDialog,
+  me: meDialog,
   empty: emptyDialog,
   delete: (nick = "Nova2", games = 3, votes = 12) => confirmDialog("Supprimer ce joueur&nbsp;?", nick, `Ses ${games} jeux et ses ${votes} votes partent avec lui.`, "Supprimer", true),
-  "confirm-empty": () => confirmDialog("Vider le sac&nbsp;?", "", `${document.querySelector(".app-removed")?.textContent || BAG_COUNT - KEPT.size} jeux seront retirés. Cette action est définitive.`, "Vider", true),
+  "confirm-empty": () => confirmDialog("Vider le sac&nbsp;?", "", `${document.querySelector(".app-removed")?.textContent || BAG_COUNT - KEPT.size} jeux seront retirés. Cette action est définitive.`, "Vider", true, true),
 };
 
 function logoBoard() {
@@ -384,10 +474,72 @@ root.addEventListener("change", event => {
   if (event.target.matches("[data-keep]")) countKept();
 });
 
+// Step 9a: the filters hide the sample cards they leave out, and the count follows.
+function refilter() {
+  const active = new Set([...root.querySelectorAll(".app-chip[aria-pressed='true']")].map(chip => chip.dataset.tag || "players"));
+  const players = Number(root.querySelector(".app-players-n")?.textContent || 9);
+  let shown = 0;
+  root.querySelectorAll(".app-card").forEach(cardElement => {
+    const pass = passes(GAMES[Number(cardElement.dataset.index)], active, players);
+    cardElement.hidden = !pass;
+    if (pass) shown++;
+  });
+  const total = state.count ?? BAG_COUNT;
+  root.querySelector(".app-count").innerHTML = countText(shown, total, active.size > 0);
+  const more = root.querySelector(".app-more");
+  if (more) more.hidden = active.size > 0;
+  const none = root.querySelector(".app-empty-filtered");
+  if (none) none.hidden = !(active.size > 0 && shown === 0);
+}
+
+// Step 9a: the menu of the nickname, a list under it.
+const menu = () => root.querySelector("#user-menu");
+function closeMenu() {
+  const list = menu();
+  if (!list) return;
+  list.hidden = true;
+  root.querySelector("[data-menu]").setAttribute("aria-expanded", "false");
+}
+function toggleMenu() {
+  const button = root.querySelector("[data-menu]");
+  const open = button.getAttribute("aria-expanded") === "true";
+  closeMenu();
+  if (open) return;
+  button.setAttribute("aria-expanded", "true");
+  menu().hidden = false;
+  menu().querySelector("button").focus({ preventScroll: true });
+}
+
 root.addEventListener("click", event => {
   const target = event.target;
+  if (target.closest("[data-menu]")) {
+    toggleMenu();
+    return;
+  }
+  if (target.closest(".app-menu-item")) {
+    closeMenu();
+    if (target.closest("[data-open]")) openPanel(target.closest("[data-open]").dataset.open);
+    return;
+  }
+  if (!target.closest(".app-menu")) closeMenu();
+  const give = target.closest("[data-give]");
+  if (give) {
+    give.remove();
+    return;
+  }
+  if (target.closest("[data-rename-me]")) {
+    state.renames = Math.max(0, (state.renames ?? RENAMES) - 1);
+    delete state.renameMe;
+    target.closest(".app-overlay").remove();
+    openPanel("me");
+    return;
+  }
   const cardElement = target.closest(".app-card");
   const game = cardElement && GAMES[Number(cardElement.dataset.index)];
+  if (target.closest(".app-remove-x") && game) {
+    openPanel("remove");
+    return;
+  }
   const vote = target.closest(".app-vote");
   if (vote && game) {
     const current = voteOf(game);
@@ -408,14 +560,18 @@ root.addEventListener("click", event => {
   if (chip) {
     if (chip.classList.contains("is-players")) togglePlayers(chip);
     else chip.setAttribute("aria-pressed", String(chip.getAttribute("aria-pressed") !== "true"));
+    refilter();
     return;
   }
   const step = target.closest("[data-step]");
   if (step) {
     const output = root.querySelector(".app-stepper-value");
-    const next = Math.min(16, Math.max(2, Number(output.textContent) + Number(step.dataset.step)));
+    const next = Math.min(MAX_PLAYERS, Math.max(1, Number(output.textContent) + Number(step.dataset.step)));
     output.textContent = next;
     root.querySelector(".app-players-n").textContent = next;
+    root.querySelector('[data-step="1"]').setAttribute("aria-disabled", String(next >= MAX_PLAYERS));
+    root.querySelector('[data-step="-1"]').setAttribute("aria-disabled", String(next <= 1));
+    refilter();
     return;
   }
   if (target.closest("[data-clear-players]")) {
@@ -423,14 +579,11 @@ root.addEventListener("click", event => {
     const players = root.querySelector(".app-chip.is-players");
     players.setAttribute("aria-pressed", "false");
     players.setAttribute("aria-expanded", "false");
+    refilter();
     return;
   }
   if (target.closest("[data-clear-filters]")) {
     root.querySelectorAll(".app-chip").forEach(c => c.setAttribute("aria-pressed", "false"));
-    return;
-  }
-  if (target.closest(".app-remove") && game) {
-    openPanel("remove");
     return;
   }
   const remove = target.closest("[data-delete]");
@@ -459,6 +612,11 @@ root.addEventListener("click", event => {
 document.addEventListener("keydown", event => {
   if (event.key !== "Escape") return;
   closeVoters();
+  if (menu() && !menu().hidden) {
+    closeMenu();
+    root.querySelector("[data-menu]").focus();
+    return;
+  }
   const overlays = document.querySelectorAll(".app-overlay");
   overlays[overlays.length - 1]?.remove();
 });
@@ -503,3 +661,5 @@ if (!reducedMotion && matchMedia("(hover: hover)").matches) {
 // A panel asked by the address, for the viewer.
 if (view.panel === "voters") root.querySelector(".app-card .app-score")?.click();
 else if (view.panel in PANELS) openPanel(view.panel);
+if (view.screen === "bag" && root.querySelector(".app-card")) refilter();
+if (state.menuOpen) toggleMenu();
