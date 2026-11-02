@@ -59,6 +59,7 @@
   --signal: #2e6bff; /* white on it 4.5:1; on --bg 4.5:1 */
   --on-signal: #ffffff;
   --signal-text: #86a8ff; /* small blue text: 8.8:1 on --bg */
+  --signal-label: #437aff; /* the electric blue of « Ajouté par » on a card, lightened by 10 % to pass AA: 5.1:1 on --surface, 4.8:1 under the pointer */
   --signal-tint: color-mix(
     in srgb,
     var(--signal) 14%,

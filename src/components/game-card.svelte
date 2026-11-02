@@ -135,11 +135,8 @@
           <span class="visually-hidden">{fr.card.steamPage}</span></a
         >
       </h3>
-      <p class="by">
-        {vote === "own"
-          ? fr.card.addedByMe
-          : format(fr.card.addedBy, { nickname: adder })}
-      </p>
+      <!-- The nickname on one's own games too: « toi » is ambiguous with a friend named Toi. -->
+      <p class="by">{format(fr.card.addedBy, { nickname: adder })}</p>
       {#if game.maxPlayers !== null}
         <p class="players">
           <Icon name="people" size={15} />{game.maxPlayers === 1
@@ -351,7 +348,7 @@
 
   /* « Ajouté par » in electric blue, right under the name (step 9a). */
   .by {
-    color: var(--signal);
+    color: var(--signal-label);
     font-weight: var(--weight-bold);
   }
 
