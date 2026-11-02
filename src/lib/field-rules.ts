@@ -22,10 +22,11 @@ export const isPersonalCode = (text: string) =>
   PERSONAL_CODE_PATTERN.test(text);
 
 export const MIN_PLAYERS = 1;
-export const MAX_PLAYERS = 99;
+// Lowered from 99 in step 9b: a game stored before keeps its number, read by the bag as it is.
+export const MAX_PLAYERS = 25;
 
 // The « Joueurs max » of a game: null when left empty, the number when it is a whole number from
-// 1 to 99 (typed as text or given as a number), "invalid" otherwise.
+// 1 to 25 (typed as text or given as a number), "invalid" otherwise.
 export const readMaxPlayers = (value: unknown): number | null | "invalid" => {
   if (value === null || value === undefined) return null;
   if (typeof value === "string") {

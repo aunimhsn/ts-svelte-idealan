@@ -1,6 +1,7 @@
 <!-- The confirmation before what can't be undone (specs.md, Confirmation): a question, the name on
-     one line, the numbers at stake, « Annuler » or the action. The action fills in blue for 2
-     seconds before it can be clicked, so that a quick double tap never confirms. A sheet from the
+     one line, the numbers at stake, « Annuler » or the action. The action fills in blue (in red
+     for emptying the bag) for 2 seconds before it can be clicked, so that a quick double tap never
+     confirms. A sheet from the
      bottom of the screen on a phone, a window in the middle on a PC, over the dimmed bag; « Annuler »,
      « Échap » or a click on the dimmed bag closes it. A native <dialog>: it keeps the keyboard focus
      inside it, and gives it back to the button that opened it. -->
@@ -12,6 +13,7 @@
     name = "",
     text,
     action,
+    danger = false,
     onconfirm,
     onclose,
   }: {
@@ -19,6 +21,8 @@
     name?: string;
     text: string;
     action: string;
+    // Red rather than blue: emptying the bag.
+    danger?: boolean;
     onconfirm: () => void;
     onclose: () => void;
   } = $props();
@@ -75,6 +79,7 @@
       <button
         type="button"
         class="button is-primary"
+        class:is-danger={danger}
         class:is-arming={!armed}
         aria-disabled={!armed}
         onclick={confirm}
@@ -164,6 +169,16 @@
     transform: scaleX(0);
     transform-origin: left;
     animation: arm var(--duration-arm) linear forwards;
+  }
+
+  .button.is-danger.is-arming {
+    border-color: var(--error-text);
+    background: transparent;
+    color: var(--text);
+  }
+
+  .button.is-danger.is-arming::before {
+    background: var(--error);
   }
 
   @keyframes arm {

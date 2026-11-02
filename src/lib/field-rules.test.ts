@@ -53,16 +53,29 @@ describe("readMaxPlayers", () => {
     ["8", 8],
     [" 12 ", 12],
     [1, 1],
-    [99, 99],
-    ["99", 99],
+    [25, 25],
+    ["25", 25],
   ])("reads %j as %j", (value, expected) => {
     expect(readMaxPlayers(value)).toBe(expected);
   });
 
-  it.each([0, 100, 2.5, -1, "0", "100", "8.0", "huit", "1e1", true, {}, []])(
-    "refuses %j",
-    (value) => {
-      expect(readMaxPlayers(value)).toBe("invalid");
-    },
-  );
+  it.each([
+    0,
+    26,
+    99,
+    2.5,
+    -1,
+    "0",
+    "26",
+    "99",
+    "100",
+    "8.0",
+    "huit",
+    "1e1",
+    true,
+    {},
+    [],
+  ])("refuses %j", (value) => {
+    expect(readMaxPlayers(value)).toBe("invalid");
+  });
 });

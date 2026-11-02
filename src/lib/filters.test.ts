@@ -5,8 +5,9 @@ import {
   clampPlayers,
   isFiltering,
   passes,
+  freeOf,
+  gamesWord,
   playersOf,
-  shownOf,
   tagChoices,
 } from "./filters";
 
@@ -75,25 +76,34 @@ describe("isFiltering", () => {
 });
 
 describe("clampPlayers", () => {
-  it("keeps N from 1 to 99", () => {
+  it("keeps N from 1 to 25", () => {
     expect(clampPlayers(0)).toBe(1);
     expect(clampPlayers(9)).toBe(9);
-    expect(clampPlayers(100)).toBe(99);
+    expect(clampPlayers(26)).toBe(25);
   });
 });
 
 describe("playersOf", () => {
   it("follows the bag until the friend chooses N", () => {
     expect(playersOf(null, 9)).toBe(9);
-    expect(playersOf(null, 120)).toBe(99);
+    expect(playersOf(null, 40)).toBe(25);
     expect(playersOf(5, 9)).toBe(5);
   });
 });
 
-describe("shownOf", () => {
+describe("gamesWord", () => {
   it("keeps the singular for 0 and 1 game", () => {
-    expect(shownOf(0, 47)).toBe("jeu sur 47");
-    expect(shownOf(1, 47)).toBe("jeu sur 47");
-    expect(shownOf(2, 47)).toBe("jeux sur 47");
+    expect(gamesWord(0)).toBe("jeu");
+    expect(gamesWord(1)).toBe("jeu");
+    expect(gamesWord(2)).toBe("jeux");
+  });
+});
+
+describe("freeOf", () => {
+  it("counts the free places until the bag is full", () => {
+    expect(freeOf(0, 50)).toBe("· 50 places libres");
+    expect(freeOf(47, 50)).toBe("· 3 places libres");
+    expect(freeOf(49, 50)).toBe("· 1 place libre");
+    expect(freeOf(50, 50)).toBe("· sac plein");
   });
 });

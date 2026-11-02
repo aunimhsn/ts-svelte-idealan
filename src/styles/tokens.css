@@ -135,11 +135,10 @@
   --shadow-pop: 0 12px 32px rgb(0 0 0 / 60%); /* bubbles and small windows */
   --glass-blur: 8px;
 
-  /* Shapes: sharp corners, the covers chamfered at their top right corner. */
+  /* Shapes: sharp corners. */
   --radius: 0;
   --radius-pill: 999px; /* the handle of a sheet */
   --radius-icon: 20%; /* the square of the favicon */
-  --chamfer: 18px;
   --hairline: 1px; /* every border */
   --stroke: 2px; /* the focus ring, the spinner, the lines of the floor */
   --edge: 3px; /* the blue edge of the banner */

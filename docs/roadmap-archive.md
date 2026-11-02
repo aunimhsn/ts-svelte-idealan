@@ -2,6 +2,16 @@
 
 The detail of the steps of [roadmap.md](../roadmap.md) whose pull request is merged, the most recent first. `roadmap.md` keeps one line per step done.
 
+## 9a. Mock-up and specifications of the polish
+
+Merged on 2026-11-02 in [#19](https://github.com/aunimhsn/ts-svelte-idealan/pull/19). Tools: mock-up, specifications, structure.
+
+- The cards without their categories nor their cut corner, « Ajouté par » in electric blue under the title, the cross of « Retirer » on the cover, the whole card opening the Steam page in a new tab.
+- The count of the bar with the free places (« 47 jeux · 3 places libres »), « 5/47 jeux · filtres actifs » with a filter on; « Jouable à » and « Joueurs max » up to 25.
+- The nickname on the right with « admin » under it, its menu: « Réglages », « Vider le sac » in red, « Se déconnecter »; emptying the bag red all the way.
+- A friend renames themself 3 times at most, the admin gives the renames back and reads their journal; the renames in « Stored data » of `specs.md`.
+- The decisions in `docs/branding.md`, the options set aside in its « Set aside » list.
+
 ## 8. Launch
 
 Merged on 2026-11-02 in [#17](https://github.com/aunimhsn/ts-svelte-idealan/pull/17). Tools: launch.

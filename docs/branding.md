@@ -124,7 +124,7 @@ One size per role:
 - `--content` 1600 px: the width of the header and of the bag; the welcome is a column of `--width-welcome` 420 px.
 - Panels: `--width-dialog` 520 px, the tall ones (settings, emptying) `--width-dialog-tall` 1080 px (at most 90 % of the screen); the bubbles (who voted, « Jouable à ») `--width-bubble` 260 px.
 - Touch targets: `--tap` 44 px (fields, buttons, votes on a phone, the cross of the strip), `--tap-small` 36 px (chips, small buttons, votes on a PC).
-- Sharp corners everywhere (`--radius` 0). Since step 9a (2026-11-02), the covers lose their chamfer, the cut corner at their top right, where the cross of « Retirer » now sits; `--chamfer` goes with it in step 9b. Exceptions: the handle of a sheet (`--radius-pill`), the square of the favicon rounded by 20 % (`--radius-icon`).
+- Sharp corners everywhere (`--radius` 0). Since step 9a (2026-11-02), the covers lose their chamfer, the cut corner at their top right, where the cross of « Retirer » now sits; `--chamfer` went with it in step 9b. Exceptions: the handle of a sheet (`--radius-pill`), the square of the favicon rounded by 20 % (`--radius-icon`).
 - Borders of `--hairline` 1 px; `--stroke` 2 px for the focus ring, the spinner and the lines of the floor; `--edge` 3 px for the blue edge of the banner.
 - Layers, from the back: the floor, the content, the header, the bubble of the votes, « Jouable à », the strip of the errors, the card whose bubble is open, the panels, the scanlines over everything (`--layer-*`).
 

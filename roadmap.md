@@ -34,9 +34,9 @@ The usual steps of the first cycle of a small application; adapt them at the set
 - [x] **7. Moderation** ([#15](https://github.com/aunimhsn/ts-svelte-idealan/pull/15), [#16](https://github.com/aunimhsn/ts-svelte-idealan/pull/16)).
 - [x] **8. Launch** ([#17](https://github.com/aunimhsn/ts-svelte-idealan/pull/17)).
 - [ ] **9. Polish**, the feedback of the owner and the friends after the launch, in three sub-steps agreed with the owner on 2026-11-02 (one production deploy for each of 9b and 9c, previews free):
-  - [x] **9a. Mock-up and specifications** ([#19](https://github.com/aunimhsn/ts-svelte-idealan/pull/19); mock-up, specifications, structure; documentation only): the cards without their categories, « Ajouté par » in blue under the title, the cross of « Retirer » on the cover, the Steam page in a new tab; the count of the filters (« 5/47 »), « Jouable à » and « Joueurs max » up to 25; the nickname on the right with « admin » under it, its menu (« Réglages », « Vider le sac » in red, « Se déconnecter »); a friend renames themself 3 times at most (a rename by the admin doesn't count), and the admin sees the renames in the settings. The decisions in `docs/branding.md`, the renames in « Stored data » of `specs.md`.
-  - [ ] **9b. The polish of the bag** (build): the cards, the count and the limit of 25, the menu of the nickname.
-  - [ ] **9c. Renaming oneself** (build): the friend's « Réglages », the function, the count of renames and their log in the bag, the log in the admin's settings.
+  - [x] **9a. Mock-up and specifications** ([#19](https://github.com/aunimhsn/ts-svelte-idealan/pull/19)).
+  - [x] **9b. The polish of the bag** (build): the cards, the count and the limit of 25, the menu of the nickname; the menu of a friend has only « Se déconnecter » until 9c brings their « Réglages ».
+  - [ ] **9c. Renaming oneself** (build): the friend's « Réglages » in their menu, the function, the count of renames and their log in the bag, the log in the admin's settings with « Redonner les 3 », the red padlock and « Supprimer » in red.
 - [ ] **10. Retrospective**: after the LAN, the friends' feedback in the backlog, the lessons in `process.md`, the memory moved to the files, and the template `ts-svelte-dynamic-website-template` made from this project.
 
 The steps may be split into sub-steps when a pull request grows too large. When no step is left, Claude Code proposes the next items of the backlog to the owner.

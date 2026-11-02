@@ -58,3 +58,7 @@ export const readSteamLink = (text: string): SteamLinkResult => {
   }
   return { ok: false, error: "not-a-steam-link" };
 };
+
+// The Steam page of a game, which its card opens in a new tab.
+export const steamPage = (appid: number) =>
+  `https://store.steampowered.com/app/${appid}/`;

@@ -36,25 +36,34 @@ const screens = [
     path: "/",
     kept,
     bag: "answers",
-    click: "[aria-controls$='-players']",
+    clicks: ["[aria-controls$='-players']"],
     opens: "[aria-labelledby$='-players-title']",
   },
-  // The settings of the admin, opened from the header.
+  // The menu of the nickname, a list under it.
+  {
+    name: "the menu of the nickname",
+    path: "/",
+    kept,
+    bag: "answers",
+    clicks: ["header [aria-controls$='-menu']"],
+    opens: "header [id$='-menu']",
+  },
+  // The settings of the admin, opened from the menu of the nickname.
   {
     name: "the settings",
     path: "/",
     kept,
     bag: "answers",
-    click: "header .open-settings",
+    clicks: ["header [aria-controls$='-menu']", "header .open-settings"],
     opens: "dialog[open]",
   },
-  // Emptying the bag, opened from the header.
+  // Emptying the bag, opened from the menu of the nickname.
   {
     name: "emptying the bag",
     path: "/",
     kept,
     bag: "answers",
-    click: "header .open-empty",
+    clicks: ["header [aria-controls$='-menu']", "header .open-empty"],
     opens: "dialog[open]",
   },
   { name: "the bag without the server", path: "/", kept, bag: "down" },
@@ -216,8 +225,8 @@ const check = async (width, screen) => {
       errors.push(`${where}: the screen expected didn't show`);
       return;
     }
-    if (screen.click) {
-      await page.locator(screen.click).click();
+    if (screen.clicks) {
+      for (const click of screen.clicks) await page.locator(click).click();
       if (!(await page.locator(screen.opens).isVisible())) {
         errors.push(`${where}: the click didn't open what it should`);
         return;
