@@ -19,6 +19,7 @@ const game: BagGame = {
 const viewOf = (games: BagGame[] = []): BagView => ({
   role: "member",
   me: { id: "j1", nickname: "Nova" },
+  renames: 0,
   players: [{ id: "j1", nickname: "Nova" }],
   games,
 });
@@ -452,6 +453,58 @@ describe("AppState", () => {
     ]);
   });
 
+  describe("the settings of a friend", () => {
+    it("renames the friend, who keeps their session under the new nickname", async () => {
+      const renamed = {
+        ...viewOf(),
+        me: { id: "j1", nickname: "Pixel" },
+        renames: 1,
+      };
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf()),
+        "/api/rename-self": () => Response.json(renamed),
+      });
+      const { storage, kept } = memoryStorage(session);
+      const app = new AppState(api, storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.renameSelf(" pixel ")).toBe(true);
+      expect(calls.at(-1)).toMatchObject({
+        path: "/api/rename-self",
+        body: { nickname: "Pixel" },
+      });
+      expect(app.view?.renames).toBe(1);
+      expect(kept()).toEqual({ ...session, nickname: "Pixel" });
+    });
+
+    it("leaves the same nickname as it is, without asking the server", async () => {
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf()),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.renameSelf("Nova")).toBe(true);
+      expect(await app.renameSelf("Kr ak")).toBe(false);
+      expect(app.settingsError).toEqual({ id: "j1", code: "invalid-nickname" });
+      expect(calls.map((call) => call.path)).toEqual(["/api/get-bag"]);
+    });
+
+    it("shows a refusal under the field, not in the strip", async () => {
+      const { api } = fakeServer({
+        "/api/get-bag": () => Response.json(viewOf()),
+        "/api/rename-self": refuse("no-renames-left", 409),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.renameSelf("Pixel")).toBe(false);
+      expect(app.settingsError).toEqual({
+        id: "j1",
+        code: "no-renames-left",
+        nickname: "Pixel",
+      });
+      expect(app.toast).toBeNull();
+    });
+  });
+
   describe("the settings of the admin", () => {
     const adminView = (accounts?: BagView["accounts"]): BagView => ({
       ...viewOf(),
@@ -463,8 +516,8 @@ describe("AppState", () => {
       ...(accounts ? { accounts } : {}),
     });
     const accounts = [
-      { id: "j1", nickname: "Nova", state: "active" as const },
-      { id: "j2", nickname: "Krak", state: "locked" as const },
+      { id: "j1", nickname: "Nova", state: "active" as const, renames: 0 },
+      { id: "j2", nickname: "Krak", state: "locked" as const, renames: 2 },
     ];
 
     it("reads the accounts, and keeps them through the reloads of the bag", async () => {
@@ -478,6 +531,33 @@ describe("AppState", () => {
       expect(app.accounts).toEqual(accounts);
       await app.refresh();
       expect(app.accounts).toEqual(accounts);
+    });
+
+    it("gives a friend their renames back, and reads the journal", async () => {
+      const journal = [
+        {
+          id: "j2",
+          from: "Krak",
+          to: "Zed",
+          at: "2026-11-07T18:00:00.000Z",
+          used: null,
+        },
+      ];
+      const { api, calls } = fakeServer({
+        "/api/get-bag": () => Response.json(adminView()),
+        "/api/give-back-renames": () =>
+          Response.json({ ...adminView(accounts), journal }),
+      });
+      const app = new AppState(api, memoryStorage(session).storage);
+      await vi.waitFor(() => expect(app.view).not.toBeNull());
+      expect(await app.giveBackRenames("j2")).toBe(true);
+      expect(calls.at(-1)).toMatchObject({
+        path: "/api/give-back-renames",
+        body: { id: "j2" },
+      });
+      expect(app.journal).toEqual(journal);
+      await app.refresh();
+      expect(app.journal).toEqual(journal);
     });
 
     it("refuses a nickname against the rules before asking the server", async () => {

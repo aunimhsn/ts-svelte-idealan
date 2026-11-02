@@ -1,6 +1,7 @@
 <!-- The header of the bag: the name, then the friend's nickname on the right, « admin » under it
      for the owner; a tap on it opens its menu as a list under it, on a phone as on a PC:
-     « Réglages » and « Vider le sac » in red for the admin, then « Se déconnecter ». A tap outside
+     « Réglages » (the friend's own, or the settings of every player for the admin), « Vider le
+     sac » in red for the admin, then « Se déconnecter ». A tap outside
      the menu or « Échap » closes it. The strip of the errors hangs under the header. -->
 <script lang="ts">
   import { tick } from "svelte";
@@ -85,15 +86,15 @@
         <Icon name="chevron" size={16} />
       </button>
       <div class="menu" id={menuId} hidden={!open}>
+        <button
+          type="button"
+          class="item open-settings"
+          aria-haspopup="dialog"
+          onclick={() => choose(onsettings)}
+        >
+          {fr.header.settings}
+        </button>
         {#if admin}
-          <button
-            type="button"
-            class="item open-settings"
-            aria-haspopup="dialog"
-            onclick={() => choose(onsettings)}
-          >
-            {fr.header.settings}
-          </button>
           <button
             type="button"
             class="item is-danger open-empty"

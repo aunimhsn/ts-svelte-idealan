@@ -146,6 +146,7 @@ describe("enter", () => {
       body: {
         role: "member",
         me: { id: "j1", nickname: "Sylent" },
+        renames: 0,
         players: [
           { id: "j1", nickname: "Sylent" },
           { id: "j2", nickname: "Nova" },

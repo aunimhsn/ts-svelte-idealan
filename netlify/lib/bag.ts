@@ -2,7 +2,13 @@
 // that every function of the bag answers.
 import type { BagGame, BagView, Role, Vote } from "../../src/lib/bag";
 import { isRecord } from "./is-record";
-import { isPlayerId, viewOfPlayer, type Player, type Players } from "./players";
+import {
+  isPlayerId,
+  renamesOf,
+  viewOfPlayer,
+  type Player,
+  type Players,
+} from "./players";
 
 export const BAG_KEY = "bag";
 
@@ -46,6 +52,7 @@ export const viewOfBag = (
 ): BagView => ({
   role,
   me: viewOfPlayer(me),
+  renames: renamesOf(me),
   players: players.list.map(viewOfPlayer),
   games: bag.games,
 });

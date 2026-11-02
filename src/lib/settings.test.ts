@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { BagGame, BagView } from "./bag";
-import { accountsOf, countsOf, deleteText } from "./settings";
+import {
+  accountsOf,
+  countsOf,
+  deleteText,
+  formatWhen,
+  renameCountText,
+  renamesLeftOf,
+  renamesLeftText,
+} from "./settings";
 
 const game = (
   appid: number,
@@ -32,10 +40,11 @@ describe("countsOf", () => {
 });
 
 describe("accountsOf", () => {
-  it("follows the players of the bag, with the states last read", () => {
+  it("follows the players of the bag, with the states and renames last read", () => {
     const view: BagView = {
       role: "admin",
       me: { id: "j1", nickname: "Sylent" },
+      renames: 0,
       players: [
         { id: "j1", nickname: "Sylent" },
         { id: "j3", nickname: "Zed" },
@@ -44,13 +53,46 @@ describe("accountsOf", () => {
     };
     expect(
       accountsOf(view, [
-        { id: "j1", nickname: "Sylent", state: "active" },
-        { id: "j2", nickname: "Nova", state: "locked" },
+        { id: "j1", nickname: "Sylent", state: "active", renames: 1 },
+        { id: "j2", nickname: "Nova", state: "locked", renames: 2 },
       ]),
     ).toEqual([
-      { id: "j1", nickname: "Sylent", state: "active" },
-      { id: "j3", nickname: "Zed", state: "active" },
+      { id: "j1", nickname: "Sylent", state: "active", renames: 1 },
+      { id: "j3", nickname: "Zed", state: "active", renames: 0 },
     ]);
+  });
+});
+
+describe("the renames", () => {
+  it.each([
+    [0, 3, "3 restants"],
+    [2, 1, "1 restant"],
+    [3, 0, "plus de renommage"],
+    [5, 0, "plus de renommage"],
+  ])("says what is left after %i used", (used, left, text) => {
+    expect(renamesLeftOf(used)).toBe(left);
+    expect(renamesLeftText(left)).toBe(text);
+  });
+
+  it("dates a rename from the day of the browser", () => {
+    const now = new Date(2026, 10, 7, 20, 0);
+    expect(formatWhen(new Date(2026, 10, 7, 18, 2), now)).toBe(
+      "aujourd’hui à 18\u00a0h\u00a002",
+    );
+    expect(formatWhen(new Date(2026, 10, 6, 23, 41), now)).toBe(
+      "hier à 23\u00a0h\u00a041",
+    );
+    expect(formatWhen(new Date(2026, 10, 3, 9, 5), now)).toBe(
+      "le 3/11 à 9\u00a0h\u00a005",
+    );
+  });
+
+  it("counts a rename by the friend, not one by the admin", () => {
+    const entry = { id: "j2", from: "Pix", to: "Pixel", at: "", used: 2 };
+    expect(renameCountText(entry)).toBe("2/3");
+    expect(renameCountText({ ...entry, used: null })).toBe(
+      "par toi, non compté",
+    );
   });
 });
 

@@ -77,7 +77,47 @@ describe("the personal code", () => {
 
 describe("readPlayers", () => {
   it("starts with nobody", () => {
-    expect(readPlayers(null)).toEqual({ nextId: 1, list: [] });
+    expect(readPlayers(null)).toEqual({ nextId: 1, list: [], journal: [] });
+  });
+
+  it("reads players written before the renames, with none used and an empty journal", () => {
+    const player = {
+      id: "j1",
+      nickname: "Nova",
+      codeHash: null,
+      createdAt: "2026-11-01T20:00:00.000Z",
+    };
+    expect(readPlayers({ nextId: 2, list: [player] })).toEqual({
+      nextId: 2,
+      list: [player],
+      journal: [],
+    });
+  });
+
+  it.each([
+    { renames: 4 },
+    { renames: -1 },
+    { journal: [{ id: "j1", from: "A", to: "B", at: "x", used: 5 }] },
+    { journal: [{ id: "x", from: "A", to: "B", at: "x", used: null }] },
+    { journal: "text" },
+  ])("fails loudly on renames it didn't write: %j", (change) => {
+    const player = {
+      id: "j1",
+      nickname: "Nova",
+      codeHash: null,
+      createdAt: "2026-11-01T20:00:00.000Z",
+    };
+    const { journal, renames } = change as {
+      journal?: unknown;
+      renames?: unknown;
+    };
+    expect(() =>
+      readPlayers({
+        nextId: 2,
+        list: [{ ...player, ...(renames === undefined ? {} : { renames }) }],
+        ...(journal === undefined ? {} : { journal }),
+      }),
+    ).toThrow();
   });
 
   it.each([{}, [], "text", { nextId: 1, list: [{ id: "x" }] }])(
@@ -193,7 +233,11 @@ describe("enterPlayer", () => {
         createdAt: NOW.toISOString(),
       }),
     );
-    const players: Players = { nextId: MAX_PLAYER_COUNT + 1, list };
+    const players: Players = {
+      nextId: MAX_PLAYER_COUNT + 1,
+      list,
+      journal: [],
+    };
     const { store } = memoryStore({ [PLAYERS_KEY]: players });
     expect(await enterPlayer(store, "Latecomer", "1234", NOW)).toEqual({
       ok: false,

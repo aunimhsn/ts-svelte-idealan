@@ -9,6 +9,13 @@
     up: { width: 2.4, paths: ["M6 15l6-6 6 6"] },
     down: { width: 2.4, paths: ["M6 9l6 6 6-6"] },
     chevron: { width: 2, paths: ["M7 10l5 5 5-5"] },
+    lock: {
+      width: 2.2,
+      paths: [
+        "M6 11h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z",
+        "M8 11V8a4 4 0 0 1 8 0v3",
+      ],
+    },
     people: {
       width: 1.8,
       paths: [

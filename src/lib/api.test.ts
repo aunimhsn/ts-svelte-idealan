@@ -5,6 +5,7 @@ import type { BagView } from "./bag";
 const view: BagView = {
   role: "member",
   me: { id: "j1", nickname: "Nova" },
+  renames: 0,
   players: [{ id: "j1", nickname: "Nova" }],
   games: [],
 };
