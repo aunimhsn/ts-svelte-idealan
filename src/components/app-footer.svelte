@@ -30,7 +30,12 @@
       />
     </svg>
   </span>
-  <p>{fr.footer.steam}</p>
+  <!-- Each sentence on a line of its own on a phone, so that « Valve. » never stays alone on the
+       second one; on one line from the breakpoint. -->
+  <p>
+    <span>{fr.footer.steamData}</span>
+    <span>{fr.footer.steamAffiliation}</span>
+  </p>
   <a
     class="signature"
     href="https://sylent.art"
@@ -59,6 +64,16 @@
 
   p {
     margin: 0;
+  }
+
+  p span {
+    display: block;
+  }
+
+  @media (width >= 900px) {
+    p span {
+      display: inline;
+    }
   }
 
   .signature {

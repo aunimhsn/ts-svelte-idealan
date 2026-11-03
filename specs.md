@@ -41,7 +41,7 @@ One page (a single-page application): a friend not known to the browser sees the
 - A friend has one vote per game, up or down; a second tap on the same arrow withdraws it, a tap on the other one changes it. The friend who added a game can't vote on it otherwise.
 - A vote shows at once, and goes back if the server refuses it. After the friend's own vote, the cards stay where they are until the bag is read again (the reload, « Rafraîchir », adding or removing a game), so that a card never moves under their finger (chosen in step 6c).
 - « Retirer », a cross at the top right of the cover, on the games the friend added, and on every game for the admin (step 9a).
-- Footer: « Données et images : Steam. Idealan n’est pas affilié à Valve. »
+- Footer: « Données et images : Steam. Idealan n’est pas affilié à Valve. », each sentence on a line of its own on a phone, on one line on a PC (chosen by the owner on 2026-11-03: « Valve. » stayed alone on the second line).
 - No real time: the bag reloads every 30 seconds while the tab is shown, after each action, and with « Rafraîchir ».
 
 ### Who voted (panel)

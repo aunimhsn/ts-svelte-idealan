@@ -155,7 +155,8 @@
     "splitScreen": "Écran partagé"
   },
   "footer": {
-    "steam": "Données et images : Steam. Idealan n’est pas affilié à Valve.",
+    "steamData": "Données et images : Steam.",
+    "steamAffiliation": "Idealan n’est pas affilié à Valve.",
     "signature": "Sylent, sur sylent.art"
   },
   "toast": {
