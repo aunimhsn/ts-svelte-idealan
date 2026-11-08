@@ -14,6 +14,7 @@ One entry per item, in the section of its kind: what it is in one sentence, what
 
 - The counts of the settings say « 0 votes · 0 jeux »: in French, 0 takes the singular (« 0 vote · 0 jeu »), as the bar of the emptying already does (`src/lib/empty-bag.ts`). Depends on: step 7b. Noted on 2026-11-02.
 - On a PC, each line of the admin's settings is a grid of its own: a line with « Redonner les 3 » moves its counts about 130 px to the right of the others (the mock-up does the same). A `subgrid` on the list would align the columns. Depends on: step 9c. Noted on 2026-11-02.
+- On a PC, in the first column of cards, the bubble of the voters may cut the start of a long nickname (16 wide letters, about 210 px) on a window narrower than about 1115 px: estimated by the review, not measured. The check of the widths doesn't open this bubble, and `scrollWidth` doesn't see an overflow on the left. Depends on: nothing. Noted on 2026-11-08.
 - Claude Code runs inside the Flatpak of VS Code, where neither `firefox` nor `flatpak` is on the path: `screenshot.sh` of the `html-mockups` skill should fall back to `flatpak-spawn --host flatpak run org.mozilla.firefox`, here and in the template. Depends on: step 3. Noted on 2026-11-01.
 
 ## Edge cases

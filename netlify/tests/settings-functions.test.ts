@@ -104,8 +104,8 @@ const setUp = async () => {
   await enter("Krak", "5555");
   memory.write(BAG_KEY, {
     games: [
-      game(10, "j2", { j2: "up", j1: "up", j3: "down" }),
-      game(20, "j1", { j1: "up", j2: "down" }),
+      game(10, "j2", { j2: "up", j1: "up", j3: "up" }),
+      game(20, "j1", { j1: "up", j2: "up" }),
     ],
   });
   const admin = { code: "admin-test-code", player: "j1", personalCode: "1234" };
@@ -372,7 +372,7 @@ describe("delete-player", () => {
     // A vote and a game left by a player deleted before (j7).
     bag.write(BAG_KEY, {
       games: [
-        game(10, "j2", { j2: "up", j7: "down" }),
+        game(10, "j2", { j2: "up", j7: "up" }),
         game(30, "j7", { j7: "up" }),
         game(20, "j1", { j1: "up" }),
       ],
@@ -423,7 +423,7 @@ describe("empty-bag", () => {
     const { status, body } = await bag.empty(bag.admin, { appids: [20] });
     expect(status).toBe(200);
     expect(body.games).toEqual([
-      game(10, "j2", { j2: "up", j1: "up", j3: "down" }),
+      game(10, "j2", { j2: "up", j1: "up", j3: "up" }),
     ]);
     expect(body.accounts).toBeUndefined();
     expect(bag.data.get(BAG_KEY)).toEqual({ games: body.games });

@@ -195,7 +195,7 @@
             removing={app.removing === game.appid}
             removeLocked={app.removing !== null}
             votersOpen={openVoters === game.appid}
-            onvote={(tapped) => void app.vote(game.appid, tapped)}
+            onvote={() => void app.vote(game.appid)}
             onremove={() => (removal = game)}
             onvoters={(open) => {
               if (open) openVoters = game.appid;

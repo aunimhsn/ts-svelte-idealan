@@ -33,8 +33,8 @@
   <!-- Each sentence on a line of its own on a phone, so that « Valve. » never stays alone on the
        second one; on one line from the breakpoint. -->
   <p>
-    <span>{fr.footer.steamData}</span>
-    <span>{fr.footer.steamAffiliation}</span>
+    <span data-one-line>{fr.footer.steamData}</span>
+    <span data-one-line>{fr.footer.steamAffiliation}</span>
   </p>
   <a
     class="signature"

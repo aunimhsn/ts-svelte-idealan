@@ -4,7 +4,7 @@ What Idealan does, agreed with the owner on 2026-11-01 (step 1 of [roadmap.md](r
 
 ## Purpose
 
-- A LAN party between friends is coming, and nobody knows what to play once everyone is there. Before the LAN, each friend puts into a shared « bag » the Steam games they would like to play, by pasting the link of the game's Steam page; the friends vote for or against each game. On the day, each one opens the page and the group picks a game.
+- A LAN party between friends is coming, and nobody knows what to play once everyone is there. Before the LAN, each friend puts into a shared « bag » the Steam games they would like to play, by pasting the link of the game's Steam page; the friends vote for the games they want. On the day, each one opens the page and the group picks a game.
 - Success: on the evening of the LAN, the choice takes two minutes.
 - Users: about 9 people, the owner (the admin) and 8 friends at most, comfortable with games and links.
 - Devices: before the LAN, a phone (adding and voting must work well at phone width); on the day, each friend on their own PC, Full HD at least. No shared screen.
@@ -36,9 +36,9 @@ One page (a single-page application): a friend not known to the browser sees the
 - A bar: the number of games and the free places (« 47 jeux · 3 places libres », « sac plein » at 50) and « Rafraîchir », then the filters: « Jouable à N » first, then the kinds of game (Coop, Coop en LAN, JcJ, JcJ en LAN, Écran partagé, then the genres of Steam, the most frequent first). Only the kinds and genres of at least one game of the bag are offered, so that no filter alone empties the bag.
 - Several filters pressed show the games that have every one of them (« Coop en LAN » and « Action »: the action games playable in coop on a LAN). With a filter on, the count reads « 12/47 jeux · filtres actifs » (step 9a). Every filter is off when the bag shows and after a reload of the page: they are not kept (chosen by the owner on 2026-11-01).
 - « Jouable à N » hides the games whose maximum number of players is below N; the games without a number stay shown, since nobody knows. Opening it turns it on, « Retirer ce filtre » turns it off. N, from 1 to 25 (step 9a), starts at the number of players of the bag and follows it until the friend changes it on the day (« Jouable à 9 »).
-- The games, sorted by score (upvotes minus downvotes): the cover, the name, « Ajouté par Nova » right under it, « Jusqu’à 8 joueurs » when known, the score, an upvote and a downvote. The categories are no longer on the card (step 9a): the filters keep them, and the Steam page shows them.
+- The games, sorted by score (the number of upvotes): the cover, the name, « Ajouté par Nova » right under it, « Jusqu’à 8 joueurs » when known, the score and an upvote. The categories are no longer on the card (step 9a): the filters keep them, and the Steam page shows them.
 - A tap anywhere on a card, but its buttons, opens the Steam page of the game (`https://store.steampowered.com/app/<appid>/`) in a new tab (step 9a).
-- A friend has one vote per game, up or down; a second tap on the same arrow withdraws it, a tap on the other one changes it. The friend who added a game can't vote on it otherwise.
+- A friend has one upvote per game; a second tap on the arrow withdraws it. There is no downvote since 2026-11-08 (asked by the owner): the friends vote for what they want to play, and the votes against already given are dropped. The friend who added a game can't vote on it otherwise.
 - A vote shows at once, and goes back if the server refuses it. After the friend's own vote, the cards stay where they are until the bag is read again (the reload, « Rafraîchir », adding or removing a game), so that a card never moves under their finger (chosen in step 6c).
 - « Retirer », a cross at the top right of the cover, on the games the friend added, and on every game for the admin (step 9a).
 - Footer: « Données et images : Steam. Idealan n’est pas affilié à Valve. », each sentence on a line of its own on a phone, on one line on a PC (chosen by the owner on 2026-11-03: « Valve. » stayed alone on the second line).
@@ -46,7 +46,7 @@ One page (a single-page application): a friend not known to the browser sees the
 
 ### Who voted (panel)
 
-- On hover on a computer, on a tap on a phone, the score of a game shows the nicknames of its voters in two columns, « Pour » and « Contre », each with its count and one nickname per line; who added the game is not marked there, since the card already says it (asked by the owner on 2026-11-01).
+- On hover on a computer, on a tap on a phone, the score of a game shows the nicknames of its voters under « Pour », with their count and one nickname per line; who added the game is not marked there, since the card already says it (asked by the owner on 2026-11-01).
 
 ### Confirmation (panel)
 
@@ -91,7 +91,7 @@ Agreed with the owner on 2026-11-01 in an Excalidraw wireframe, phone first (390
 
 - **Welcome**: the name and a short line, the three fields one under the other, each with its help or its error below it, « Entrer » across the width; the Steam footer and the signature (the wordmark of Sylent, linked to sylent.art, over the mark of Sylent as a large faint watermark) at the bottom. Under « Code perso »: « Nouveau venu : choisis-le. Déjà venu : redonne-le. » The errors come one at a time: the access code, then the nickname, then the personal code.
 - **The bag, top to bottom**: the header (the name, then the nickname on the right, « admin » under it for the admin, and its menu as a list under it, on a phone as on a PC); the adding block (« Lien Steam » across the width, then, under it on the right, « Joueurs max », « facultatif » and « Ajouter »; the same on a PC, as wide as the link field, chosen by the owner on 2026-11-01); the count with the free places and « Rafraîchir »; the filters (« Jouable à N » first, then the kinds), one row that scrolls sideways on a phone and wraps on a PC, where the count takes a row of its own and « Rafraîchir », filled with the blue, ends the row of the filters (chosen by the owner on 2026-11-01); the games; the footer. Nothing stays fixed while the page scrolls.
-- **A game card**: the cover across the width of the card, without its cut corner since step 9a, with the cross of « Retirer » at its top right when allowed; then the name, « Ajouté par Krak » in blue right under it, the friend's own nickname on their games (step 9b: a friend named « Toi » would make « Ajouté par toi » ambiguous), « Jusqu’à N joueurs » when known; the votes in a column on the right: upvote, score, downvote. The friend's vote is shown pressed; on their own game, the upvote is pressed and the downvote locked.
+- **A game card**: the cover across the width of the card, without its cut corner since step 9a, with the cross of « Retirer » at its top right when allowed; then the name, « Ajouté par Krak » in blue right under it, the friend's own nickname on their games (step 9b: a friend named « Toi » would make « Ajouté par toi » ambiguous), « Jusqu’à N joueurs » when known; the votes in a column on the right: upvote, then score. The friend's vote is shown pressed; on their own game, the upvote is pressed and locked.
 - **The games**: one card per row on a phone (about two per screen), a grid of five per row on a PC (about ten in full view).
 - **Who voted**: a bubble under the score, on a tap on a phone, on hover or keyboard focus on a PC; the page is not dimmed.
 - **Panels**: on a phone, they rise from the bottom of the screen over the dimmed bag (a bottom sheet); on a PC, a window in the middle of the dimmed bag. « Fermer », « Annuler », « Échap » or a click on the dimmed bag closes them. The settings are blocks per player on a phone, a table on a PC; emptying the bag is a list with a box per game on a phone, a grid of covers to check on a PC, with « 9 gardés · 38 retirés » and « Vider (38 jeux) » in a bar that stays at the bottom.
@@ -120,12 +120,13 @@ In Netlify Blobs (a key-value store: a name, the key, holds a content). Each wri
 
 | Key | Holds | Written by |
 |---|---|---|
-| `bag` | Up to 50 games, each with its `appid`, name, cover, categories, genres, the maximum number of players when given, the id of the player who added it, the date, and the votes (player id → up or down). About 50 KB. | Adding, voting, removing, emptying, deleting a player. |
+| `bag` | Up to 50 games, each with its `appid`, name, cover, categories, genres, the maximum number of players when given, the id of the player who added it, the date, and the votes (player id → up). About 50 KB. | Adding, voting, removing, emptying, deleting a player. |
 | `players` | Each player: a fixed id (`j1`), the nickname as typed, the personal code hashed with a salt of its own (never readable), the date of creation, and the renames they used (0 to 3, step 9a); the number of the next id, never reused; and the journal of the renames (step 9a): the last 100, each with the player's id, the former and the new nickname, the date, and whether the admin made it. A nickname exists once, without case. At most 50 players. | Entering with a new nickname; a friend renaming themself; the admin's settings. |
 | `attempts/<id>` | The wrong personal codes given in a row for a player, and their tries being checked (each with the time it started; expired after 2 minutes). | Every action of the player (each try is written before its code is checked); the admin's reset. |
 | `steam/<appid>` | The Steam page of a game: type, name, cover, categories, genres. Asked to Steam once, kept even when the game leaves the bag. | Adding a game not asked before. |
 
 - The votes point to the id of the player, not to their nickname: renaming changes only `players`.
+- The downvotes of a bag written before 2026-11-08 need no migration: they no longer count as soon as the bag is read, and leave Blobs at its next write.
 - Step 9a adds the renames used and the journal to `players` without a migration: a player without the count has used none, a `players` without the journal has an empty one. Deleting a player removes their lines of the journal too.
 - The two codes (member, admin) live in the environment variables of Netlify, never in Blobs nor in the repository.
 - The browser of each friend keeps the access code, their id and nickname, and their personal code itself, sent with each action and checked again by the server, until « Se déconnecter » (chosen by the owner on 2026-11-01, over a token signed by the server that would need one more secret in Netlify, accepting that whoever uses the browser next can read it there).

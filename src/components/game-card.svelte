@@ -1,6 +1,6 @@
 <!-- A game of the bag (specs.md, Layout): the cover, with the cross of « Retirer » at its top
      right when allowed, the name, who added it, « Jusqu’à N joueurs » when known, and the votes in
-     a column on the right: upvote, score, downvote. The whole card opens the Steam page of the
+     a column on the right: upvote, then score. The whole card opens the Steam page of the
      game in a new tab: the link of the name stretched over it, under the cross and the votes. The
      score jumps when it changes, and shows who voted in a bubble under it: on a tap, or on hover
      and keyboard focus on a computer. A cover missing or that doesn't load becomes a striped block
@@ -8,7 +8,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import fr from "../i18n/fr.json";
-  import { scoreOf, type BagGame, type Vote } from "../lib/bag";
+  import { scoreOf, type BagGame } from "../lib/bag";
   import { signed, voteOf, votersOf } from "../lib/games";
   import { format } from "../lib/messages";
   import { steamPage } from "../lib/steam-link";
@@ -35,7 +35,7 @@
     // A removal runs: « Retirer » waits for it to end.
     removeLocked: boolean;
     votersOpen: boolean;
-    onvote: (tapped: Vote) => void;
+    onvote: () => void;
     onremove: () => void;
     onvoters: (open: boolean) => void;
   } = $props();
@@ -157,11 +157,11 @@
       <button
         type="button"
         class="vote"
-        aria-label={fr.card.up}
+        aria-label={fr.card.voteUp}
         aria-describedby={titleId}
         aria-pressed={vote === "up" || vote === "own"}
         disabled={vote === "own" || removing}
-        onclick={() => onvote("up")}
+        onclick={onvote}
       >
         <Icon name="up" size={22} />
       </button>
@@ -189,34 +189,19 @@
           <span class="score-value" {@attach bump}>{signed(score)}</span>
         {/key}
       </button>
-      <button
-        type="button"
-        class="vote is-down"
-        aria-label={fr.card.down}
-        aria-describedby={titleId}
-        aria-pressed={vote === "down"}
-        disabled={vote === "own" || removing}
-        onclick={() => onvote("down")}
-      >
-        <Icon name="down" size={22} />
-      </button>
       <div class="voters" id={votersId} hidden={voters === null}>
         {#if voters !== null}
-          {#each [{ title: fr.card.up, names: voters.up }, { title: fr.card.down, names: voters.down }] as column (column.title)}
-            <div>
-              <p class="voters-title">
-                {column.title}
-                <span class="voters-count">{column.names.length}</span>
-              </p>
-              <ul>
-                {#each column.names as nickname, index (index)}
-                  <li>{nickname}</li>
-                {:else}
-                  <li class="is-none">{fr.card.nobody}</li>
-                {/each}
-              </ul>
-            </div>
-          {/each}
+          <p class="voters-title">
+            {fr.card.up}
+            <span class="voters-count">{voters.length}</span>
+          </p>
+          <ul>
+            {#each voters as nickname, index (index)}
+              <li>{nickname}</li>
+            {:else}
+              <li class="is-none">{fr.card.nobody}</li>
+            {/each}
+          </ul>
         {/if}
       </div>
     </div>
@@ -352,7 +337,8 @@
     font-weight: var(--weight-bold);
   }
 
-  /* « Retirer »: a square with a cross at the top right of the cover, above the link. */
+  /* « Retirer »: a red square with a white cross at the top right of the cover, above the link,
+     so that it shows on any cover. */
   .remove {
     position: absolute;
     z-index: var(--layer-bubble);
@@ -363,21 +349,22 @@
     width: var(--tap);
     height: var(--tap);
     padding: 0;
-    border: var(--hairline) solid var(--line-strong);
+    border: var(--hairline) solid var(--error-text);
     border-radius: var(--radius);
-    background: color-mix(in srgb, var(--surface-solid) 78%, transparent);
-    backdrop-filter: blur(var(--glass-blur));
-    color: var(--text);
+    background: var(--remove);
+    color: var(--on-error);
     cursor: pointer;
     touch-action: manipulation;
-    transition:
-      background var(--duration-fast),
-      border-color var(--duration-fast);
+    transition: background var(--duration-fast);
   }
 
   .remove:hover {
-    border-color: var(--error-text);
-    background: var(--error);
+    background: var(--remove-hover);
+  }
+
+  /* The ring of the focus sits on the cover: the dark gap keeps it visible on a light one. */
+  .remove:focus-visible {
+    box-shadow: 0 0 0 var(--focus-offset) var(--bg);
   }
 
   .remove[aria-disabled="true"] {
@@ -385,7 +372,7 @@
     opacity: 0.75;
   }
 
-  /* The votes: upvote, score, downvote; the friend's vote fills with the blue and glows. */
+  /* The votes: upvote, then score; the friend's vote fills with the blue and glows. */
   .votes {
     position: relative;
     z-index: var(--layer-bubble);
@@ -429,11 +416,6 @@
     box-shadow: var(--glow-vote);
   }
 
-  .vote.is-down:disabled {
-    border-style: dashed;
-    opacity: 0.4;
-  }
-
   /* The score, in the blue when the friend voted for the game. */
   .score {
     min-width: var(--tap);
@@ -470,7 +452,8 @@
     z-index: var(--layer-bubble);
     top: calc(100% + var(--space-2));
     right: 0;
-    width: min(var(--width-bubble), calc(100vw - 2 * var(--space-4)));
+    width: max-content;
+    max-width: min(var(--width-bubble), calc(100vw - 2 * var(--space-4)));
     padding: var(--space-3) var(--space-4);
     border: var(--hairline) solid var(--line-strong);
     border-radius: var(--radius);
@@ -500,12 +483,6 @@
     border-left: var(--hairline) solid var(--line-strong);
     background: var(--surface-solid);
     transform: rotate(45deg);
-  }
-
-  .voters:not([hidden]) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-4);
   }
 
   .voters-title {

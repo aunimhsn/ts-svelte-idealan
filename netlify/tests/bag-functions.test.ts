@@ -459,13 +459,9 @@ describe("add-game", () => {
 });
 
 describe("vote", () => {
-  it("votes, changes the vote, and withdraws it", async () => {
+  it("votes and withdraws the vote", async () => {
     const { add, vote, sylent, nova } = await setUp();
     await add(sylent);
-    expect((await vote(nova, 730, "down")).body.games[0]?.votes).toEqual({
-      j1: "up",
-      j2: "down",
-    });
     expect((await vote(nova, 730, "up")).body.games[0]?.votes).toEqual({
       j1: "up",
       j2: "up",
@@ -478,7 +474,7 @@ describe("vote", () => {
   it("keeps the upvote of who added the game", async () => {
     const { add, vote, sylent } = await setUp();
     await add(sylent);
-    expect(await vote(sylent, 730, "down")).toEqual({
+    expect(await vote(sylent, 730, "up")).toEqual({
       status: 403,
       body: { error: "own-game" },
     });
@@ -496,6 +492,7 @@ describe("vote", () => {
 
   it.each([
     [730, "sideways"],
+    [730, "down"],
     ["730", "up"],
     [730, undefined],
   ])("refuses the vote %j %j", async (appid, value) => {
@@ -522,14 +519,14 @@ describe("vote", () => {
     await add(sylent);
     let once = true;
     onBeforeWrite((key) => {
-      // Krak votes against between the read and the write of Nova's vote.
+      // Krak votes between the read and the write of Nova's vote.
       if (key === BAG_KEY && once) {
         once = false;
         const bag = data.get(BAG_KEY) as { games: BagGame[] };
         write(BAG_KEY, {
           games: bag.games.map((game) => ({
             ...game,
-            votes: { ...game.votes, j3: "down" },
+            votes: { ...game.votes, j3: "up" },
           })),
         });
       }
@@ -537,9 +534,42 @@ describe("vote", () => {
     expect((await vote(nova, 730, "up")).body.games[0]?.votes).toEqual({
       j1: "up",
       j2: "up",
-      j3: "down",
+      j3: "up",
     });
     expect(once).toBe(false);
+  });
+
+  it("hides a downvote kept from before on a read, without writing", async () => {
+    const { add, getBag, data, write, sylent } = await setUp();
+    await add(sylent);
+    const stored = data.get(BAG_KEY) as { games: BagGame[] };
+    const withDownvote = {
+      games: stored.games.map((game) => ({
+        ...game,
+        votes: { ...game.votes, j3: "down" },
+      })),
+    };
+    write(BAG_KEY, withDownvote);
+    expect((await getBag(sylent)).body.games[0]?.votes).toEqual({ j1: "up" });
+    expect(data.get(BAG_KEY)).toEqual(withDownvote);
+  });
+
+  it("stops counting a downvote kept from before, and forgets it at the next write", async () => {
+    const { add, vote, data, write, sylent, nova } = await setUp();
+    await add(sylent);
+    const before = data.get(BAG_KEY) as { games: BagGame[] };
+    write(BAG_KEY, {
+      games: before.games.map((game) => ({
+        ...game,
+        votes: { ...game.votes, j3: "down" },
+      })),
+    });
+    const expected = { j1: "up", j2: "up" };
+    expect((await vote(nova, 730, "up")).body.games[0]?.votes).toEqual(
+      expected,
+    );
+    const after = data.get(BAG_KEY) as { games: BagGame[] };
+    expect(after.games[0]?.votes).toEqual(expected);
   });
 });
 
