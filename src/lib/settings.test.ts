@@ -29,8 +29,8 @@ const game = (
 describe("countsOf", () => {
   it("counts the games added and the votes on the games of the others", () => {
     const games = [
-      game(1, "j1", { j1: "up", j2: "down" }),
-      game(2, "j2", { j2: "up", j1: "down" }),
+      game(1, "j1", { j1: "up", j2: "up" }),
+      game(2, "j2", { j2: "up", j1: "up" }),
       game(3, "j3", { j3: "up", j1: "up" }),
       game(4, "j3", { j3: "up" }),
     ];

@@ -317,16 +317,16 @@ export class AppState {
     return false;
   }
 
-  // Taps an arrow of a game: votes, changes the vote or withdraws it. The card shows it at once
+  // Taps the arrow of a game: votes or withdraws the vote. The card shows it at once
   // and stays where it is; if the server refuses, the vote shown goes back to what it was.
-  async vote(appid: number, tapped: Vote) {
+  async vote(appid: number) {
     const view = this.view;
     const game = view?.games.find((candidate) => candidate.appid === appid);
     if (!view || !game || game.addedBy === view.me.id) return;
     const pending: PendingVote = {
       id: (this.#voteId += 1),
       appid,
-      vote: nextVote(game.votes[view.me.id] ?? null, tapped),
+      vote: nextVote(game.votes[view.me.id] ?? null),
     };
     this.#votes = [...this.#votes, pending];
     const epoch = this.#epoch;

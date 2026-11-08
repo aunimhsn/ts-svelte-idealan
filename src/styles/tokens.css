@@ -92,6 +92,8 @@
 
   --error-text: #ff8f85; /* 9.2:1; also the border of a field at fault */
   --error: #8c1626; /* the bordeaux of the strip of the errors, chosen by the owner on 2026-11-01 */
+  --remove: #b01e30; /* the square of « Retirer » on a card, white on it 6.8:1 */
+  --remove-hover: #d62839; /* the same under the pointer, white on it 5.0:1 */
   --error-alpha: 88%;
   --error-bg: color-mix(
     in srgb,

@@ -8,7 +8,7 @@ export const MAX_GAMES = 50;
 // back.
 export const MAX_RENAMES = 3;
 
-export type Vote = "up" | "down";
+export type Vote = "up";
 
 export type Role = "member" | "admin";
 
@@ -75,9 +75,6 @@ export interface BagView {
   journal?: RenameEntry[];
 }
 
-// The score of a game: its upvotes minus its downvotes.
+// The score of a game: its upvotes.
 export const scoreOf = (game: Pick<BagGame, "votes">) =>
-  Object.values(game.votes).reduce(
-    (score, vote) => score + (vote === "up" ? 1 : -1),
-    0,
-  );
+  Object.keys(game.votes).length;

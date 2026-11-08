@@ -1,7 +1,7 @@
-// Votes for a game, against it, or withdraws the vote (specs.md, The bag): POST /api/vote with
-// { appid, vote: "up" | "down" | null }, the access code and the player in the headers. The
-// interface sends the vote the friend ends with: a second tap on the same arrow sends null. The
-// friend who added a game keeps their upvote. Answers the bag.
+// Votes for a game or withdraws the vote (specs.md, The bag): POST /api/vote with
+// { appid, vote: "up" | null }, the access code and the player in the headers. The interface
+// sends the vote the friend ends with: a second tap on the arrow sends null. The friend who added
+// a game keeps their upvote. Answers the bag.
 import type { Config, Context } from "@netlify/functions";
 import type { Vote } from "../../src/lib/bag";
 import type { Environment } from "../lib/access";
@@ -33,10 +33,7 @@ export const handleVote = async (
   const body = await readBody(request);
   const appid = body?.appid;
   const vote = body?.vote;
-  if (
-    !Number.isSafeInteger(appid) ||
-    !(vote === "up" || vote === "down" || vote === null)
-  ) {
+  if (!Number.isSafeInteger(appid) || !(vote === "up" || vote === null)) {
     return errorResponse("invalid-request", 400);
   }
   const me = session.player.id;

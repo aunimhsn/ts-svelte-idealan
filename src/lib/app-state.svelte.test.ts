@@ -269,7 +269,7 @@ describe("AppState", () => {
       });
       const app = new AppState(api, memoryStorage(session).storage);
       await vi.waitFor(() => expect(app.view).not.toBeNull());
-      const voted = app.vote(2, "up");
+      const voted = app.vote(2);
       expect(app.view?.games[1]?.votes.j1).toBe("up");
       await vi.waitFor(() => expect(answer).toBeDefined());
       answer?.();
@@ -288,7 +288,7 @@ describe("AppState", () => {
       });
       const app = new AppState(api, memoryStorage(session).storage);
       await vi.waitFor(() => expect(app.view).not.toBeNull());
-      await app.vote(2, "down");
+      await app.vote(2);
       expect(app.view?.games[0]?.votes).toEqual({ j2: "up" });
       expect(app.toast).toBe("server-error");
     });
@@ -300,7 +300,7 @@ describe("AppState", () => {
       });
       const app = new AppState(api, memoryStorage(session).storage);
       await vi.waitFor(() => expect(app.view).not.toBeNull());
-      await app.vote(730, "down");
+      await app.vote(730);
       expect(app.view?.games[0]?.votes).toEqual({ j1: "up" });
       expect(calls.map((call) => call.path)).toEqual(["/api/get-bag"]);
     });
@@ -323,9 +323,9 @@ describe("AppState", () => {
       });
       const app = new AppState(api, memoryStorage(session).storage);
       await vi.waitFor(() => expect(app.view).not.toBeNull());
-      const first = app.vote(2, "up");
+      const first = app.vote(2);
       expect(app.view?.games[0]?.votes).toEqual({ j2: "up", j1: "up" });
-      const second = app.vote(2, "up");
+      const second = app.vote(2);
       expect(app.view?.games[0]?.votes).toEqual({ j2: "up" });
       await vi.waitFor(() => expect(answers).toHaveLength(1));
       answers[0]?.();

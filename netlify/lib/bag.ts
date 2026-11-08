@@ -16,13 +16,18 @@ export interface Bag {
   games: BagGame[];
 }
 
-const isVotes = (value: unknown): value is Record<string, Vote> =>
+// A bag written before the downvote was removed (2026-11-08) can still hold some: accepted here,
+// then dropped by `readBag`.
+type StoredVotes = Record<string, Vote | "down">;
+type StoredGame = Omit<BagGame, "votes"> & { votes: StoredVotes };
+
+const isVotes = (value: unknown): value is StoredVotes =>
   isRecord(value) &&
   Object.entries(value).every(
     ([id, vote]) => isPlayerId(id) && (vote === "up" || vote === "down"),
   );
 
-const isGame = (value: unknown): value is BagGame =>
+const isGame = (value: unknown): value is StoredGame =>
   isRecord(value) &&
   Number.isSafeInteger(value.appid) &&
   typeof value.name === "string" &&
@@ -34,12 +39,23 @@ const isGame = (value: unknown): value is BagGame =>
   typeof value.addedAt === "string" &&
   isVotes(value.votes);
 
-// The bag kept in Blobs, or an empty one. A shape this code didn't write fails loudly rather than
-// being overwritten with an empty bag, which would lose every game.
+const isUpvote = (entry: [string, Vote | "down"]): entry is [string, Vote] =>
+  entry[1] === "up";
+
+const withoutDownvotes = (game: StoredGame): BagGame => ({
+  ...game,
+  votes: Object.fromEntries(Object.entries(game.votes).filter(isUpvote)),
+});
+
+// The bag kept in Blobs, or an empty one, without the old downvotes: they stop counting at once
+// and leave Blobs at the next write of the bag. A shape this code didn't write fails loudly rather
+// than being overwritten with an empty bag, which would lose every game.
 export const readBag = (value: unknown): Bag => {
   if (value === null) return { games: [] };
   if (isRecord(value) && Array.isArray(value.games)) {
-    if (value.games.every(isGame)) return { games: value.games };
+    if (value.games.every(isGame)) {
+      return { games: value.games.map(withoutDownvotes) };
+    }
   }
   throw new Error("The bag key has an unexpected shape.");
 };

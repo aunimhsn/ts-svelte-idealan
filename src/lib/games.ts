@@ -35,27 +35,22 @@ export const tagsOf = (game: Pick<BagGame, "categories" | "genres">) => [
 export const voteOf = (game: BagGame, playerId: string) =>
   game.addedBy === playerId ? "own" : (game.votes[playerId] ?? null);
 
-// A score with its sign: « +6 », « 0 », « −2 » (the minus sign, not the hyphen).
-export const signed = (score: number) =>
-  score > 0 ? `+${score}` : score < 0 ? `−${-score}` : "0";
+// A score with its sign: « +6 », « 0 ».
+export const signed = (score: number) => (score > 0 ? `+${score}` : "0");
 
-// The vote a tap on an arrow sends: a second tap on the same arrow withdraws the vote, a tap on
-// the other one changes it (specs.md, The bag).
-export const nextVote = (current: Vote | null, tapped: Vote) =>
-  current === tapped ? null : tapped;
+// The vote a tap on the arrow sends: a second tap withdraws the vote (specs.md, The bag).
+export const nextVote = (current: Vote | null): Vote | null =>
+  current === null ? "up" : null;
 
-// Who voted for a game and against it, by nickname, in the order of the votes; a player who left
-// the bag shows as a former player.
+// Who voted for a game, by nickname, in the order of the votes; a player who left the bag shows
+// as a former player.
 export const votersOf = (
   game: Pick<BagGame, "votes">,
   nicknames: ReadonlyMap<string, string>,
-) => {
-  const voters: Record<Vote, string[]> = { up: [], down: [] };
-  for (const [id, vote] of Object.entries(game.votes)) {
-    voters[vote].push(nicknames.get(id) ?? fr.card.formerPlayer);
-  }
-  return voters;
-};
+) =>
+  Object.keys(game.votes).map(
+    (id) => nicknames.get(id) ?? fr.card.formerPlayer,
+  );
 
 // The games in the order given, the games not in it after them by score: after the friend's own
 // vote, the cards stay where they are until the bag is read again, so that a card never moves

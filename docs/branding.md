@@ -67,6 +67,8 @@ The electric blue `#2e6bff`, chosen on 2026-11-01 among six blues, lights the ro
 | `--dim` | `#8a93ab` | Weak text: tags, notes, placeholders, the footer | 6.6:1, 6.0:1 on `--signal-tint` |
 | `--focus` | `--text` | The focus ring, 2 px, offset by 2 px | 18.7:1 |
 | `--error-text` | `#ff8f85` | The message under a field, the border of a field at fault | 9.2:1 |
+| `--remove` | `#b01e30` | The carmine of the square of « Retirer » on a card, chosen on 2026-11-08 | white on it 6.8:1 |
+| `--remove-hover` | `#d62839` | The same square under the pointer | white on it 5.0:1 |
 | `--error` | `#8c1626` | The bordeaux of the strip of the errors, chosen by the owner on 2026-11-01 over the first red `#d62839` (« il pique les yeux ») | |
 | `--error-bg` | `--error` at 88 % | The strip of the errors, still translucent | white on it 10.6:1, 7.2:1 at worst over white |
 | `--on-error` | `#ffffff` | Text and cross on the strip | |
@@ -139,10 +141,10 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 - **Chips** (filters): pressed, the border in `--signal`, a background `--signal-tint`, the text in `--signal-text`. The window of « Jouable à N » opens `--space-1` (4 px) under its chip, on a phone and on a PC: a small gap the owner liked (2026-11-01).
 - **Cards**: glass (`--surface` blurred by `--glass-blur` 8 px); under the pointer, a blue border and `--glow-card`, a slight tilt and press. Since step 9a (chosen by the owner on 2026-11-02):
   - The whole card opens the Steam page of the game in a new tab (the link of the title stretched over the card, a focus outline around the card); the cross and the votes stay above it. The friends are precise players: no icon ↗. A tap that closes a bubble or the menu doesn't open the Steam page (step 9b).
-  - « Retirer » is a square with a cross at the top right of the cover (`--tap` on a phone, `--tap-small` on a PC), `--surface-solid` at 78 % blurred, filled with `--error` under the pointer; only where the friend may remove the game.
+  - « Retirer » is a square with a cross at the top right of the cover (`--tap` on a phone, `--tap-small` on a PC), filled with `--remove` with a white cross and a border `--error-text`, `--remove-hover` under the pointer (asked by the owner on 2026-11-08: the cross didn't show enough on the covers); only where the friend may remove the game.
   - No categories on the card: the filters keep them, and the Steam page shows them.
   - « Ajouté par Krak » in bold, right under the title, then « Jusqu’à 10 joueurs ». Since step 9b (chosen by the owner on 2026-11-02), the friend's own nickname on their games rather than « toi », which a friend named « Toi » would make ambiguous; and the electric blue lightened by 10 %, `--signal-label` (5.1:1 on a card, 4.8:1 under the pointer), since `--signal` reached only 4.35:1, under AA.
-- **Votes**: square buttons of `--tap`; the friend's vote fills with `--signal` and glows (`--glow-vote`); the score in `--signal-text` when the friend voted for it; their own game can't be voted against (a dashed border, 40 % opacity).
+- **Votes**: square buttons of `--tap`; the friend's vote fills with `--signal` and glows (`--glow-vote`); the score in `--signal-text` when the friend voted for it; the upvote of their own game stays pressed and locked. There is only the upvote since 2026-11-08 (asked by the owner); the bubble of the score lists « Pour » alone, as wide as its nicknames.
 - **Bubbles and panels**: `--surface-solid`, a border `--line-strong`, `--shadow-pop`; behind a panel, `--overlay`.
 - **The strip of the errors**: under the header, over the page, `--error-bg` blurred, white text, a cross of `--tap`.
 - **The settings of the admin** (chosen by the owner on 2026-11-02): a rename refused shows in a bubble of `--error-bg` under its line, its point (`--arrow`) toward the field, white text, the field bordered in `--error-text`, so that the error sits next to its player in a long list, inside the panel that makes the strip of the bag unreachable. The state of a nickname next to its counts: a red padlock (`--error-text`, read « verrouillé ») after 5 wrong personal codes, since step 9a (asked by the owner on 2026-11-02, to save room); « code à choisir », a label in capitals framed in `--secondary`, for a code reset and not chosen yet. « Redonner les 3 » sits right next to « Renommer », once the friend used one of their renames; on a phone, such a line gives the field of the nickname a row of its own, its two buttons under it on the right (step 9c, accepted by the owner on 2026-11-02: the field narrowed showed « Abcdefgl » at 360 px). The renames are in a journal under the list, « PixL → Pixel », its date and « 2/3 » (« par toi, non compté » for a rename by the admin), folded by default in the application (« ▸ Renommages 4 »). The admin's own line has no action, only « toi » in the column of « Supprimer » (2026-11-02).
@@ -174,7 +176,7 @@ The CSS of the mock-up ([`docs/mockups/shared/app.css`](mockups/shared/app.css))
 <!-- Where they come from, their license, their format and sizes. -->
 
 - **Covers**: the header images of the Steam CDN (460 × 215, the ratio kept by every cover), never copied into the repository; shown at the width of a card (about 340 px on a phone, 300 px on a PC) and as 88 px thumbnails in the emptying (`--thumb`). A missing cover becomes a striped block (`--stripes`, drawn with `--stripe`) with the name of the game; a bare striped block in the emptying, where the name is written next to it. The footer says « Données et images : Steam. Idealan n’est pas affilié à Valve. »: on a phone, each sentence on a line of its own, so that « Valve. » never stays alone on the second line; on one line from 900 px (chosen by the owner on 2026-11-03).
-- **Icons**: SVG lines in the color of the text, never text symbols, drawn in the mock-up (`ICON` of `app.js`): vote up and down, refresh, chevron, people.
+- **Icons**: SVG lines in the color of the text, never text symbols, drawn in the mock-up (`ICON` of `app.js`): vote up, refresh, chevron, people.
 - **The logo and the signature**: see [Brand assets](#brand-assets) and [Logo](#logo).
 
 ## Accessibility
@@ -208,6 +210,7 @@ On 2026-11-02, in the settings of the admin (step 7a):
 
 On 2026-11-02, in the polish of the bag (step 9a):
 
+- **The color of the cross of « Retirer »** (2026-11-08): the former dark square, a red cross on that square (thin on a busy cover), the bordeaux `--error` (too dark on a dark cover). The owner chose the carmine square with a white cross.
 - **The cross of « Retirer »**: beside the cut corner kept, or carrying the cut corner itself, flush with the corner of the cover. The owner chose the cover without its cut corner.
 - **The link to Steam**: the cover and the title only, with or without an icon ↗ (safer on a phone, where a finger may miss a vote). The owner chose the whole card: their friends are precise players.
 - **« Ajouté par »**: in `--signal-text`, the light blue. The owner chose the electric blue. In step 9b, `--signal` itself (4.35:1, under AA) gave way to `--signal-label`, lightened by 10 %; « Ajouté par toi » on one's own games gave way to the nickname.

@@ -38,6 +38,7 @@ The usual steps of the first cycle of a small application; adapt them at the set
   - [x] **9b. The polish of the bag** ([#20](https://github.com/aunimhsn/ts-svelte-idealan/pull/20)).
   - [x] **9c. Renaming oneself** (build): the friend's « Réglages » in their menu, the function, the count of renames and their log in the bag, the log in the admin's settings with « Redonner les 3 », the red padlock and « Supprimer » in red.
 - [x] **Fix: the Steam notice of the footer on two lines on a phone** ([#22](https://github.com/aunimhsn/ts-svelte-idealan/pull/22)).
+- [x] **Small feedback: no more downvote, the cross of « Retirer » in red** ([#22](https://github.com/aunimhsn/ts-svelte-idealan/pull/22)).
 - [ ] **10. Retrospective**: after the LAN, the friends' feedback in the backlog, the lessons in `process.md`, the memory moved to the files, and the template `ts-svelte-dynamic-website-template` made from this project.
 
 The steps may be split into sub-steps when a pull request grows too large. When no step is left, Claude Code proposes the next items of the backlog to the owner.
