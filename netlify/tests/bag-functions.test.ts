@@ -539,6 +539,21 @@ describe("vote", () => {
     expect(once).toBe(false);
   });
 
+  it("hides a downvote kept from before on a read, without writing", async () => {
+    const { add, getBag, data, write, sylent } = await setUp();
+    await add(sylent);
+    const stored = data.get(BAG_KEY) as { games: BagGame[] };
+    const withDownvote = {
+      games: stored.games.map((game) => ({
+        ...game,
+        votes: { ...game.votes, j3: "down" },
+      })),
+    };
+    write(BAG_KEY, withDownvote);
+    expect((await getBag(sylent)).body.games[0]?.votes).toEqual({ j1: "up" });
+    expect(data.get(BAG_KEY)).toEqual(withDownvote);
+  });
+
   it("stops counting a downvote kept from before, and forgets it at the next write", async () => {
     const { add, vote, data, write, sylent, nova } = await setUp();
     await add(sylent);

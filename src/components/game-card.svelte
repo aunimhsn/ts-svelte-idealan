@@ -157,7 +157,7 @@
       <button
         type="button"
         class="vote"
-        aria-label={fr.card.up}
+        aria-label={fr.card.voteUp}
         aria-describedby={titleId}
         aria-pressed={vote === "up" || vote === "own"}
         disabled={vote === "own" || removing}
@@ -360,6 +360,11 @@
 
   .remove:hover {
     background: var(--remove-hover);
+  }
+
+  /* The ring of the focus sits on the cover: the dark gap keeps it visible on a light one. */
+  .remove:focus-visible {
+    box-shadow: 0 0 0 var(--focus-offset) var(--bg);
   }
 
   .remove[aria-disabled="true"] {
